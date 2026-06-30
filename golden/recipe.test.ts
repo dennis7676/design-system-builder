@@ -108,15 +108,22 @@ describe("R5 — bounded overrides mutate intent, stay valid", () => {
   });
 });
 
-describe("R6 — deferred recipes are selectable but not buildable", () => {
-  it("selecting a deferred stub raises a recipe-deferred conflict", () => {
-    const b = brand({ tone: { static_dynamic: 6, cold_warm: 5, serious_playful: 5, classic_cutting_edge: 6, minimal_rich: 5 } });
-    const sel = selectRecipe(b, RECIPES);
-    expect(sel.recipeKey).toBe("expressive");
+describe("R6 — deferred (base:null) recipes are selectable but not buildable", () => {
+  // All 4 shipped recipes now have a base tree; exercise the deferred-stub code
+  // path with an inline base:null recipe so the contract stays covered.
+  const stub: Recipe = {
+    key: "stub-fam", version: "0.0.0-stub", source: "test",
+    toneAnchor: TONE(),
+    hardConstraintRules: { requires: { mediums: ["web"] }, excludesAudiences: [], minContrastCapable: true, tags: ["web"] },
+    philosophy: null, base: null,
+  };
+  it("selecting a base:null recipe raises a recipe-deferred conflict", () => {
+    const sel = selectRecipe(brand(), [stub]);
+    expect(sel.recipeKey).toBe("stub-fam");
     expect(sel.conflicts.map((c) => c.code)).toContain("recipe-deferred");
   });
-  it("buildTokens on a stub throws BuildError", () => {
-    expect(() => buildTokens(brand(), recipe("expressive"))).toThrow(BuildError);
+  it("buildTokens on a base:null recipe throws BuildError", () => {
+    expect(() => buildTokens(brand(), stub)).toThrow(BuildError);
   });
 });
 

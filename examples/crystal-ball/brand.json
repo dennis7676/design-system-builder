@@ -5,9 +5,9 @@
   "accessibility": { "minContrast": "AA" },
   "constraints": [],
   "branding": {
-    "tone_vector": { "static_dynamic": 3, "cold_warm": 4, "serious_playful": 4, "classic_cutting_edge": 5, "minimal_rich": 2 },
-    "archetype": "sage",
-    "references": ["airbnb", "toss"]
+    "tone_vector": { "static_dynamic": 3, "cold_warm": 5, "serious_playful": 4, "classic_cutting_edge": 5, "minimal_rich": 3 },
+    "archetype": "caregiver-sage",
+    "references": ["airbnb", "toss", "notion"]
   },
   "overrides": {}
 }

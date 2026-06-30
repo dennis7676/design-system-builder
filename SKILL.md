@@ -24,7 +24,11 @@ interview (this skill, LLM)  →  brand.json (CONFIRMED — reproducibility boun
   →  generate (CLI): tokens.css + styleguide.html + DESIGN.md  (3-surface hash-consistent)
 ```
 
-Repo: `~/design-system-builder`. Build first if `dist/` is stale: `npm run build`.
+Repo: `~/design-system-builder`. **Run all commands below from the repo root**
+(they use relative `dist/cli.js` and `references/recipes`). Build first if
+`dist/` is stale: `npm run build`. `build` stamps a fixed `generatedAt`
+sentinel, so the same `brand.json` yields a **byte-identical** `tokens.json`,
+not merely the same intent hash.
 
 ---
 
@@ -55,7 +59,7 @@ Ask, conversationally: **medium?** (web / app / video — pilot supports `web`),
 
 ### Phase 1 — Brand personality (→ tone_vector + archetype)
 1. "If the brand were a person, what's their job?" → Jung archetype (free text → `branding.archetype`, a **prior only**, never the decider).
-2. **Semantic Differential — the 5 axes that become `tone_vector` (1–7).** Run these as `AskUserQuestion` (up to 4 questions per call), one anchored scale per axis, so the **user picks the integer**, not you. Use the rubric below for option labels. Midpoint (4) = the auto-added "Other → 균형/중간".
+2. **Semantic Differential — the 5 axes that become `tone_vector` (1–7).** Run as `AskUserQuestion`, one anchored scale per axis. `AskUserQuestion` caps at **4 questions per call**, so split the 5 axes across **two calls** (e.g. 3 + 2) — do not silently drop the 5th. Offer 4 anchored options per axis mapping to `{1, 3, 5, 7}`; the auto-added "Other" lets the user say midpoint (4) or an off-anchor value (2/6) in words, which you then place. This makes the common case a direct user choice and keeps your interpretation to the off-anchor margins. (Reproducibility is ultimately guaranteed by the confirmation seal below, not by the instrument's granularity.)
 3. "3 words this brand would NEVER use" → exclusion signals.
 4. "2–3 similar brands/products" → `branding.references[]` (reverse-inference, **override guide only**).
 
@@ -134,7 +138,7 @@ empty. Only emit `visual.radius` / `motion.speed` (others deferred).
    | `no-recipe-satisfies-hard-constraints` | constraints/medium exclude all recipes | relax a `constraints[]` tag or change medium; re-ask Phase 4 |
    | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
-   | `override-deferred` | used a deferred axis | remove it (see Phase 3) |
+   | `override-deferred` *and/or* a `BRAND [overrides.<axis>] unknown override axis` line | used a deferred axis (e.g. `visual.accent`); it is not in `OVERRIDE_RANGES`, so `validateBrand` flags it as unknown *and* `validateOverrides` flags it deferred — both can appear | remove it (see Phase 3) |
 4. **Build with confirmation** → writes the intent-token SSOT:
    ```
    node dist/cli.js build brand.json --out out/tokens.json --confirm

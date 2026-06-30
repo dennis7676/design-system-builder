@@ -1,0 +1,41 @@
+{
+  "name": "design-system-builder",
+  "version": "0.1.0",
+  "description": "Interview-driven design system generator — intent token SSOT → multi-target adapters (web M2, video M4)",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "design-system-builder": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "references",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "cli": "tsx src/cli.ts"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "keywords": [
+    "design-system",
+    "design-tokens",
+    "wcag",
+    "oklch",
+    "styleguide"
+  ]
+}

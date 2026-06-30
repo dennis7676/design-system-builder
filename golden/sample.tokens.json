@@ -1,0 +1,139 @@
+{
+  "version": "1.0.0",
+  "schemaVersion": "2026-06-30",
+  "meta": {
+    "generatedAt": "2026-06-30T14:30:00Z",
+    "recipe": "minimal-tech",
+    "toneVector": { "minimal_rich": -0.6, "warm_cool": 0.3, "playful_serious": 0.5 },
+    "requiredTargets": ["web"],
+    "philosophy": {
+      "principles": ["명료성 우선", "기능색 최소", "정직한 여백"],
+      "rationale": "저채도 중성 팔레트에 기능색을 절제해 명료성을 우선한다. 엔지니어 원형은 모서리를 타이트하게, 모션을 절제하게 끌어당긴다.",
+      "decisionTrace": [
+        {
+          "axis": "tone_vector.minimal_rich",
+          "value": -0.6,
+          "rationale": "저채도 중성 팔레트 + 기능색 최소화로 명료성 우선",
+          "coversTokenPath": ["semantic.color.surface.*", "semantic.color.primary.default", "primitive.color.*"]
+        },
+        {
+          "axis": "persona.archetype",
+          "value": "engineer",
+          "rationale": "타이트한 모서리와 절제된 모션",
+          "coversTokenPath": ["primitive.radius.*", "semantic.shape.*", "primitive.duration.*", "semantic.motion.*"]
+        },
+        {
+          "axis": "tone_vector.playful_serious",
+          "value": 0.5,
+          "rationale": "본문 가독성을 위한 균형 잡힌 sans 램프와 정직한 여백 스케일",
+          "coversTokenPath": ["primitive.font.*", "semantic.typography.*", "primitive.space.*", "semantic.space.*"]
+        }
+      ]
+    }
+  },
+  "transformContract": {
+    "dimension": { "web": { "base": 16, "unit": "rem" } },
+    "duration": { "web": "ms" },
+    "color": { "web": "oklch" }
+  },
+  "contrastPairs": [
+    { "fg": "semantic.color.surface.foreground", "bg": "semantic.color.surface.default", "role": "text", "state": "default" },
+    { "fg": "semantic.color.primary.foreground", "bg": "semantic.color.primary.default", "role": "text", "state": "default" },
+    { "fg": "semantic.color.primary.foreground", "bg": "semantic.color.primary.hover", "role": "text", "state": "hover" }
+  ],
+  "primitive": {
+    "color": {
+      "neutral": {
+        "50":  { "$type": "color", "$value": "oklch(0.98 0 0)", "$class": "portable", "$description": "최상위 표면 배경" },
+        "100": { "$type": "color", "$value": "oklch(0.95 0 0)", "$class": "portable" },
+        "600": { "$type": "color", "$value": "oklch(0.50 0 0)", "$class": "portable" },
+        "900": { "$type": "color", "$value": "oklch(0.20 0 0)", "$class": "portable", "$description": "본문 텍스트" }
+      },
+      "blue": {
+        "600": { "$type": "color", "$value": "oklch(0.48 0.13 255)", "$class": "portable", "$description": "브랜드 프라이머리" },
+        "700": { "$type": "color", "$value": "oklch(0.42 0.13 255)", "$class": "portable", "$description": "프라이머리 hover" }
+      }
+    },
+    "space": {
+      "xs": { "$type": "dimension", "$value": { "value": 0.5, "unit": "abstract" }, "$class": "adapter-derived" },
+      "sm": { "$type": "dimension", "$value": { "value": 1, "unit": "abstract" }, "$class": "adapter-derived" },
+      "md": { "$type": "dimension", "$value": { "value": 1.5, "unit": "abstract" }, "$class": "adapter-derived" },
+      "lg": { "$type": "dimension", "$value": { "value": 2, "unit": "abstract" }, "$class": "adapter-derived" }
+    },
+    "radius": {
+      "sm": { "$type": "dimension", "$value": { "value": 0.25, "unit": "abstract" }, "$class": "adapter-derived" },
+      "md": { "$type": "dimension", "$value": { "value": 0.5, "unit": "abstract" }, "$class": "adapter-derived" }
+    },
+    "duration": {
+      "fast": { "$type": "duration", "$value": { "value": 120, "unit": "ms" }, "$class": "adapter-derived" },
+      "normal": { "$type": "duration", "$value": { "value": 200, "unit": "ms" }, "$class": "adapter-derived" }
+    },
+    "font": {
+      "family": {
+        "sans": { "$type": "fontFamily", "$value": ["Inter", "system-ui", "sans-serif"], "$class": "portable" },
+        "mono": { "$type": "fontFamily", "$value": ["JetBrains Mono", "ui-monospace", "monospace"], "$class": "portable" }
+      },
+      "size": {
+        "caption": { "$type": "dimension", "$value": { "value": 0.875, "unit": "abstract" }, "$class": "adapter-derived" },
+        "body":    { "$type": "dimension", "$value": { "value": 1, "unit": "abstract" }, "$class": "adapter-derived" },
+        "heading": { "$type": "dimension", "$value": { "value": 1.5, "unit": "abstract" }, "$class": "adapter-derived" },
+        "display": { "$type": "dimension", "$value": { "value": 2.25, "unit": "abstract" }, "$class": "adapter-derived" }
+      },
+      "weight": {
+        "regular": { "$type": "fontWeight", "$value": 400, "$class": "portable" },
+        "bold":    { "$type": "fontWeight", "$value": 600, "$class": "portable" }
+      },
+      "lineHeight": {
+        "tight":  { "$type": "number", "$value": 1.2, "$class": "portable" },
+        "normal": { "$type": "number", "$value": 1.5, "$class": "portable" }
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "surface": {
+        "default": { "$type": "color", "$value": "{primitive.color.neutral.50}", "$class": "portable" },
+        "foreground": { "$type": "color", "$value": "{primitive.color.neutral.900}", "$class": "portable" }
+      },
+      "primary": {
+        "default": { "$type": "color", "$value": "{primitive.color.blue.600}", "$class": "portable" },
+        "hover": { "$type": "color", "$value": "{primitive.color.blue.700}", "$class": "portable" },
+        "foreground": { "$type": "color", "$value": "{primitive.color.neutral.50}", "$class": "portable" }
+      }
+    },
+    "space": {
+      "inset": { "$type": "dimension", "$value": "{primitive.space.md}", "$class": "adapter-derived" },
+      "stack": { "$type": "dimension", "$value": "{primitive.space.sm}", "$class": "adapter-derived" }
+    },
+    "shape": {
+      "control": { "$type": "dimension", "$value": "{primitive.radius.md}", "$class": "adapter-derived" }
+    },
+    "motion": {
+      "transition": { "$type": "duration", "$value": "{primitive.duration.normal}", "$class": "adapter-derived" }
+    },
+    "typography": {
+      "body": {
+        "size": { "$type": "dimension", "$value": "{primitive.font.size.body}", "$class": "adapter-derived" },
+        "weight": { "$type": "fontWeight", "$value": "{primitive.font.weight.regular}", "$class": "adapter-derived" },
+        "lineHeight": { "$type": "number", "$value": "{primitive.font.lineHeight.normal}", "$class": "adapter-derived" },
+        "family": { "$type": "fontFamily", "$value": "{primitive.font.family.sans}", "$class": "adapter-derived" }
+      },
+      "heading": {
+        "size": { "$type": "dimension", "$value": "{primitive.font.size.heading}", "$class": "adapter-derived" },
+        "weight": { "$type": "fontWeight", "$value": "{primitive.font.weight.bold}", "$class": "adapter-derived" },
+        "lineHeight": { "$type": "number", "$value": "{primitive.font.lineHeight.tight}", "$class": "adapter-derived" },
+        "family": { "$type": "fontFamily", "$value": "{primitive.font.family.sans}", "$class": "adapter-derived" }
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "background": { "$type": "color", "$value": "{semantic.color.primary.default}", "$class": "adapter-derived" },
+      "backgroundHover": { "$type": "color", "$value": "{semantic.color.primary.hover}", "$class": "adapter-derived" },
+      "foreground": { "$type": "color", "$value": "{semantic.color.primary.foreground}", "$class": "adapter-derived" },
+      "radius": { "$type": "dimension", "$value": "{semantic.shape.control}", "$class": "adapter-derived" },
+      "paddingX": { "$type": "dimension", "$value": "{semantic.space.inset}", "$class": "adapter-derived" },
+      "transition": { "$type": "duration", "$value": "{semantic.motion.transition}", "$class": "adapter-derived" }
+    }
+  }
+}

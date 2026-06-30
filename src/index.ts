@@ -1,6 +1,11 @@
 export * from "./tokens-schema.js";
 export * from "./color.js";
 export * from "./validator.js";
+export * from "./transformer.js";
+export * from "./adapters/css-adapter.js";
+export * from "./styleguide-generator.js";
+export * from "./design-md-generator.js";
+export * from "./manifest.js";
 
 import { readFileSync } from "node:fs";
 import type { TokensDocument } from "./tokens-schema.js";

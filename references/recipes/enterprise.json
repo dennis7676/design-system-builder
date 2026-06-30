@@ -47,14 +47,14 @@
     "primitive": {
       "color": {
         "neutral": {
-          "50":  { "$type": "color", "$value": "oklch(0.98 0 0)", "$class": "portable", "$description": "최상위 표면 배경" },
-          "100": { "$type": "color", "$value": "oklch(0.95 0 0)", "$class": "portable" },
-          "600": { "$type": "color", "$value": "oklch(0.50 0 0)", "$class": "portable" },
-          "900": { "$type": "color", "$value": "oklch(0.20 0 0)", "$class": "portable", "$description": "본문 텍스트" }
+          "50":  { "$type": "color", "$value": "oklch(0.98 0.006 75)", "$class": "portable", "$description": "최상위 표면 배경 (따뜻한 페이퍼)" },
+          "100": { "$type": "color", "$value": "oklch(0.95 0.008 75)", "$class": "portable" },
+          "600": { "$type": "color", "$value": "oklch(0.50 0.01 75)", "$class": "portable" },
+          "900": { "$type": "color", "$value": "oklch(0.24 0.012 75)", "$class": "portable", "$description": "본문 텍스트 (따뜻한 잉크)" }
         },
-        "blue": {
-          "600": { "$type": "color", "$value": "oklch(0.48 0.13 255)", "$class": "portable", "$description": "브랜드 프라이머리" },
-          "700": { "$type": "color", "$value": "oklch(0.42 0.13 255)", "$class": "portable", "$description": "프라이머리 hover" }
+        "brand": {
+          "600": { "$type": "color", "$value": "oklch(0.47 0.14 275)", "$class": "portable", "$description": "브랜드 프라이머리 (인디고)" },
+          "700": { "$type": "color", "$value": "oklch(0.41 0.14 275)", "$class": "portable", "$description": "프라이머리 hover" }
         }
       },
       "space": {
@@ -99,8 +99,8 @@
           "foreground": { "$type": "color", "$value": "{primitive.color.neutral.900}", "$class": "portable" }
         },
         "primary": {
-          "default": { "$type": "color", "$value": "{primitive.color.blue.600}", "$class": "portable" },
-          "hover": { "$type": "color", "$value": "{primitive.color.blue.700}", "$class": "portable" },
+          "default": { "$type": "color", "$value": "{primitive.color.brand.600}", "$class": "portable" },
+          "hover": { "$type": "color", "$value": "{primitive.color.brand.700}", "$class": "portable" },
           "foreground": { "$type": "color", "$value": "{primitive.color.neutral.50}", "$class": "portable" }
         }
       },

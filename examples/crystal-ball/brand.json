@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "2026-06-30",
+  "product": { "name": "Crystal Ball", "medium": "web" },
+  "audience": ["office-workers-20s-40s", "women"],
+  "accessibility": { "minContrast": "AA" },
+  "constraints": [],
+  "branding": {
+    "tone_vector": { "static_dynamic": 3, "cold_warm": 4, "serious_playful": 4, "classic_cutting_edge": 5, "minimal_rich": 2 },
+    "archetype": "sage",
+    "references": ["airbnb", "toss"]
+  },
+  "overrides": {}
+}

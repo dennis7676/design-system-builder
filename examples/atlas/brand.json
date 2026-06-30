@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "2026-06-30",
+  "product": { "name": "Atlas", "medium": "web" },
+  "audience": ["knowledge-workers", "operators"],
+  "accessibility": { "minContrast": "AA" },
+  "constraints": ["dense-data"],
+  "branding": {
+    "tone_vector": { "static_dynamic": 3, "cold_warm": 3, "serious_playful": 2, "classic_cutting_edge": 3, "minimal_rich": 4 },
+    "archetype": "sage",
+    "references": ["linear", "grafana"]
+  },
+  "overrides": {}
+}

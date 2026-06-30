@@ -3,3 +3,9 @@ dist/
 *.log
 .DS_Store
 coverage/
+
+# example outputs are DERIVED, not SSOT — regenerate from brand.json (see examples/README.md)
+examples/*/tokens.json
+examples/*/tokens.css
+examples/*/styleguide.html
+examples/*/DESIGN.md

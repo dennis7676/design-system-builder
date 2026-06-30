@@ -11,11 +11,16 @@ import {
   tokenEntries,
 } from "./surface-data.js";
 import {
+  axisLabel,
+  componentUsage,
   descriptionFor,
   htmlEscape,
   pathTail,
+  styleguideInlineJs,
   tokenEntriesUnder,
   tokenRef,
+  typeSentence,
+  usageHint,
 } from "./render-utils.js";
 
 export function generateStyleguide(doc: TokensDocument): string {
@@ -46,6 +51,7 @@ export function generateStyleguide(doc: TokensDocument): string {
     `<nav aria-label="Sections">${nav(doc)}</nav>`,
     `<main>${sections.join("\n")}</main>`,
     `<script id="token-snapshot" type="application/json">${snapshot}</script>`,
+    `<script>${styleguideInlineJs()}</script>`,
     "</body>",
     "</html>",
   ].join("\n");
@@ -62,40 +68,49 @@ function nav(doc: TokensDocument): string {
   if (hasElevation(doc)) items.push(["elevation", "Elevation"]);
   if (hasMotion(doc)) items.push(["motion", "Motion"]);
   items.push(["components", "Components"], ["relationships", "Relationships"], ["accessibility", "Accessibility"]);
-  return items.map(([id, label]) => `<a href="#${id}">${label}</a>`).join("");
+  return items.map(([id, label]) => `<a href="#${id}" data-nav-link="${id}">${label}</a>`).join("");
 }
 
 function philosophy(doc: TokensDocument): string {
   const principles = doc.meta.philosophy.principles
     .map((principle) => `<li>${htmlEscape(principle)}</li>`)
     .join("");
+  const tone = Object.entries(doc.meta.toneVector)
+    .map(([axis, value]) => {
+      const percent = Math.round(((value + 1) / 2) * 100);
+      return `<div class="tone-chip"><span>${htmlEscape(axisLabel(axis))}</span><b>${htmlEscape(value.toFixed(2))}</b><i><em style="width:${percent}%"></em></i></div>`;
+    })
+    .join("");
   const trace = doc.meta.philosophy.decisionTrace
     .map((item) =>
       `<tr data-trace-row><td>${htmlEscape(item.axis)}=${htmlEscape(String(item.value))}</td><td>${htmlEscape(item.rationale)}</td><td>${htmlEscape(item.coversTokenPath.join(", "))}</td></tr>`,
     )
     .join("");
-  return section("philosophy", "Philosophy", `<div class="brand-card"><strong>${htmlEscape(doc.meta.recipe)}</strong><p>${htmlEscape(doc.meta.philosophy.rationale)}</p><ul>${principles}</ul></div><table><tbody>${trace}</tbody></table>`);
+  return section("philosophy", "Philosophy", `<div class="hero-panel"><p class="eyebrow">Generated design system</p><h1>${htmlEscape(doc.meta.recipe)}</h1><p class="lead">${htmlEscape(doc.meta.philosophy.rationale)}</p><div class="tone-grid">${tone}</div></div><div class="brand-card"><strong>Design principles</strong><ul>${principles}</ul></div><div class="table-card"><h3>Decision trace</h3><table><tbody>${trace}</tbody></table></div>`);
 }
 
 function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+  const contrast = contrastResults(doc);
   const swatches = tokenEntriesUnder(doc.semantic, "color", "semantic.color")
     .filter((entry) => entry.leaf.$type === "color")
     .map((entry) => {
       const value = realized.get(entry.path) ?? "transparent";
       const role = pathTail(entry.path, "semantic.color");
-      const contrast = contrastResults(doc).filter((result) => result.pair.bg === entry.path);
-      const badges = contrast.map((result) => `<span class="${result.pass ? "pass" : "fail"}">${result.pair.state} ${result.ratio.toFixed(2)} ${result.pass ? "pass" : "fail"}</span>`).join("");
-      return `<article data-color-swatch><span class="swatch" style="background:${htmlEscape(value)}"></span><strong>${htmlEscape(role)}</strong><small>${htmlEscape(descriptionFor(doc, entry))}</small>${badges}</article>`;
+      const badges = contrast
+        .filter((result) => result.pair.bg === entry.path)
+        .map((result) => `<span class="badge ${result.pass ? "pass" : "fail"}">${result.pair.state} ${result.ratio.toFixed(2)} ${result.pass ? "PASS" : "FAIL"}</span>`)
+        .join("");
+      return `<article data-color-swatch class="color-card"><span class="swatch" style="background:${htmlEscape(value)}"></span><div><p class="meta-label">${htmlEscape(role)}</p><strong>${htmlEscape(value)}</strong><small>${htmlEscape(usageHint(role, descriptionFor(doc, entry)))}</small><div class="badge-row">${badges}</div></div></article>`;
     })
     .join("");
-  return section("colors", "Colors", `<div class="swatch-grid">${swatches}</div>`);
+  return section("colors", "Colors", `<p class="section-lead">Semantic roles describe where color is used, not only what value it resolves to. Pair surface roles with foreground roles, and reserve primary roles for clear action states.</p><div class="swatch-grid">${swatches}</div>`);
 }
 
 function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
   const samples = typographyRoles(doc, realized)
-    .map((role) => `<p data-type-sample style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)}">${htmlEscape(role.name)}: The quick brown fox maps intent to type.</p>`)
+    .map((role) => `<article data-type-sample class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)}">${htmlEscape(typeSentence(role.name))}</p><code>line-height ${htmlEscape(role.lineHeight)}</code></article>`)
     .join("");
-  return section("typography", "Typography", samples);
+  return section("typography", "Typography", `<p class="section-lead">The ramp uses the realized typography tokens directly, so specimens show the same scale and weight that components consume.</p><div class="type-ramp">${samples}</div>`);
 }
 
 function spacing(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
@@ -130,9 +145,9 @@ function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string
 
 function components(doc: TokensDocument): string {
   const mappings = entriesFrom(doc.component, "component")
-    .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td></tr>`)
+    .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td><td>${htmlEscape(componentUsage(entry.path))}</td></tr>`)
     .join("");
-  return section("components", "Components", `<button data-component-demo class="demo-button">Primary button</button><table><tbody>${mappings}</tbody></table>`);
+  return section("components", "Components", `<p class="section-lead">Component tokens bind semantic decisions into reusable states. Use the control to simulate the primary button state without leaving this static file.</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="Preview button state"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">Primary button</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">Composed example</p><h3>Token-backed card</h3><p>Surface, foreground, spacing, radius, and button tokens combine into a real product pattern.</p><button class="demo-button" type="button">Continue</button></article></div></div><div class="table-card"><h3>Component token map</h3><table><tbody>${mappings}</tbody></table></div>`);
 }
 
 function relationships(doc: TokensDocument): string {
@@ -196,23 +211,51 @@ function baseCss(doc: TokensDocument): string {
     : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
-    body { margin: 0; background: var(--semantic-color-surface-default); color: var(--semantic-color-surface-foreground); font-family: var(--semantic-typography-body-family); display: grid; grid-template-columns: 14rem 1fr; }
-    nav { position: sticky; top: 0; height: 100vh; padding: 1rem; border-right: 1px solid var(--primitive-color-neutral-100); background: var(--semantic-color-surface-default); }
-    nav a { display: block; color: inherit; padding: .4rem 0; text-decoration: none; }
-    main { max-width: 72rem; padding: 2rem; }
-    section { padding: 1.5rem 0; border-bottom: 1px solid var(--primitive-color-neutral-100); }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border-bottom: 1px solid var(--primitive-color-neutral-100); padding: .5rem; text-align: left; }
-    .brand-card, article, .radius-box, .elevation-card { border: 1px solid var(--primitive-color-neutral-100); border-radius: var(--semantic-shape-control); padding: 1rem; }
-    .swatch-grid, .shape-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 1rem; }
-    .swatch { display: block; min-height: 4rem; border-radius: var(--semantic-shape-control); border: 1px solid var(--primitive-color-neutral-100); }
-    .pass { color: oklch(0.38 0.12 150); margin-right: .5rem; }
-    .fail { color: oklch(0.45 0.15 25); margin-right: .5rem; }
-    .bars div { display: grid; grid-template-columns: 12rem 1fr 6rem; align-items: center; gap: 1rem; margin: .5rem 0; }
-    .bars i { display: block; height: 1rem; background: var(--semantic-color-primary-default); border-radius: .25rem; }
-    .demo-button { background: var(--component-button-background); color: var(--component-button-foreground); border: 0; border-radius: var(--component-button-radius); padding: .75rem var(--component-button-paddingX); transition: background var(--component-button-transition) ease; }
-    .demo-button:hover { background: var(--component-button-backgroundHover); }
-    .focus-demo:focus-visible, .demo-button:focus-visible { outline: .2rem solid var(--semantic-color-primary-default); outline-offset: .2rem; }
-    @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100); } }
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+    body { margin: 0; overflow-x: hidden; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight, 400) var(--semantic-typography-body-size, 1rem)/var(--semantic-typography-body-lineHeight, 1.5) var(--semantic-typography-body-family, system-ui, sans-serif); display: grid; grid-template-columns: 15rem minmax(0, 1fr); }
+    nav { position: sticky; top: 0; height: 100vh; padding: var(--semantic-space-inset, 1.5rem); border-right: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 92%, transparent); backdrop-filter: blur(.75rem); }
+    nav a { display: block; color: inherit; padding: .55rem .75rem; border-radius: var(--semantic-shape-control, .5rem); text-decoration: none; transition: background var(--semantic-motion-transition, 160ms) ease, color var(--semantic-motion-transition, 160ms) ease; }
+    nav a:hover, nav a.is-active { color: var(--semantic-color-primary-default, currentColor); background: color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 10%, transparent); }
+    main { width: min(78rem, 100%); max-width: 100%; padding: clamp(1.25rem, 3vw, 3rem); }
+    section { padding: clamp(2.25rem, 5vw, 5rem) 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); scroll-margin-top: 2rem; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 13ch; margin-bottom: 1rem; font: var(--semantic-typography-heading-weight, 700) 4.5rem/1 var(--semantic-typography-heading-family, system-ui, sans-serif); overflow-wrap: anywhere; }
+    h2 { margin-bottom: 1rem; font: var(--semantic-typography-heading-weight, 700) var(--semantic-typography-heading-size, 1.75rem)/var(--semantic-typography-heading-lineHeight, 1.2) var(--semantic-typography-heading-family, system-ui, sans-serif); }
+    h3 { margin-bottom: .75rem; font-size: 1rem; }
+    table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 1rem; font-size: .92rem; }
+    th, td { border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); padding: .75rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; word-break: break-word; }
+    code, .type-meta, .meta-label, .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .78rem; }
+    .hero-panel { width: 100%; max-width: 100%; padding: clamp(1.5rem, 4vw, 3rem); border-radius: var(--semantic-shape-control, .5rem); background: linear-gradient(135deg, color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 16%, var(--semantic-color-surface-default, Canvas)), var(--semantic-color-surface-default, Canvas)); border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .lead, .section-lead { max-width: 62rem; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 76%, var(--semantic-color-surface-default, Canvas)); font-size: 1.08rem; overflow-wrap: anywhere; word-break: break-word; line-break: loose; }
+    .eyebrow, .meta-label, .type-meta { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 58%, var(--semantic-color-surface-default, Canvas)); text-transform: uppercase; letter-spacing: 0; }
+    .tone-grid, .swatch-grid, .shape-grid, .type-ramp, .component-stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+    .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 96%, var(--semantic-color-primary-default, currentColor)); padding: var(--semantic-space-inset, 1.5rem); }
+    .table-card { overflow-x: auto; }
+    .tone-chip { display: grid; gap: .45rem; }
+    .tone-chip b { color: var(--semantic-color-primary-default, currentColor); }
+    .tone-chip i, .bars i { display: block; overflow: hidden; border-radius: 999px; background: var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .tone-chip em { display: block; height: .5rem; border-radius: inherit; background: var(--semantic-color-primary-default, currentColor); }
+    .brand-card { margin-top: 1rem; }
+    .brand-card ul { margin-bottom: 0; padding-left: 1.25rem; }
+    .swatch-grid { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+    .color-card { display: grid; grid-template-columns: 6rem 1fr; gap: 1rem; min-height: 10rem; }
+    .color-card strong { display: block; margin-bottom: .35rem; font-family: var(--primitive-font-family-mono, ui-monospace, monospace); word-break: break-word; }
+    .color-card small { display: block; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 68%, var(--semantic-color-surface-default, Canvas)); }
+    .swatch { display: block; min-height: 100%; border-radius: var(--semantic-shape-control, .5rem); border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .badge-row, .state-row, .playground-toolbar { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .badge, .playground-toolbar button { border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: 999px; padding: .35rem .6rem; background: var(--semantic-color-surface-default, Canvas); color: inherit; }
+    .pass { color: var(--semantic-color-primary-default, currentColor); }
+    .fail { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 82%, var(--semantic-color-primary-default, currentColor)); }
+    .type-card p { margin: .75rem 0; }
+    .bars div { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(3rem, 1fr) 6rem; align-items: center; gap: 1rem; margin: .75rem 0; }
+    .bars i { height: 1rem; background: var(--semantic-color-primary-default, currentColor); }
+    .demo-button { background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); color: var(--component-button-foreground, ButtonText); border: 0; border-radius: var(--component-button-radius, var(--semantic-shape-control, .5rem)); padding: .75rem var(--component-button-paddingX, 1.25rem); transition: background var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease, transform var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease, opacity var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease; }
+    .demo-button:hover, .state-hover, .playground.is-hover .playground-target { background: var(--component-button-backgroundHover, var(--component-button-background, ButtonFace)); transform: translateY(-1px); }
+    .demo-button:disabled, .playground.is-disabled .playground-target { opacity: .45; cursor: not-allowed; transform: none; }
+    .focus-demo:focus-visible, .demo-button:focus-visible, .state-focus, .playground.is-focus .playground-target { outline: .2rem solid var(--semantic-color-primary-default, Highlight); outline-offset: .2rem; }
+    .playground-toolbar button.is-selected { color: var(--component-button-foreground, ButtonText); background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); border-color: transparent; }
+    .component-stage { align-items: stretch; }
+    .sample-card { display: grid; gap: .4rem; align-content: start; }
+    @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: 2rem; } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
 ${reduce}`;
 }

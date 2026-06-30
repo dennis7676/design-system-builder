@@ -1,0 +1,143 @@
+{
+  "key": "enterprise",
+  "version": "1.0.0",
+  "source": "Carbon/Atlassian-like (nominative reference; no code/token values copied). Color primitives shared with minimal-tech for pilot WCAG safety; differentiation in typography/space/shape/motion.",
+  "toneAnchor": { "static_dynamic": 3, "cold_warm": 4, "serious_playful": 2, "classic_cutting_edge": 2, "minimal_rich": 4 },
+  "hardConstraintRules": {
+    "requires": { "mediums": ["web"] },
+    "excludesAudiences": [],
+    "minContrastCapable": true,
+    "tags": ["web", "html", "high-contrast-capable", "dense-data"]
+  },
+  "philosophy": {
+    "principles": ["일관성과 신뢰", "정보 밀도 우선", "보수적 모션"],
+    "rationale": "엔터프라이즈 원형은 정보 밀도와 일관성을 우선한다. 넉넉한 여백 스케일과 보수적 모서리·모션으로 장시간 사용에도 피로가 낮은 화면을 만든다.",
+    "decisionTrace": [
+      {
+        "axis": "tone_vector.minimal_rich",
+        "value": 4,
+        "rationale": "중간 채도 중성 팔레트로 정보 밀도와 가독성 균형",
+        "coversTokenPath": ["semantic.color.surface.*", "semantic.color.primary.default", "primitive.color.*"]
+      },
+      {
+        "axis": "persona.archetype",
+        "value": "enterprise",
+        "rationale": "보수적 모서리와 절제된 전환 모션",
+        "coversTokenPath": ["primitive.radius.*", "semantic.shape.*", "primitive.duration.*", "semantic.motion.*"]
+      },
+      {
+        "axis": "tone_vector.serious_playful",
+        "value": 2,
+        "rationale": "정보 밀도를 위한 또렷한 본문 램프와 넉넉한 여백 스케일",
+        "coversTokenPath": ["primitive.font.*", "semantic.typography.*", "primitive.space.*", "semantic.space.*"]
+      }
+    ]
+  },
+  "base": {
+    "transformContract": {
+      "dimension": { "web": { "base": 16, "unit": "rem" } },
+      "duration": { "web": "ms" },
+      "color": { "web": "oklch" }
+    },
+    "contrastPairs": [
+      { "fg": "semantic.color.surface.foreground", "bg": "semantic.color.surface.default", "role": "text", "state": "default" },
+      { "fg": "semantic.color.primary.foreground", "bg": "semantic.color.primary.default", "role": "text", "state": "default" },
+      { "fg": "semantic.color.primary.foreground", "bg": "semantic.color.primary.hover", "role": "text", "state": "hover" }
+    ],
+    "primitive": {
+      "color": {
+        "neutral": {
+          "50":  { "$type": "color", "$value": "oklch(0.98 0 0)", "$class": "portable", "$description": "최상위 표면 배경" },
+          "100": { "$type": "color", "$value": "oklch(0.95 0 0)", "$class": "portable" },
+          "600": { "$type": "color", "$value": "oklch(0.50 0 0)", "$class": "portable" },
+          "900": { "$type": "color", "$value": "oklch(0.20 0 0)", "$class": "portable", "$description": "본문 텍스트" }
+        },
+        "blue": {
+          "600": { "$type": "color", "$value": "oklch(0.48 0.13 255)", "$class": "portable", "$description": "브랜드 프라이머리" },
+          "700": { "$type": "color", "$value": "oklch(0.42 0.13 255)", "$class": "portable", "$description": "프라이머리 hover" }
+        }
+      },
+      "space": {
+        "xs": { "$type": "dimension", "$value": { "value": 0.5, "unit": "abstract" }, "$class": "adapter-derived" },
+        "sm": { "$type": "dimension", "$value": { "value": 1, "unit": "abstract" }, "$class": "adapter-derived" },
+        "md": { "$type": "dimension", "$value": { "value": 2, "unit": "abstract" }, "$class": "adapter-derived" },
+        "lg": { "$type": "dimension", "$value": { "value": 3, "unit": "abstract" }, "$class": "adapter-derived" }
+      },
+      "radius": {
+        "sm": { "$type": "dimension", "$value": { "value": 0.125, "unit": "abstract" }, "$class": "adapter-derived" },
+        "md": { "$type": "dimension", "$value": { "value": 0.25, "unit": "abstract" }, "$class": "adapter-derived" }
+      },
+      "duration": {
+        "fast": { "$type": "duration", "$value": { "value": 160, "unit": "ms" }, "$class": "adapter-derived" },
+        "normal": { "$type": "duration", "$value": { "value": 240, "unit": "ms" }, "$class": "adapter-derived" }
+      },
+      "font": {
+        "family": {
+          "sans": { "$type": "fontFamily", "$value": ["IBM Plex Sans", "system-ui", "sans-serif"], "$class": "portable" },
+          "mono": { "$type": "fontFamily", "$value": ["IBM Plex Mono", "ui-monospace", "monospace"], "$class": "portable" }
+        },
+        "size": {
+          "caption": { "$type": "dimension", "$value": { "value": 0.8125, "unit": "abstract" }, "$class": "adapter-derived" },
+          "body":    { "$type": "dimension", "$value": { "value": 1, "unit": "abstract" }, "$class": "adapter-derived" },
+          "heading": { "$type": "dimension", "$value": { "value": 1.375, "unit": "abstract" }, "$class": "adapter-derived" },
+          "display": { "$type": "dimension", "$value": { "value": 2, "unit": "abstract" }, "$class": "adapter-derived" }
+        },
+        "weight": {
+          "regular": { "$type": "fontWeight", "$value": 400, "$class": "portable" },
+          "bold":    { "$type": "fontWeight", "$value": 600, "$class": "portable" }
+        },
+        "lineHeight": {
+          "tight":  { "$type": "number", "$value": 1.3, "$class": "portable" },
+          "normal": { "$type": "number", "$value": 1.6, "$class": "portable" }
+        }
+      }
+    },
+    "semantic": {
+      "color": {
+        "surface": {
+          "default": { "$type": "color", "$value": "{primitive.color.neutral.50}", "$class": "portable" },
+          "foreground": { "$type": "color", "$value": "{primitive.color.neutral.900}", "$class": "portable" }
+        },
+        "primary": {
+          "default": { "$type": "color", "$value": "{primitive.color.blue.600}", "$class": "portable" },
+          "hover": { "$type": "color", "$value": "{primitive.color.blue.700}", "$class": "portable" },
+          "foreground": { "$type": "color", "$value": "{primitive.color.neutral.50}", "$class": "portable" }
+        }
+      },
+      "space": {
+        "inset": { "$type": "dimension", "$value": "{primitive.space.md}", "$class": "adapter-derived" },
+        "stack": { "$type": "dimension", "$value": "{primitive.space.sm}", "$class": "adapter-derived" }
+      },
+      "shape": {
+        "control": { "$type": "dimension", "$value": "{primitive.radius.md}", "$class": "adapter-derived" }
+      },
+      "motion": {
+        "transition": { "$type": "duration", "$value": "{primitive.duration.normal}", "$class": "adapter-derived" }
+      },
+      "typography": {
+        "body": {
+          "size": { "$type": "dimension", "$value": "{primitive.font.size.body}", "$class": "adapter-derived" },
+          "weight": { "$type": "fontWeight", "$value": "{primitive.font.weight.regular}", "$class": "adapter-derived" },
+          "lineHeight": { "$type": "number", "$value": "{primitive.font.lineHeight.normal}", "$class": "adapter-derived" },
+          "family": { "$type": "fontFamily", "$value": "{primitive.font.family.sans}", "$class": "adapter-derived" }
+        },
+        "heading": {
+          "size": { "$type": "dimension", "$value": "{primitive.font.size.heading}", "$class": "adapter-derived" },
+          "weight": { "$type": "fontWeight", "$value": "{primitive.font.weight.bold}", "$class": "adapter-derived" },
+          "lineHeight": { "$type": "number", "$value": "{primitive.font.lineHeight.tight}", "$class": "adapter-derived" },
+          "family": { "$type": "fontFamily", "$value": "{primitive.font.family.sans}", "$class": "adapter-derived" }
+        }
+      }
+    },
+    "component": {
+      "button": {
+        "background": { "$type": "color", "$value": "{semantic.color.primary.default}", "$class": "adapter-derived" },
+        "backgroundHover": { "$type": "color", "$value": "{semantic.color.primary.hover}", "$class": "adapter-derived" },
+        "foreground": { "$type": "color", "$value": "{semantic.color.primary.foreground}", "$class": "adapter-derived" },
+        "radius": { "$type": "dimension", "$value": "{semantic.shape.control}", "$class": "adapter-derived" },
+        "paddingX": { "$type": "dimension", "$value": "{semantic.space.inset}", "$class": "adapter-derived" },
+        "transition": { "$type": "duration", "$value": "{semantic.motion.transition}", "$class": "adapter-derived" }
+      }
+    }
+  }
+}

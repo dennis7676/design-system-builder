@@ -6,6 +6,10 @@ export * from "./adapters/css-adapter.js";
 export * from "./styleguide-generator.js";
 export * from "./design-md-generator.js";
 export * from "./manifest.js";
+export * from "./brand-schema.js";
+export * from "./recipe-selection.js";
+export * from "./tokens-builder.js";
+export * from "./gate.js";
 
 import { readFileSync } from "node:fs";
 import type { TokensDocument } from "./tokens-schema.js";

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "2026-06-30",
+  "product": { "name": "Helios Dashboard", "medium": "web" },
+  "audience": ["developers", "ops"],
+  "accessibility": { "minContrast": "AA" },
+  "constraints": ["dense-data"],
+  "branding": {
+    "tone_vector": {
+      "static_dynamic": 3,
+      "cold_warm": 4,
+      "serious_playful": 2,
+      "classic_cutting_edge": 3,
+      "minimal_rich": 4
+    },
+    "archetype": "enterprise",
+    "references": ["carbon", "atlassian"]
+  },
+  "overrides": { "visual.radius": "tighter" }
+}

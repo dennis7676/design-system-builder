@@ -1,0 +1,31 @@
+{
+  "key": "pro-emotive",
+  "version": "0.0.0-stub",
+  "source": "Airbnb/Notion-like (nominative reference)",
+  "status": "deferred",
+  "note": "M3 deferred: toneAnchor/hard-constraint only; base token tree not yet authored. select_recipe may rank this; buildTokens raises a conflict.",
+  "toneAnchor": {
+    "static_dynamic": 4,
+    "cold_warm": 6,
+    "serious_playful": 5,
+    "classic_cutting_edge": 4,
+    "minimal_rich": 6
+  },
+  "hardConstraintRules": {
+    "requires": {
+      "mediums": [
+        "web"
+      ]
+    },
+    "excludesAudiences": [],
+    "minContrastCapable": true,
+    "tags": [
+      "web",
+      "html",
+      "high-contrast-capable",
+      "warm"
+    ]
+  },
+  "philosophy": null,
+  "base": null
+}

@@ -4,7 +4,7 @@
   "meta": {
     "generatedAt": "2026-06-30T14:30:00Z",
     "recipe": "minimal-tech",
-    "toneVector": { "minimal_rich": -0.6, "warm_cool": 0.3, "playful_serious": 0.5 },
+    "toneVector": { "static_dynamic": -0.667, "cold_warm": -0.333, "serious_playful": -0.333, "classic_cutting_edge": 0.333, "minimal_rich": -0.667 },
     "requiredTargets": ["web"],
     "philosophy": {
       "principles": ["명료성 우선", "기능색 최소", "정직한 여백"],

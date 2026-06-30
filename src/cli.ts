@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import {
   checkManifest,
   generateDesignMd,
@@ -8,13 +8,19 @@ import {
   toCssVars,
 } from "./index.js";
 import { validateTokens } from "./validator.js";
+import { validateBrand, type BrandJson } from "./brand-schema.js";
+import { loadRecipes, selectRecipe } from "./recipe-selection.js";
+import { buildTokens } from "./tokens-builder.js";
+import { canGenerate } from "./gate.js";
 
 function main(argv: string[]): number {
   const [cmd, ...rest] = argv;
   if (cmd === "generate") return generate(rest);
+  if (cmd === "build") return build(rest);
   if (cmd !== "validate") {
     console.error("usage: design-system-builder validate <tokens.json> [--check-manifest]");
     console.error("   or: design-system-builder generate <tokens.json> [--out-dir <dir>]");
+    console.error("   or: design-system-builder build <brand.json> [--recipes <dir>] [--out <tokens.json>] [--confirm]");
     return 2;
   }
   const file = rest.find((a) => !a.startsWith("--"));
@@ -71,6 +77,74 @@ function generate(argv: string[]): number {
   writeFileSync(`${outDir}/DESIGN.md`, designMd);
   console.error(`wrote ${outDir}/tokens.css, ${outDir}/styleguide.html, ${outDir}/DESIGN.md`);
   return 0;
+}
+
+function flagValue(argv: string[], flag: string): string | undefined {
+  const i = argv.indexOf(flag);
+  return i >= 0 ? argv[i + 1] : undefined;
+}
+
+function build(argv: string[]): number {
+  const file = argv.find((a) => !a.startsWith("--") && !isFlagValue(argv, a));
+  if (!file) {
+    console.error("error: brand.json path required");
+    return 2;
+  }
+  const recipesDir = flagValue(argv, "--recipes") ?? "references/recipes";
+  const outFile = flagValue(argv, "--out");
+  const userConfirmed = argv.includes("--confirm");
+
+  const brand = JSON.parse(readFileSync(file, "utf8")) as BrandJson;
+  const fieldErrors = validateBrand(brand);
+  for (const e of fieldErrors) console.error(`BRAND [${e.path}] ${e.message}`);
+
+  const recipes = loadRecipes(recipesDir);
+  const selection = selectRecipe(brand, recipes);
+  console.error(`recipe: ${selection.recipeKey ?? "(none)"}  candidates: [${selection.candidates.join(", ")}]`);
+  for (const d of selection.distances) console.error(`  tone_distance ${d.key}: ${d.distance.toFixed(3)}`);
+  for (const c of selection.conflicts) console.error(`CONFLICT [${c.code}] ${c.message}`);
+
+  const gate = canGenerate({ brand, selection, userConfirmed });
+  if (!gate.ok) {
+    console.error("✗ export gate BLOCKED:");
+    for (const r of gate.reasons) console.error(`  - ${r}`);
+    if (!userConfirmed && gate.reasons.length === 1) {
+      console.error("  (pass --confirm once the above is reviewed)");
+    }
+    return 1;
+  }
+
+  const doc = buildTokens(brand, selection.recipe!);
+  const validation = validateTokens(doc);
+  const errs = validation.findings.filter((f) => f.severity === "error");
+  for (const f of validation.findings) {
+    console.error(`${f.severity.toUpperCase().padEnd(5)} [${f.code}] ${f.path ? f.path + " — " : ""}${f.message}`);
+  }
+  if (errs.length > 0) {
+    console.error("✗ built tokens.json failed validation");
+    return 1;
+  }
+  console.error(`tokenHash: ${validation.tokenHash}`);
+
+  const json = JSON.stringify(doc, null, 2) + "\n";
+  if (outFile === undefined) {
+    console.log(json);
+  } else {
+    mkdirSync(dirOf(outFile), { recursive: true });
+    writeFileSync(outFile, json);
+    console.error(`✓ wrote ${outFile}`);
+  }
+  return 0;
+}
+
+function isFlagValue(argv: string[], token: string): boolean {
+  const i = argv.indexOf(token);
+  return i > 0 && (argv[i - 1] === "--recipes" || argv[i - 1] === "--out");
+}
+
+function dirOf(p: string): string {
+  const idx = p.lastIndexOf("/");
+  return idx <= 0 ? "." : p.slice(0, idx);
 }
 
 process.exit(main(process.argv.slice(2)));

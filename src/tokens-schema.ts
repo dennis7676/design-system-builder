@@ -23,6 +23,16 @@ export interface DimensionIntent {
 /** A reference to another token, written as "{path.to.token}". */
 export type AliasValue = string;
 
+/** A gradient intent — realized to a CSS `linear-gradient()`/`radial-gradient()`.
+ * `stops` are concrete colour strings (oklch/hex); the validator reads them for
+ * the worst-case-stop contrast gate. */
+export interface GradientValue {
+  kind: "linear" | "radial";
+  /** linear only, e.g. "160deg"; defaults to "180deg" when omitted. */
+  angle?: string;
+  stops: string[];
+}
+
 export type LeafType =
   | "color"
   | "dimension"
@@ -31,6 +41,7 @@ export type LeafType =
   | "fontWeight"
   | "number"
   | "shadow"
+  | "gradient"
   | "cubicBezier";
 
 /**
@@ -42,7 +53,7 @@ export type LeafType =
  */
 export interface LeafToken {
   $type: LeafType;
-  $value: string | number | string[] | DimensionIntent | AliasValue;
+  $value: string | number | string[] | DimensionIntent | AliasValue | GradientValue;
   $class: TokenClass;
   $description?: string;
 }
@@ -69,6 +80,17 @@ export function isDimensionIntent(v: unknown): v is DimensionIntent {
     "value" in v &&
     "unit" in v &&
     typeof (v as DimensionIntent).value === "number"
+  );
+}
+
+/** Is `$value` a structured gradient intent. */
+export function isGradientValue(v: unknown): v is GradientValue {
+  return (
+    typeof v === "object" &&
+    v !== null &&
+    "stops" in v &&
+    Array.isArray((v as GradientValue).stops) &&
+    "kind" in v
   );
 }
 

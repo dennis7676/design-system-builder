@@ -102,6 +102,11 @@ function demoCss(doc: TokensDocument): string {
   // so they render flat by identity. Values come only from var(--semantic-elevation-*).
   const raised = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-raised);" : "";
   const overlay = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
+  // Hero gradient is opt-in: expressive recipes declare semantic.gradient.hero;
+  // flat recipes emit no gradient so the hero renders on the plain surface.
+  const heroBg = hasGradient(doc)
+    ? ` background: var(--semantic-gradient-hero); border-radius: ${radius}; padding-inline: clamp(1.5rem, 4vw, 3rem); margin-top: 1.5rem;`
+    : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -121,7 +126,7 @@ function demoCss(doc: TokensDocument): string {
     .topbar nav a { text-decoration: none; padding: .4rem .5rem; border-radius: ${radius}; }
     .topbar nav a:hover { color: ${primary}; }
     main { width: min(72rem, 100%); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
-    .hero { padding: clamp(3rem, 8vw, 6rem) 0; display: grid; gap: 1.5rem; }
+    .hero { padding: clamp(3rem, 8vw, 6rem) 0; display: grid; gap: 1.5rem;${heroBg} }
     .hero h1 { max-width: 18ch; font: var(--semantic-typography-heading-weight, 700) clamp(2.4rem, 6vw, 4rem)/1.05 var(--semantic-typography-heading-family, system-ui, sans-serif); }
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
     .features { padding: clamp(2rem, 5vw, 4rem) 0; display: grid; gap: 1.5rem; border-top: 1px solid ${hairline}; }
@@ -152,4 +157,9 @@ function hasMotion(doc: TokensDocument): boolean {
 /** True when the doc carries semantic.elevation.* — expressive recipes only. */
 function hasElevation(doc: TokensDocument): boolean {
   return hasTokenPath(doc, /(^|\.)elevation(\.|$)/);
+}
+
+/** True when the doc carries semantic.gradient.* — expressive recipes only. */
+function hasGradient(doc: TokensDocument): boolean {
+  return hasTokenPath(doc, /(^|\.)gradient(\.|$)/);
 }

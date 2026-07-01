@@ -6,6 +6,7 @@ import {
   aliasPath,
   isAlias,
   isDimensionIntent,
+  isGradientValue,
 } from "./tokens-schema.js";
 import { contrastRatio } from "./color.js";
 import { flatten } from "./validator.js";
@@ -81,8 +82,13 @@ export function contrastResults(doc: TokensDocument): readonly ContrastResult[] 
   const leaves = tokenMap(doc);
   return doc.contrastPairs.map((pair) => {
     const fg = resolveValue(pair.fg, leaves);
-    const bg = resolveValue(pair.bg, leaves);
-    if (typeof fg !== "string" || typeof bg !== "string") {
+    const bgRaw = resolveValue(pair.bg, leaves);
+    if (typeof fg !== "string") {
+      throw new TokenSurfaceError(`contrast color unresolved: ${pair.fg} / ${pair.bg}`);
+    }
+    // Gradient bg → report the worst-case stop (mirrors the validator gate).
+    const bg = isGradientValue(bgRaw) ? worstStop(fg, bgRaw.stops) : bgRaw;
+    if (typeof bg !== "string") {
       throw new TokenSurfaceError(`contrast color unresolved: ${pair.fg} / ${pair.bg}`);
     }
     const ratio = contrastRatio(fg, bg);
@@ -93,6 +99,20 @@ export function contrastResults(doc: TokensDocument): readonly ContrastResult[] 
     const minRatio = pair.minRatio ?? MIN_RATIO[pair.role];
     return { pair, ratio: rounded, minRatio, pass: rounded >= minRatio };
   });
+}
+
+/** The gradient stop with the lowest contrast against fg (worst case). */
+function worstStop(fg: string, stops: readonly string[]): string {
+  let worst = stops[0] ?? fg;
+  let worstRatio = Infinity;
+  for (const s of stops) {
+    const r = contrastRatio(fg, s);
+    if (r !== null && r < worstRatio) {
+      worstRatio = r;
+      worst = s;
+    }
+  }
+  return worst;
 }
 
 export function hasTokenPath(doc: TokensDocument, pattern: RegExp): boolean {

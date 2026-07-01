@@ -99,6 +99,12 @@
         "bg": "semantic.color.primary.hover",
         "role": "text",
         "state": "hover"
+      },
+      {
+        "fg": "semantic.color.surface.foreground",
+        "bg": "semantic.gradient.hero",
+        "role": "text",
+        "state": "default"
       }
     ],
     "primitive": {
@@ -451,6 +457,21 @@
           "$type": "shadow",
           "$value": "{primitive.shadow.lg}",
           "$class": "adapter-derived"
+        }
+      },
+      "gradient": {
+        "hero": {
+          "$type": "gradient",
+          "$value": {
+            "kind": "linear",
+            "angle": "180deg",
+            "stops": [
+              "oklch(0.97 0.008 85)",
+              "oklch(0.95 0.04 85)"
+            ]
+          },
+          "$class": "portable",
+          "$description": "luxury hero surface gradient"
         }
       }
     },

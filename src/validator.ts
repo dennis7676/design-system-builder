@@ -15,6 +15,7 @@ import {
   isLeaf,
   isAlias,
   isDimensionIntent,
+  isGradientValue,
   aliasPath,
   INTENT_SUBTREE_KEYS,
   MIN_RATIO,
@@ -206,8 +207,34 @@ function checkContrast(
   for (const pair of doc.contrastPairs) {
     const min = pair.minRatio ?? MIN_RATIO[pair.role];
     const fg = colorValueOf(pair.fg, leaves);
-    const bg = colorValueOf(pair.bg, leaves);
-    if (fg === null || bg === null) {
+    const bgLeaf = resolveAlias(pair.bg, leaves).resolved;
+    if (fg === null || !bgLeaf) {
+      findings.push({ severity: "error", code: "contrast-unresolved", message: `contrastPair 색 미해소: ${pair.fg} / ${pair.bg}` });
+      continue;
+    }
+
+    // Gradient background → worst-case-stop gate: contrast against every stop,
+    // fail on the minimum. A gradient passes only if all stops clear the floor.
+    if (bgLeaf.$type === "gradient" && isGradientValue(bgLeaf.$value)) {
+      const ratios = bgLeaf.$value.stops.map((s) => contrastRatio(fg, s));
+      if (ratios.some((r) => r === null)) {
+        findings.push({ severity: "error", code: "contrast-unparseable", message: `그라디언트 stop 색 파싱 실패: ${pair.bg}` });
+        continue;
+      }
+      const worst = Math.min(...(ratios as number[]));
+      if (worst < min) {
+        findings.push({
+          severity: "error",
+          code: "contrast-fail",
+          message: `그라디언트 worst-case 대비 미달 ${worst.toFixed(2)}:1 < ${min}:1 (${pair.fg} on ${pair.bg}, ${pair.role}/${pair.state})`,
+          meta: { ratio: Number(worst.toFixed(2)), required: min, role: pair.role, state: pair.state },
+        });
+      }
+      continue;
+    }
+
+    const bg = typeof bgLeaf.$value === "string" ? bgLeaf.$value : null;
+    if (bg === null) {
       findings.push({ severity: "error", code: "contrast-unresolved", message: `contrastPair 색 미해소: ${pair.fg} / ${pair.bg}` });
       continue;
     }

@@ -4,6 +4,7 @@ import {
   type LeafType,
   type TokensDocument,
   isDimensionIntent,
+  isGradientValue,
 } from "./tokens-schema.js";
 import { resolveToken, tokenEntries, tokenMap, TokenSurfaceError } from "./surface-data.js";
 
@@ -44,7 +45,17 @@ function realize(type: LeafType, value: LeafToken["$value"], base: number): stri
     case "cubicBezier":
       if (typeof value !== "string") throw new TokenSurfaceError(`${type} string expected`);
       return value;
+    case "gradient":
+      return realizeGradient(value);
   }
+}
+
+function realizeGradient(value: LeafToken["$value"]): string {
+  if (!isGradientValue(value)) throw new TokenSurfaceError("gradient intent expected");
+  const stops = value.stops.join(", ");
+  return value.kind === "radial"
+    ? `radial-gradient(${stops})`
+    : `linear-gradient(${value.angle ?? "180deg"}, ${stops})`;
 }
 
 function realizeDimension(value: LeafToken["$value"], base: number): string {

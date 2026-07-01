@@ -6,12 +6,16 @@
  * normalized -1..1 echo derived by the builder).
  */
 
+// Axis labels (1..7): each pole is documented for interview scripts. `cold_warm`
+// is the colour-temperature (warm-cool) axis, mapping to the Warm-Cool dimension
+// of the I.R.I / Kobayashi colour-image scales; the key name is kept stable
+// (label clarified only — see design d7 Round A).
 export const TONE_AXES = [
-  "static_dynamic",
-  "cold_warm",
-  "serious_playful",
-  "classic_cutting_edge",
-  "minimal_rich",
+  "static_dynamic",     // static (1) .. dynamic (7)
+  "cold_warm",          // colour temperature: cool (1) .. warm (7)
+  "serious_playful",    // serious (1) .. playful (7)
+  "classic_cutting_edge", // classic (1) .. cutting-edge (7)
+  "minimal_rich",       // minimal (1) .. rich (7)
 ] as const;
 
 export type ToneAxis = (typeof TONE_AXES)[number];

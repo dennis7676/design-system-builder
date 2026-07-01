@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import {
   checkManifest,
   computeTokenHash,
+  generateDemo,
   generateDesignMd,
   generateStyleguide,
   toCssVars,
@@ -20,6 +21,7 @@ const clone = (): TokensDocument => structuredClone(SAMPLE);
 const surfacesFor = (doc: TokensDocument) => ({
   styleguideHtml: generateStyleguide(doc),
   designMd: generateDesignMd(doc),
+  demoHtml: generateDemo(doc),
 });
 const errors = (doc: TokensDocument, surfaces = surfacesFor(doc)) =>
   checkManifest(doc, surfaces).filter((f) => f.severity === "error");

@@ -8,10 +8,12 @@ import {
   hasTokenPath,
 } from "./surface-data.js";
 import { pathTail, tokenEntriesUnder } from "./render-utils.js";
+import { DEMO_REGIONS } from "./demo-generator.js";
 
 export interface Surfaces {
   readonly styleguideHtml: string;
   readonly designMd: string;
+  readonly demoHtml: string;
 }
 
 const REQUIRED_ELEMENTS = [
@@ -33,12 +35,42 @@ export function checkManifest(doc: TokensDocument, surfaces: Surfaces): Finding[
   checkCompleteness(doc, surfaces, findings);
   checkA11yRecords(doc, surfaces, findings);
   checkMotionReduce(doc, surfaces, findings);
+  checkDemo(doc, surfaces, findings);
   return findings;
+}
+
+/**
+ * Applied demo surface (P3): its own builtFromTokenHash (drift) + region
+ * completeness. Narrower than the styleguide contract by design — the demo's job
+ * is applied realism, not spec coverage. a11y is covered by the shared token
+ * contrastPairs, so no separate a11y contract here.
+ */
+function checkDemo(doc: TokensDocument, surfaces: Surfaces, findings: Finding[]): void {
+  const expected = computeTokenHash(doc);
+  const demoHash = snapshotBuiltHash(surfaces.demoHtml);
+  if (demoHash !== expected) {
+    findings.push({
+      severity: "error",
+      code: "manifest-drift",
+      message: "demo builtFromTokenHash missing or stale",
+      meta: { surface: "demo", expected, actual: demoHash },
+    });
+  }
+  for (const region of DEMO_REGIONS) {
+    if (!surfaces.demoHtml.includes(`data-demo-region="${region}"`)) {
+      findings.push({
+        severity: "error",
+        code: "surface-incomplete",
+        message: `demo missing required ${region} region`,
+        meta: { surface: "demo", element: region },
+      });
+    }
+  }
 }
 
 function checkDrift(doc: TokensDocument, surfaces: Surfaces, findings: Finding[]): void {
   const expected = computeTokenHash(doc);
-  const styleguideHash = styleguideBuiltHash(surfaces.styleguideHtml);
+  const styleguideHash = snapshotBuiltHash(surfaces.styleguideHtml);
   const designHash = designMdBuiltHash(surfaces.designMd);
   if (styleguideHash !== expected) {
     findings.push({
@@ -98,7 +130,9 @@ function checkMotionReduce(doc: TokensDocument, surfaces: Surfaces, findings: Fi
   }
 }
 
-function styleguideBuiltHash(html: string): string | null {
+/** Extract builtFromTokenHash from a surface's embedded token-snapshot script
+ * (shared by styleguide and demo — both use the same snapshot shape). */
+function snapshotBuiltHash(html: string): string | null {
   const script = html.match(/<script id="token-snapshot" type="application\/json">([\s\S]*?)<\/script>/);
   const json = script?.[1];
   if (json === undefined) return null;

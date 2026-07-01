@@ -5,6 +5,7 @@ export * from "./transformer.js";
 export * from "./adapters/css-adapter.js";
 export * from "./styleguide-generator.js";
 export * from "./design-md-generator.js";
+export * from "./demo-generator.js";
 export * from "./manifest.js";
 export * from "./brand-schema.js";
 export * from "./recipe-selection.js";

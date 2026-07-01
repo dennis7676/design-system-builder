@@ -2,6 +2,7 @@
 import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import {
   checkManifest,
+  generateDemo,
   generateDesignMd,
   generateStyleguide,
   loadTokens,
@@ -37,6 +38,7 @@ function main(argv: string[]): number {
       ...checkManifest(doc, {
         styleguideHtml: generateStyleguide(doc),
         designMd: generateDesignMd(doc),
+        demoHtml: generateDemo(doc),
       }),
     );
   }
@@ -67,6 +69,7 @@ function generate(argv: string[]): number {
   const css = toCssVars(doc);
   const styleguideHtml = generateStyleguide(doc);
   const designMd = generateDesignMd(doc);
+  const demoHtml = generateDemo(doc);
   if (outDir === undefined) {
     console.log(styleguideHtml);
     return 0;
@@ -75,7 +78,8 @@ function generate(argv: string[]): number {
   writeFileSync(`${outDir}/tokens.css`, `${css}\n`);
   writeFileSync(`${outDir}/styleguide.html`, styleguideHtml);
   writeFileSync(`${outDir}/DESIGN.md`, designMd);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/styleguide.html, ${outDir}/DESIGN.md`);
+  writeFileSync(`${outDir}/demo.html`, demoHtml);
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
   return 0;
 }
 

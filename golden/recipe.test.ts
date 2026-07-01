@@ -181,3 +181,36 @@ describe("R9 — distance ties break by declared order (determinism)", () => {
     expect(selectRecipe(b, ordered).recipeKey).toBe("first");
   });
 });
+
+describe("R10 — B1 structural recipes (d8: 4→8, family ceiling)", () => {
+  // Positive coverage for the 4 new structural recipes. These do NOT modify any
+  // R1–R9 expectation (invariants: web-only medium, no 'dense-data' tag, anchors
+  // distinct from existing test vectors), so the existing golden net stays green
+  // unchanged — this block ADDS coverage rather than re-pinning behaviour.
+  const NEW = ["creative-multiscale", "warm-creator", "luxury", "retro"] as const;
+
+  for (const key of NEW) {
+    it(`${key} is loaded and selected at its own tone anchor`, () => {
+      const r = recipe(key);
+      expect(r).toBeDefined();
+      const b = brand({ tone: r.toneAnchor });
+      expect(selectRecipe(b, RECIPES).recipeKey).toBe(key);
+    });
+    it(`${key} builds and passes the export gate (0 errors, WCAG incl.)`, () => {
+      const built = buildTokens(brand({ tone: recipe(key).toneAnchor }), recipe(key));
+      const errs = validateTokens(built).findings.filter((f) => f.severity === "error");
+      expect(errs).toEqual([]);
+    });
+  }
+
+  it("new recipes never declare 'dense-data' (keeps R4 dense-data → enterprise)", () => {
+    for (const key of NEW) {
+      expect(recipe(key).hardConstraintRules.tags).not.toContain("dense-data");
+    }
+  });
+  it("new recipes are web-only (keeps R4 medium=video → no recipe)", () => {
+    for (const key of NEW) {
+      expect([...recipe(key).hardConstraintRules.requires.mediums]).toEqual(["web"]);
+    }
+  });
+});

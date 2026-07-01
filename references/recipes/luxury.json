@@ -1,0 +1,460 @@
+{
+  "key": "luxury",
+  "version": "1.0.0",
+  "source": "Editorial-luxury-like (nominative reference; no code/token values copied)",
+  "toneAnchor": {
+    "static_dynamic": 2,
+    "cold_warm": 5,
+    "serious_playful": 2,
+    "classic_cutting_edge": 3,
+    "minimal_rich": 4
+  },
+  "hardConstraintRules": {
+    "requires": {
+      "mediums": [
+        "web"
+      ]
+    },
+    "excludesAudiences": [],
+    "minContrastCapable": true,
+    "tags": [
+      "web",
+      "html",
+      "high-contrast-capable",
+      "editorial"
+    ]
+  },
+  "philosophy": {
+    "principles": [
+      "절제와 희소",
+      "세리프 위계",
+      "넓은 여백"
+    ],
+    "rationale": "세리프 헤드라인과 넓은 여백으로 절제된 고급감을 전한다. 에디토리얼 원형은 모서리를 날카롭게, 모션을 느긋하게 끌어당긴다.",
+    "decisionTrace": [
+      {
+        "axis": "tone_vector.minimal_rich",
+        "value": 4,
+        "rationale": "웜-뉴트럴 크림 표면에 근-블랙 텍스트와 골드 장식",
+        "coversTokenPath": [
+          "semantic.color.surface.*",
+          "semantic.color.primary.default",
+          "primitive.color.*"
+        ]
+      },
+      {
+        "axis": "persona.archetype",
+        "value": "aesthete",
+        "rationale": "날카로운 모서리와 느긋한 전환",
+        "coversTokenPath": [
+          "primitive.radius.*",
+          "semantic.shape.*",
+          "primitive.duration.*",
+          "semantic.motion.*"
+        ]
+      },
+      {
+        "axis": "tone_vector.serious_playful",
+        "value": 2,
+        "rationale": "세리프 헤드라인과 넓은 스케일 대비",
+        "coversTokenPath": [
+          "primitive.font.*",
+          "semantic.typography.*",
+          "primitive.space.*",
+          "semantic.space.*"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "transformContract": {
+      "dimension": {
+        "web": {
+          "base": 16,
+          "unit": "rem"
+        }
+      },
+      "duration": {
+        "web": "ms"
+      },
+      "color": {
+        "web": "oklch"
+      }
+    },
+    "contrastPairs": [
+      {
+        "fg": "semantic.color.surface.foreground",
+        "bg": "semantic.color.surface.default",
+        "role": "text",
+        "state": "default"
+      },
+      {
+        "fg": "semantic.color.primary.foreground",
+        "bg": "semantic.color.primary.default",
+        "role": "text",
+        "state": "default"
+      },
+      {
+        "fg": "semantic.color.primary.foreground",
+        "bg": "semantic.color.primary.hover",
+        "role": "text",
+        "state": "hover"
+      }
+    ],
+    "primitive": {
+      "color": {
+        "neutral": {
+          "50": {
+            "$type": "color",
+            "$value": "oklch(0.97 0.008 85)",
+            "$class": "portable",
+            "$description": "최상위 표면 배경"
+          },
+          "100": {
+            "$type": "color",
+            "$value": "oklch(0.94 0.01 85)",
+            "$class": "portable"
+          },
+          "600": {
+            "$type": "color",
+            "$value": "oklch(0.45 0.02 70)",
+            "$class": "portable"
+          },
+          "900": {
+            "$type": "color",
+            "$value": "oklch(0.22 0.01 60)",
+            "$class": "portable",
+            "$description": "본문 텍스트"
+          }
+        },
+        "brand": {
+          "600": {
+            "$type": "color",
+            "$value": "oklch(0.22 0.01 60)",
+            "$class": "portable",
+            "$description": "브랜드 프라이머리"
+          },
+          "700": {
+            "$type": "color",
+            "$value": "oklch(0.16 0.01 60)",
+            "$class": "portable",
+            "$description": "프라이머리 hover"
+          }
+        },
+        "accent": {
+          "500": {
+            "$type": "color",
+            "$value": "oklch(0.72 0.11 85)",
+            "$class": "portable",
+            "$description": "장식 보조색 (대비 쌍 아님)"
+          }
+        }
+      },
+      "space": {
+        "xs": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.5,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 3,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "radius": {
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.125,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "duration": {
+        "fast": {
+          "$type": "duration",
+          "$value": {
+            "value": 200,
+            "unit": "ms"
+          },
+          "$class": "adapter-derived"
+        },
+        "normal": {
+          "$type": "duration",
+          "$value": {
+            "value": 320,
+            "unit": "ms"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "font": {
+        "family": {
+          "sans": {
+            "$type": "fontFamily",
+            "$value": [
+              "Public Sans",
+              "system-ui",
+              "sans-serif"
+            ],
+            "$class": "portable"
+          },
+          "mono": {
+            "$type": "fontFamily",
+            "$value": [
+              "IBM Plex Mono",
+              "ui-monospace",
+              "monospace"
+            ],
+            "$class": "portable"
+          },
+          "serif": {
+            "$type": "fontFamily",
+            "$value": [
+              "Cormorant Garamond",
+              "Georgia",
+              "serif"
+            ],
+            "$class": "portable"
+          }
+        },
+        "size": {
+          "caption": {
+            "$type": "dimension",
+            "$value": {
+              "value": 0.875,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "body": {
+            "$type": "dimension",
+            "$value": {
+              "value": 1,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "heading": {
+            "$type": "dimension",
+            "$value": {
+              "value": 2,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "display": {
+            "$type": "dimension",
+            "$value": {
+              "value": 3,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          }
+        },
+        "weight": {
+          "regular": {
+            "$type": "fontWeight",
+            "$value": 400,
+            "$class": "portable"
+          },
+          "bold": {
+            "$type": "fontWeight",
+            "$value": 600,
+            "$class": "portable"
+          }
+        },
+        "lineHeight": {
+          "tight": {
+            "$type": "number",
+            "$value": 1.2,
+            "$class": "portable"
+          },
+          "normal": {
+            "$type": "number",
+            "$value": 1.5,
+            "$class": "portable"
+          }
+        }
+      }
+    },
+    "semantic": {
+      "color": {
+        "surface": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.50}",
+            "$class": "adapter-derived"
+          },
+          "foreground": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.900}",
+            "$class": "adapter-derived"
+          }
+        },
+        "primary": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.brand.600}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.brand.700}",
+            "$class": "adapter-derived"
+          },
+          "foreground": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.50}",
+            "$class": "adapter-derived"
+          }
+        },
+        "accent": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.accent.500}",
+            "$class": "adapter-derived"
+          }
+        }
+      },
+      "space": {
+        "inset": {
+          "$type": "dimension",
+          "$value": "{primitive.space.md}",
+          "$class": "adapter-derived"
+        },
+        "stack": {
+          "$type": "dimension",
+          "$value": "{primitive.space.sm}",
+          "$class": "adapter-derived"
+        }
+      },
+      "shape": {
+        "control": {
+          "$type": "dimension",
+          "$value": "{primitive.radius.md}",
+          "$class": "adapter-derived"
+        }
+      },
+      "motion": {
+        "transition": {
+          "$type": "duration",
+          "$value": "{primitive.duration.normal}",
+          "$class": "adapter-derived"
+        }
+      },
+      "typography": {
+        "body": {
+          "size": {
+            "$type": "dimension",
+            "$value": "{primitive.font.size.body}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{primitive.font.weight.regular}",
+            "$class": "adapter-derived"
+          },
+          "lineHeight": {
+            "$type": "number",
+            "$value": "{primitive.font.lineHeight.normal}",
+            "$class": "adapter-derived"
+          },
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{primitive.font.family.sans}",
+            "$class": "adapter-derived"
+          }
+        },
+        "heading": {
+          "size": {
+            "$type": "dimension",
+            "$value": "{primitive.font.size.heading}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{primitive.font.weight.bold}",
+            "$class": "adapter-derived"
+          },
+          "lineHeight": {
+            "$type": "number",
+            "$value": "{primitive.font.lineHeight.tight}",
+            "$class": "adapter-derived"
+          },
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{primitive.font.family.serif}",
+            "$class": "adapter-derived"
+          }
+        }
+      }
+    },
+    "component": {
+      "button": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "backgroundHover": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "radius": {
+          "$type": "dimension",
+          "$value": "{semantic.shape.control}",
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{semantic.space.inset}",
+          "$class": "adapter-derived"
+        },
+        "transition": {
+          "$type": "duration",
+          "$value": "{semantic.motion.transition}",
+          "$class": "adapter-derived"
+        }
+      }
+    }
+  }
+}

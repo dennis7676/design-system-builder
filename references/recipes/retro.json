@@ -1,0 +1,460 @@
+{
+  "key": "retro",
+  "version": "1.0.0",
+  "source": "Retro-editorial-like (nominative reference; no code/token values copied)",
+  "toneAnchor": {
+    "static_dynamic": 4,
+    "cold_warm": 6,
+    "serious_playful": 5,
+    "classic_cutting_edge": 2,
+    "minimal_rich": 6
+  },
+  "hardConstraintRules": {
+    "requires": {
+      "mediums": [
+        "web"
+      ]
+    },
+    "excludesAudiences": [],
+    "minContrastCapable": true,
+    "tags": [
+      "web",
+      "html",
+      "high-contrast-capable",
+      "display"
+    ]
+  },
+  "philosophy": {
+    "principles": [
+      "디스플레이 타입",
+      "따뜻한 향수",
+      "질감 있는 풍부함"
+    ],
+    "rationale": "디스플레이 세리프와 따뜻한 러스트 배색으로 향수를 자극한다. 레트로 원형은 형태를 풍부하게, 모션을 중용으로 끌어당긴다.",
+    "decisionTrace": [
+      {
+        "axis": "tone_vector.minimal_rich",
+        "value": 6,
+        "rationale": "웜 크림 표면에 러스트 포인트와 머스타드 장식",
+        "coversTokenPath": [
+          "semantic.color.surface.*",
+          "semantic.color.primary.default",
+          "primitive.color.*"
+        ]
+      },
+      {
+        "axis": "persona.archetype",
+        "value": "nostalgic",
+        "rationale": "적당한 모서리와 중용의 전환",
+        "coversTokenPath": [
+          "primitive.radius.*",
+          "semantic.shape.*",
+          "primitive.duration.*",
+          "semantic.motion.*"
+        ]
+      },
+      {
+        "axis": "tone_vector.serious_playful",
+        "value": 5,
+        "rationale": "디스플레이 세리프와 풍부한 위계",
+        "coversTokenPath": [
+          "primitive.font.*",
+          "semantic.typography.*",
+          "primitive.space.*",
+          "semantic.space.*"
+        ]
+      }
+    ]
+  },
+  "base": {
+    "transformContract": {
+      "dimension": {
+        "web": {
+          "base": 16,
+          "unit": "rem"
+        }
+      },
+      "duration": {
+        "web": "ms"
+      },
+      "color": {
+        "web": "oklch"
+      }
+    },
+    "contrastPairs": [
+      {
+        "fg": "semantic.color.surface.foreground",
+        "bg": "semantic.color.surface.default",
+        "role": "text",
+        "state": "default"
+      },
+      {
+        "fg": "semantic.color.primary.foreground",
+        "bg": "semantic.color.primary.default",
+        "role": "text",
+        "state": "default"
+      },
+      {
+        "fg": "semantic.color.primary.foreground",
+        "bg": "semantic.color.primary.hover",
+        "role": "text",
+        "state": "hover"
+      }
+    ],
+    "primitive": {
+      "color": {
+        "neutral": {
+          "50": {
+            "$type": "color",
+            "$value": "oklch(0.94 0.02 75)",
+            "$class": "portable",
+            "$description": "최상위 표면 배경"
+          },
+          "100": {
+            "$type": "color",
+            "$value": "oklch(0.90 0.025 75)",
+            "$class": "portable"
+          },
+          "600": {
+            "$type": "color",
+            "$value": "oklch(0.48 0.04 55)",
+            "$class": "portable"
+          },
+          "900": {
+            "$type": "color",
+            "$value": "oklch(0.25 0.02 55)",
+            "$class": "portable",
+            "$description": "본문 텍스트"
+          }
+        },
+        "brand": {
+          "600": {
+            "$type": "color",
+            "$value": "oklch(0.50 0.11 40)",
+            "$class": "portable",
+            "$description": "브랜드 프라이머리"
+          },
+          "700": {
+            "$type": "color",
+            "$value": "oklch(0.42 0.11 40)",
+            "$class": "portable",
+            "$description": "프라이머리 hover"
+          }
+        },
+        "accent": {
+          "500": {
+            "$type": "color",
+            "$value": "oklch(0.80 0.12 85)",
+            "$class": "portable",
+            "$description": "장식 보조색 (대비 쌍 아님)"
+          }
+        }
+      },
+      "space": {
+        "xs": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.5,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1.5,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "radius": {
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.25,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.5,
+            "unit": "abstract"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "duration": {
+        "fast": {
+          "$type": "duration",
+          "$value": {
+            "value": 140,
+            "unit": "ms"
+          },
+          "$class": "adapter-derived"
+        },
+        "normal": {
+          "$type": "duration",
+          "$value": {
+            "value": 240,
+            "unit": "ms"
+          },
+          "$class": "adapter-derived"
+        }
+      },
+      "font": {
+        "family": {
+          "sans": {
+            "$type": "fontFamily",
+            "$value": [
+              "Public Sans",
+              "system-ui",
+              "sans-serif"
+            ],
+            "$class": "portable"
+          },
+          "mono": {
+            "$type": "fontFamily",
+            "$value": [
+              "IBM Plex Mono",
+              "ui-monospace",
+              "monospace"
+            ],
+            "$class": "portable"
+          },
+          "serif": {
+            "$type": "fontFamily",
+            "$value": [
+              "Merriweather",
+              "Georgia",
+              "serif"
+            ],
+            "$class": "portable"
+          }
+        },
+        "size": {
+          "caption": {
+            "$type": "dimension",
+            "$value": {
+              "value": 0.875,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "body": {
+            "$type": "dimension",
+            "$value": {
+              "value": 1,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "heading": {
+            "$type": "dimension",
+            "$value": {
+              "value": 1.75,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          },
+          "display": {
+            "$type": "dimension",
+            "$value": {
+              "value": 2.75,
+              "unit": "abstract"
+            },
+            "$class": "adapter-derived"
+          }
+        },
+        "weight": {
+          "regular": {
+            "$type": "fontWeight",
+            "$value": 400,
+            "$class": "portable"
+          },
+          "bold": {
+            "$type": "fontWeight",
+            "$value": 600,
+            "$class": "portable"
+          }
+        },
+        "lineHeight": {
+          "tight": {
+            "$type": "number",
+            "$value": 1.2,
+            "$class": "portable"
+          },
+          "normal": {
+            "$type": "number",
+            "$value": 1.5,
+            "$class": "portable"
+          }
+        }
+      }
+    },
+    "semantic": {
+      "color": {
+        "surface": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.50}",
+            "$class": "adapter-derived"
+          },
+          "foreground": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.900}",
+            "$class": "adapter-derived"
+          }
+        },
+        "primary": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.brand.600}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.brand.700}",
+            "$class": "adapter-derived"
+          },
+          "foreground": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.50}",
+            "$class": "adapter-derived"
+          }
+        },
+        "accent": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.accent.500}",
+            "$class": "adapter-derived"
+          }
+        }
+      },
+      "space": {
+        "inset": {
+          "$type": "dimension",
+          "$value": "{primitive.space.md}",
+          "$class": "adapter-derived"
+        },
+        "stack": {
+          "$type": "dimension",
+          "$value": "{primitive.space.sm}",
+          "$class": "adapter-derived"
+        }
+      },
+      "shape": {
+        "control": {
+          "$type": "dimension",
+          "$value": "{primitive.radius.md}",
+          "$class": "adapter-derived"
+        }
+      },
+      "motion": {
+        "transition": {
+          "$type": "duration",
+          "$value": "{primitive.duration.normal}",
+          "$class": "adapter-derived"
+        }
+      },
+      "typography": {
+        "body": {
+          "size": {
+            "$type": "dimension",
+            "$value": "{primitive.font.size.body}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{primitive.font.weight.regular}",
+            "$class": "adapter-derived"
+          },
+          "lineHeight": {
+            "$type": "number",
+            "$value": "{primitive.font.lineHeight.normal}",
+            "$class": "adapter-derived"
+          },
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{primitive.font.family.sans}",
+            "$class": "adapter-derived"
+          }
+        },
+        "heading": {
+          "size": {
+            "$type": "dimension",
+            "$value": "{primitive.font.size.heading}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{primitive.font.weight.bold}",
+            "$class": "adapter-derived"
+          },
+          "lineHeight": {
+            "$type": "number",
+            "$value": "{primitive.font.lineHeight.tight}",
+            "$class": "adapter-derived"
+          },
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{primitive.font.family.serif}",
+            "$class": "adapter-derived"
+          }
+        }
+      }
+    },
+    "component": {
+      "button": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "backgroundHover": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "radius": {
+          "$type": "dimension",
+          "$value": "{semantic.shape.control}",
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{semantic.space.inset}",
+          "$class": "adapter-derived"
+        },
+        "transition": {
+          "$type": "duration",
+          "$value": "{semantic.motion.transition}",
+          "$class": "adapter-derived"
+        }
+      }
+    }
+  }
+}

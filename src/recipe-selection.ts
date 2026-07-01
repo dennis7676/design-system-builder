@@ -11,8 +11,17 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { TONE_AXES, type BrandJson, type ToneVector, type OverrideAxis } from "./brand-schema.js";
 
-/** Stable load + tie-break order. */
-export const RECIPE_ORDER = ["minimal-tech", "enterprise", "expressive", "pro-emotive"] as const;
+/** Stable load + tie-break order. B1 (d8): +4 structural recipes (7-family ceiling). */
+export const RECIPE_ORDER = [
+  "minimal-tech",
+  "enterprise",
+  "expressive",
+  "pro-emotive",
+  "creative-multiscale",
+  "warm-creator",
+  "luxury",
+  "retro",
+] as const;
 
 /** Override axes recognized but intentionally not implemented in the pilot. */
 export const DEFERRED_OVERRIDES = [

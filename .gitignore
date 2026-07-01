@@ -9,3 +9,4 @@ examples/*/tokens.json
 examples/*/tokens.css
 examples/*/styleguide.html
 examples/*/DESIGN.md
+.playwright-cli/

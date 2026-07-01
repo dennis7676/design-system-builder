@@ -97,6 +97,11 @@ function demoCss(doc: TokensDocument): string {
   const radius = "var(--semantic-shape-control, .5rem)";
   const inset = "var(--semantic-space-inset, 1.5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
+  // Elevation is opt-in per recipe: expressive recipes declare semantic.elevation.*,
+  // flat recipes (minimal-tech/enterprise) declare none → no box-shadow is emitted,
+  // so they render flat by identity. Values come only from var(--semantic-elevation-*).
+  const raised = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-raised);" : "";
+  const overlay = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -121,11 +126,12 @@ function demoCss(doc: TokensDocument): string {
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
     .features { padding: clamp(2rem, 5vw, 4rem) 0; display: grid; gap: 1.5rem; border-top: 1px solid ${hairline}; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
-    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start; }
+    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ease, transform ${transition} ease; }
+    .card:hover {${overlay} transform: translateY(-2px); }
     .card h3 { font: var(--semantic-typography-heading-weight, 700) 1.2rem/1.2 var(--semantic-typography-heading-family, system-ui, sans-serif); }
     .link { color: ${primary}; text-decoration: none; font-weight: 600; }
     .signup { padding: clamp(2rem, 5vw, 4rem) 0; }
-    .signup-card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: clamp(1.5rem, 4vw, 3rem); background: color-mix(in oklch, ${surface} 94%, ${primary}); display: grid; gap: 1rem; max-width: 34rem; }
+    .signup-card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: clamp(1.5rem, 4vw, 3rem); background: color-mix(in oklch, ${surface} 94%, ${primary}); display: grid; gap: 1rem; max-width: 34rem;${overlay} }
     .signup form { display: grid; gap: .85rem; }
     .signup label { display: grid; gap: .35rem; font-size: .9rem; }
     .signup input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${surface}; color: ${fg}; font: inherit; }
@@ -141,4 +147,9 @@ function demoCss(doc: TokensDocument): string {
 
 function hasMotion(doc: TokensDocument): boolean {
   return hasTokenPath(doc, /(^|\.)duration(\.|$)|(^|\.)motion(\.|$)/);
+}
+
+/** True when the doc carries semantic.elevation.* — expressive recipes only. */
+function hasElevation(doc: TokensDocument): boolean {
+  return hasTokenPath(doc, /(^|\.)elevation(\.|$)/);
 }

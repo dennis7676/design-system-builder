@@ -308,6 +308,26 @@
             "$class": "portable"
           }
         }
+      },
+      "shadow": {
+        "sm": {
+          "$type": "shadow",
+          "$value": "0 1px 4px oklch(0 0 0 / 0.05)",
+          "$class": "portable",
+          "$description": "luxury elevation sm"
+        },
+        "md": {
+          "$type": "shadow",
+          "$value": "0 6px 20px oklch(0 0 0 / 0.07)",
+          "$class": "portable",
+          "$description": "luxury elevation md"
+        },
+        "lg": {
+          "$type": "shadow",
+          "$value": "0 16px 44px oklch(0 0 0 / 0.09)",
+          "$class": "portable",
+          "$description": "luxury elevation lg"
+        }
       }
     },
     "semantic": {
@@ -419,6 +439,18 @@
             "$value": "{primitive.font.family.serif}",
             "$class": "adapter-derived"
           }
+        }
+      },
+      "elevation": {
+        "raised": {
+          "$type": "shadow",
+          "$value": "{primitive.shadow.md}",
+          "$class": "adapter-derived"
+        },
+        "overlay": {
+          "$type": "shadow",
+          "$value": "{primitive.shadow.lg}",
+          "$class": "adapter-derived"
         }
       }
     },

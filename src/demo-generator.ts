@@ -17,7 +17,13 @@ import { htmlEscape } from "./render-utils.js";
 /** Regions the completeness contract (manifest.checkDemo) requires. */
 export const DEMO_REGIONS = ["nav", "hero", "features", "form", "footer"] as const;
 
+/** Expression tier resolution: meta.expression is optional; absent ⇒ balanced,
+ * and the balanced path emits byte-identical output to the pre-tier generator
+ * (backward-compat anchor — golden G-X1). */
+type Tier = "safe" | "balanced" | "bold";
+
 export function generateDemo(doc: TokensDocument): string {
+  const tier: Tier = doc.meta.expression ?? "balanced";
   const hash = computeTokenHash(doc);
   const brand = htmlEscape(doc.meta.recipe);
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
@@ -28,12 +34,12 @@ export function generateDemo(doc: TokensDocument): string {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${brand} — product</title>`,
-    `<style>${demoCss(doc)}</style>`,
+    `<style>${demoCss(doc, tier)}</style>`,
     "</head>",
     "<body>",
     header(brand),
     "<main>",
-    hero(brand),
+    tier === "bold" ? heroBold(brand) : hero(brand),
     features(),
     form(),
     "</main>",
@@ -53,6 +59,13 @@ function header(brand: string): string {
 
 function hero(brand: string): string {
   return `<section data-demo-region="hero" class="hero"><p class="eyebrow">Introducing ${brand}</p><h1>Ship a product that feels unmistakably yours.</h1><p class="lead">Every color, type ramp, radius, and motion on this page is driven by one brand token set — nothing here is hardcoded.</p><div class="cta-row"><button class="btn btn-primary">Start free</button><button class="btn btn-ghost">Book a demo</button></div></section>`;
+}
+
+/** Bold tier: split hero — copy column ↔ brand panel with a display glyph.
+ * Same region contract; the glyph is the brand's first letter (deterministic). */
+function heroBold(brand: string): string {
+  const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
+  return `<section data-demo-region="hero" class="hero"><div class="hero-copy"><p class="eyebrow">Introducing ${brand}</p><h1>Ship a product that feels unmistakably yours.</h1><p class="lead">Every color, type ramp, radius, and motion on this page is driven by one brand token set — nothing here is hardcoded.</p><div class="cta-row"><button class="btn btn-primary">Start free</button><button class="btn btn-ghost">Book a demo</button></div></div><div class="hero-panel" aria-hidden="true"><span class="glyph">${glyph}</span></div></section>`;
 }
 
 function features(): string {
@@ -85,7 +98,7 @@ function footer(brand: string): string {
 
 /** Brand values come ONLY from var(--…) (values live in the :root toCssVars block).
  * Layout chrome (grid/clamp/hairlines) may use literals, per baseCss precedent. */
-function demoCss(doc: TokensDocument): string {
+function demoCss(doc: TokensDocument, tier: Tier = "balanced"): string {
   const reduce = hasMotion(doc)
     ? `
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }`
@@ -104,7 +117,9 @@ function demoCss(doc: TokensDocument): string {
   const overlay = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
   // Hero gradient is opt-in: expressive recipes declare semantic.gradient.hero;
   // flat recipes emit no gradient so the hero renders on the plain surface.
-  const heroBg = hasGradient(doc)
+  // At bold the gradient moves into the hero-panel (tierCss), so the hero bg
+  // stays plain — no double-gradient.
+  const heroBg = tier !== "bold" && hasGradient(doc)
     ? ` background: var(--semantic-gradient-hero); border-radius: ${radius}; padding-inline: clamp(1.5rem, 4vw, 3rem); margin-top: 1.5rem;`
     : "";
   return `${toCssVars(doc)}
@@ -147,7 +162,53 @@ function demoCss(doc: TokensDocument): string {
     .footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .footer-cols a:hover { color: ${primary}; }
     .fine { width: min(72rem, 100%); margin: 0 auto; font-size: .85rem; color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}`;
+    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}`;
+}
+
+/** Tier layout overrides, appended after the base rules (same specificity —
+ * source order wins). Balanced emits nothing: the base IS the balanced tier.
+ * Brand values only via var(--…)/color-mix over vars; layout chrome literals
+ * only (baseCss precedent). Never touches colour tokens or contrast pairs. */
+function tierCss(tier: Tier, doc: TokensDocument): string {
+  if (tier === "balanced") return "";
+  const surface = "var(--semantic-color-surface-default, Canvas)";
+  const primary = "var(--semantic-color-primary-default, LinkText)";
+  const radius = "var(--semantic-shape-control, .5rem)";
+  const inset = "var(--semantic-space-inset, 1.5rem)";
+  const heading = "var(--semantic-typography-heading-family, system-ui, sans-serif)";
+  const headingWeight = "var(--semantic-typography-heading-weight, 700)";
+  if (tier === "safe") {
+    // Quieter: narrower measure, moderate display clamp, symmetric grid.
+    return `
+    main { width: min(64rem, 100%); }
+    .hero h1 { font: ${headingWeight} clamp(2.2rem, 5vw, 3.2rem)/1.1 ${heading}; }
+    .card-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 760px) { .card-grid { grid-template-columns: 1fr; } }`;
+  }
+  // bold — split hero + brand panel, bounded display clamp (overflow lesson),
+  // asymmetric spotlight grid, density ×1.1/×1.25. Vocabulary stays opt-in:
+  // flat recipes get color-mix solids, no invented shadow/gradient.
+  const panelBg = hasGradient(doc)
+    ? "var(--semantic-gradient-hero)"
+    : `color-mix(in oklch, ${surface} 88%, ${primary})`;
+  const panelShadow = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
+  const spotlightBg = hasGradient(doc)
+    ? "var(--semantic-gradient-hero)"
+    : `color-mix(in oklch, ${surface} 90%, ${primary})`;
+  return `
+    main { width: min(76rem, 100%); }
+    .hero { grid-template-columns: 1.1fr .9fr; column-gap: 2.5rem; align-items: center; padding: clamp(3rem, 7vw, 5.5rem) 0; }
+    .hero-copy { display: grid; gap: 1.5rem; }
+    .hero h1 { font: ${headingWeight} clamp(3rem, 7vw, 4.75rem)/.98 ${heading}; letter-spacing: -.01em; }
+    .hero-panel { align-self: stretch; min-height: 20rem; border-radius: calc(${radius} * 1.4); background: ${panelBg}; display: grid; place-content: center; padding: 2rem; overflow: hidden;${panelShadow} }
+    .hero-panel .glyph { font: ${headingWeight} clamp(5rem, 12vw, 9rem)/1 ${heading}; color: ${primary}; }
+    .features { padding: clamp(2.5rem, 6vw, 5rem) 0; }
+    .features h2 { font: ${headingWeight} clamp(1.8rem, 4vw, 2.6rem)/1.15 ${heading}; max-width: 22ch; }
+    .card-grid { grid-template-columns: 2fr 1fr; }
+    .card { padding: calc(${inset} * 1.1); }
+    .card:first-child { grid-row: span 2; background: ${spotlightBg}; align-content: end; min-height: 20rem; }
+    .card:first-child h3 { font-size: 1.8rem; }
+    @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .card-grid { grid-template-columns: 1fr; } .card:first-child { grid-row: auto; min-height: 0; } }`;
 }
 
 function hasMotion(doc: TokensDocument): boolean {

@@ -161,6 +161,12 @@ export interface TokensMeta {
   toneVector: Record<string, number>;
   requiredTargets: string[];
   philosophy: Philosophy;
+  /**
+   * Expression dial echoed from brand.json (present only when the brand set
+   * it). Meta is excluded from the intent tokenHash, so this never moves the
+   * R1 keystone or any recipe hash. Consumers resolve absent ⇒ "balanced".
+   */
+  expression?: "safe" | "balanced" | "bold";
 }
 
 export interface TokensDocument {

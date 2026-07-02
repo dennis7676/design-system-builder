@@ -26,6 +26,16 @@ export type ToneVector = Record<ToneAxis, number>;
 export type Medium = "web" | "app" | "video";
 
 /**
+ * Shared expression dial (settled ↔ daring). A finite enum chosen in
+ * brand.json — it scales layout amplitude on applied surfaces and never
+ * mutates token values, so contrast pairs hold identically at every tier.
+ * Absent ⇒ "balanced" (the pre-tier layout, byte-identical).
+ */
+export const EXPRESSION_TIERS = ["safe", "balanced", "bold"] as const;
+
+export type ExpressionTier = (typeof EXPRESSION_TIERS)[number];
+
+/**
  * Bounded, contrast-safe pilot overrides. Each maps to a scalar mutation on
  * existing intent tokens, so it can never break a WCAG pair the recipe already
  * satisfies.
@@ -70,6 +80,8 @@ export interface BrandJson {
   readonly branding: BrandBranding;
   /** Explicit overrides; ≤3 axes, each value within OVERRIDE_RANGES. */
   readonly overrides?: BrandOverrides;
+  /** Expression dial for applied-surface layout amplitude. Absent ⇒ "balanced". */
+  readonly expression?: ExpressionTier;
 }
 
 export interface BrandFieldError {
@@ -117,6 +129,9 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
         }
       }
     }
+  }
+  if (b.expression !== undefined && !EXPRESSION_TIERS.includes(b.expression as ExpressionTier)) {
+    errors.push({ path: "expression", message: `must be one of ${EXPRESSION_TIERS.join("|")}` });
   }
   if (b.overrides !== undefined) {
     const ov = b.overrides as Record<string, unknown>;

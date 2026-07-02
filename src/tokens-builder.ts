@@ -50,6 +50,9 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       toneVector: normalizeToneVector(brand.branding.tone_vector),
       requiredTargets: targetsFor(brand),
       philosophy: recipe.philosophy as Philosophy,
+      // Conditional echo: absent brand field ⇒ absent meta key, so existing
+      // tokens.json artifacts stay byte-stable. Meta is hash-excluded (R1-safe).
+      ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
     },
     transformContract: base.transformContract,
     contrastPairs: base.contrastPairs,

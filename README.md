@@ -74,6 +74,20 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 인터뷰 프런트도어는 Claude Code 스킬(SKILL.md)로 제공된다 — 대화로 brand.json을
 만들고 위 CLI를 자동 실행한다.
 
+## 타이포그래피 시스템
+
+- **타입 스케일**: recipe의 4단 앵커(caption/body/heading/display)에서 특성
+  비율을 유도(`meta.typeScale.ratio` = √(display/body), 해시 제외 echo).
+  중간 단 h2/h3는 body→heading 구간의 기하 보간(ρ^⅓, ρ^⅔)으로 파생.
+- **semantic 6롤**: `display / h1 / h2 / h3 / body / caption` — 각 롤은
+  family·size·weight·lineHeight·tracking 묶음. demo/styleguide는 롤 변수만
+  소비(롤 요소에 리터럴 rem/px 금지, G-T5 게이트).
+- **위계 게이트**: h1/body ∈ [1.25, 2.0] + 램프 단조 증가 (KRDS 1.25–1.5
+  안전밴드 근거, G-T3).
+- **ko 조판**: keep-all·자간 중화(음수만)·본문 행간 플로어 1.7·자수 기반
+  measure(본문 ≈35em, 제목 ≈15em) — 전부 생성기 ko 경로, 토큰 오염 없음.
+  근거·수치 SSOT: [docs/locale-typography-ko.md](docs/locale-typography-ko.md)
+
 ## 폰트 에셋 (한글)
 
 한글 아이덴티티를 위해 무료 폰트(전부 SIL OFL 계열)를 에셋으로 채택한다.
@@ -81,9 +95,7 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 레시피 성격이 한글로 이어진다. 정본 표·설치법·조판 규칙:
 **[docs/locale-typography-ko.md](docs/locale-typography-ko.md)**
 
-핵심: Pretendard(고딕 전반) · Noto Serif KR(세리프) · IBM Plex Sans KR(enterprise
-동일 패밀리) · SUIT(기하) · Gowun Batang/Dodum · NanumSquare Round · Nanum
-Myeongjo · Paperlogy(디스플레이).
+핵심: Pretendard(고딕 전반) · Noto Serif KR(세리프) · IBM Plex Sans KR(enterprise 지명) · SUIT(creative-multiscale 지명) · NanumSquareRound(warm-creator 지명) · Gowun Batang/Dodum · Nanum Myeongjo · Paperlogy(디스플레이).
 
 ## 기술 계약 (요약)
 

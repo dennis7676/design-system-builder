@@ -145,8 +145,10 @@ function applyLocaleFonts(
       if (leaf === undefined || !Array.isArray(leaf.$value)) continue;
       const stack = leaf.$value as string[];
       const fresh = extra.filter((f) => !stack.includes(f));
-      // insert before the trailing generic keyword (sans-serif/serif/monospace)
-      stack.splice(Math.max(stack.length - 1, 0), 0, ...fresh);
+      // Insert right after the identity (first) family: `system-ui` and other
+      // OS-cascade entries mid-stack cover Hangul themselves, so anything
+      // spliced behind them never renders Korean glyphs (measured 2026-07-02).
+      stack.splice(Math.min(1, stack.length), 0, ...fresh);
     }
   }
 }

@@ -280,7 +280,7 @@ function tierCss(tier: Tier, doc: TokensDocument): string {
     .hero-copy { display: grid; gap: 1.5rem; }
     .hero h1 { font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .78), 7vw, calc(var(--semantic-typography-display-size) * 1.18))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .hero-panel { align-self: stretch; min-height: 20rem; border-radius: calc(${radius} * 1.4); background: ${panelBg}; display: grid; place-content: center; padding: 2rem; overflow: hidden;${panelShadow} }
-    .hero-panel .glyph { font: var(--semantic-typography-display-weight) clamp(5rem, 12vw, 9rem)/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); color: ${primary}; }
+    .hero-panel .glyph { font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * 2.2), 12vw, calc(var(--semantic-typography-display-size) * 4))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); color: ${primary}; }
     .features { padding: clamp(2.5rem, 6vw, 5rem) 0; }
     .features h2 { font: var(--semantic-typography-h2-weight) clamp(var(--semantic-typography-h2-size), 4vw, calc(var(--semantic-typography-h2-size) * 1.35))/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); max-width: 22ch; }
     .card-grid { grid-template-columns: 2fr 1fr; }

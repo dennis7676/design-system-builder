@@ -54,14 +54,14 @@
 
 ## 4. Phase 4 — Korean font promotions (visual sign-off gated)
 
-- [ ] 4.1 Render ko demo screenshots for enterprise (IBM Plex Sans KR),
+- [x] 4.1 Render ko demo screenshots for enterprise (IBM Plex Sans KR),
       creative-multiscale (SUIT), warm-creator (Gowun Dodum) candidates
-- [ ] 4.2 ⏸ OPERATOR GATE — visual identity-fit sign-off per recipe
-- [ ] 4.3 Update approved recipes' `locales.ko`, extend G-L2 golden, update
+- [x] 4.2 ⏸ OPERATOR GATE — visual identity-fit sign-off per recipe
+- [x] 4.3 Update approved recipes' `locales.ko`, extend G-L2 golden, update
       `docs/locale-typography-ko.md` §1 statuses; commit Phase 4
 
 ## 5. Close
 
-- [ ] 5.1 Full suite + typecheck green; browser render spot-check (en + ko)
-- [ ] 5.2 README typography section updated
-- [ ] 5.3 Post-hoc codex cross-check dispatched (parallel, non-gating)
+- [x] 5.1 Full suite + typecheck green; browser render spot-check (en + ko)
+- [x] 5.2 README typography section updated
+- [x] 5.3 Post-hoc codex cross-check dispatched (parallel, non-gating)

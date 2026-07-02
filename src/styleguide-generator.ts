@@ -32,7 +32,7 @@ export function generateStyleguide(doc: TokensDocument): string {
   const sections = [
     philosophy(doc),
     colors(doc, realized),
-    typography(doc, realized),
+    typography(doc, realized, ko),
     spacing(doc, realized),
     shapes(doc, realized),
   ];
@@ -109,9 +109,12 @@ function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>): str
   return section("colors", "Colors", `<p class="section-lead">Semantic roles describe where color is used, not only what value it resolves to. Pair surface roles with foreground roles, and reserve primary roles for clear action states.</p><div class="swatch-grid">${swatches}</div>`);
 }
 
-function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>, ko = false): string {
+  // ko neutralizes NEGATIVE tracking on rendered specimens (Hangul crowding);
+  // positive caption tracking is kept. The dl still documents the token value.
+  const renderTracking = (t: string): string => (ko && Number(t) < 0 ? "0" : t);
   const samples = typographyRoles(doc, realized)
-    .map((role) => `<article data-type-sample data-type-role="${role.name}" class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)};letter-spacing:${htmlEscape(role.tracking)}em">${htmlEscape(typeSentence(role.name))}</p><dl class="type-fields"><div><dt>family</dt><dd>${htmlEscape(role.family)}</dd></div><div><dt>size</dt><dd>${htmlEscape(role.size)}</dd></div><div><dt>weight</dt><dd>${htmlEscape(role.weight)}</dd></div><div><dt>line-height</dt><dd>${htmlEscape(role.lineHeight)}</dd></div><div><dt>tracking</dt><dd>${htmlEscape(role.tracking)}</dd></div></dl></article>`)
+    .map((role) => `<article data-type-sample data-type-role="${role.name}" class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)};letter-spacing:${htmlEscape(renderTracking(role.tracking))}em">${htmlEscape(typeSentence(role.name))}</p><dl class="type-fields"><div><dt>family</dt><dd>${htmlEscape(role.family)}</dd></div><div><dt>size</dt><dd>${htmlEscape(role.size)}</dd></div><div><dt>weight</dt><dd>${htmlEscape(role.weight)}</dd></div><div><dt>line-height</dt><dd>${htmlEscape(role.lineHeight)}</dd></div><div><dt>tracking</dt><dd>${htmlEscape(role.tracking)}</dd></div></dl></article>`)
     .join("");
   return section("typography", "Typography", `<p class="section-lead">The ramp uses the realized typography tokens directly, so specimens show the same scale and weight that components consume.</p><div class="type-ramp">${samples}</div>`);
 }
@@ -278,5 +281,5 @@ function koCss(ko: boolean): string {
     body { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
     h1 { max-width: min(13ch, 15em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
     h2 { letter-spacing: normal; }
-    .lead, .section-lead { max-width: 35em; }`;
+    .lead, .section-lead { max-width: 35em; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }`;
 }

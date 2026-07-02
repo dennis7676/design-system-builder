@@ -77,6 +77,22 @@ describe("G-L2 — Korean family splice (personality-aligned)", () => {
     expect(stacks.sans![stacks.sans!.length - 1]).toBe("sans-serif");
     expect(stacks.mono).not.toContain("Pretendard"); // mono untouched
   });
+  it("promoted recipes lead with their identity-matched Korean family (P4)", () => {
+    const PROMOTED: Record<string, string> = {
+      "enterprise": "IBM Plex Sans KR",
+      "creative-multiscale": "SUIT",
+      "warm-creator": "NanumSquareRound",
+    };
+    for (const [key, family] of Object.entries(PROMOTED)) {
+      const stacks = familyStacks(buildFor(key, { locales: ["ko"] }));
+      const sans = stacks.sans!;
+      expect(sans, `${key} sans missing ${family}`).toContain(family);
+      expect(
+        sans.indexOf(family),
+        `${key}: ${family} must precede Pretendard`,
+      ).toBeLessThan(sans.indexOf("Pretendard"));
+    }
+  });
   it("every recipe ko build carries a Korean family in its heading-capable stacks", () => {
     for (const r of RECIPES) {
       const stacks = familyStacks(buildFor(r.key, { locales: ["ko"] }));
@@ -152,6 +168,17 @@ describe("G-T4 — Korean measure and leading are generator-only", () => {
     // so the ko floor must be restated on .lead itself.
     expect(leadBlock).toContain("line-height: max(1.7, var(--semantic-typography-body-lineHeight))");
     expect(Number(rootVar(html, "--semantic-typography-body-lineHeight"))).toBeLessThanOrEqual(1.7);
+  });
+
+  it("ko styleguide floors lead leading and neutralizes negative specimen tracking", () => {
+    const html = generateStyleguide(buildFor("minimal-tech", { locales: ["ko"] }));
+    expect(html).toContain(".lead, .section-lead { max-width: 35em; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }");
+    const specimen = (role: string): string =>
+      html.match(new RegExp(`data-type-role="${role}"[^>]*>.*?<p style="[^"]*"`, "s"))![0];
+    expect(specimen("h1")).toContain("letter-spacing:0em"); // -0.01 neutralized
+    expect(specimen("caption")).toContain("letter-spacing:0.04em"); // positive kept
+    // the dl keeps documenting the token value even when the render is neutralized
+    expect(html).toContain("<dt>tracking</dt><dd>-0.01</dd>");
   });
 
   it("non-ko demo never emits Korean-only typography overrides", () => {

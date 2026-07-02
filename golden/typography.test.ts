@@ -145,6 +145,15 @@ describe("G-T5 — demo typography roles are consumed without literal role font 
     }
   });
 
+  it("bold-tier hero glyph derives from the display token, not literal rems", () => {
+    const bold = { ...minimalTechSampleBrand(), expression: "bold" as const };
+    const html = generateDemo(buildTokens(bold, recipe("minimal-tech")));
+    const css = cssOf(html);
+    const block = lastRuleBlock(css, ".hero-panel .glyph");
+    expect(block).toContain("var(--semantic-typography-display-size)");
+    expect(block).not.toMatch(/font(?:-size)?\s*:[^;]*\d(?:rem|px)/);
+  });
+
   it("validator reports zero orphan warnings for role-terminal primitive font size tokens", () => {
     const roleSizeTerminals = new Set([
       "primitive.font.size.caption",

@@ -30,7 +30,7 @@
 - [x] 2.3 G-T0 superset gate in `golden/typography.test.ts` — every leaf of
       `pre-typography-sample.tokens.json` present with deep-equal value in
       fresh `build(minimal-tech)` output
-- [ ] 2.4 ⏸ OPERATOR GATE — present G-T0 result + audited diff (added paths
+- [x] 2.4 ⏸ OPERATOR GATE — present G-T0 result + audited diff (added paths
       only); on approval regenerate `golden/sample.tokens.json` (L3)
 - [ ] 2.5 `src/demo-generator.ts` + `src/styleguide-generator.ts` — consume
       six roles; remove hardcoded font sizing on role elements (design D5);

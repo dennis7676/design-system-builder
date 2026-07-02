@@ -104,10 +104,34 @@ function applyAccentOverride(base: MutableBase, requestedHue: number): ColorOver
   if (anchor === null || !anchor[0].startsWith("primitive.") || parsed === null) {
     throw new BuildError(`accent anchor unresolved: ${PRIMARY_PATH}`);
   }
-  const delta = normalizeDelta(requestedHue - parsed.H);
+  // Anchor rule: the requested hue must land on the recipe's CHROMATIC
+  // identity. A recipe with an achromatic primary (luxury: near-black primary
+  // + gold accent) anchors on its highest-chroma leaf instead — otherwise the
+  // delta would be computed against H=0 and the visible accent would land on
+  // an arbitrary hue (observed pre-fix: luxury@350 sent gold to H75).
+  const chromatic = parsed.C >= CHROMA_THRESHOLD ? parsed : highestChromaLeaf(leaves);
+  if (chromatic === null) {
+    // Fully achromatic palette: a silent no-op would claim the requested hue
+    // in meta while emitting untouched neutrals — fail loudly instead.
+    throw new BuildError(
+      `accent-anchor-achromatic: neither ${PRIMARY_PATH} nor any primitive colour leaf has chroma ≥ ${CHROMA_THRESHOLD}; a hue override has nothing to rotate`,
+      "accent-anchor-achromatic",
+    );
+  }
+  const delta = normalizeDelta(requestedHue - chromatic.H);
   rotateChromaticLeaves(base, delta);
   const corrections = repairContrastPairs(base);
   return { requestedHue, delta, corrections };
+}
+
+function highestChromaLeaf(leaves: LeafMap): Oklch | null {
+  let best: Oklch | null = null;
+  for (const [path, leaf] of leaves) {
+    if (!path.startsWith("primitive.") || leaf.$type !== "color" || typeof leaf.$value !== "string") continue;
+    const color = parseOklch(leaf.$value);
+    if (color !== null && color.C >= CHROMA_THRESHOLD && (best === null || color.C > best.C)) best = color;
+  }
+  return best;
 }
 
 function rotateChromaticLeaves(base: MutableBase, delta: number): void {

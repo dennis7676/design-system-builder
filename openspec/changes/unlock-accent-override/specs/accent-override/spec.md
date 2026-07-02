@@ -16,8 +16,11 @@ replacement. `motion.easing` SHALL remain deferred.
 ### Requirement: Coherent chromatic rotation
 When the accent override is present, `buildTokens` SHALL rotate every
 primitive colour leaf with chroma ≥ 0.03 by the single delta between the
-requested hue and the anchor hue (the primitive leaf resolved by
-`semantic.color.primary.default`), preserving each leaf's OKLCH lightness
+requested hue and the anchor hue. The anchor SHALL be the primitive leaf
+resolved by `semantic.color.primary.default` when it is chromatic, otherwise
+the highest-chroma primitive colour leaf (achromatic-primary recipes anchor
+on their visible accent); a fully achromatic palette SHALL fail with
+`accent-anchor-achromatic`. Rotation preserves each leaf's OKLCH lightness
 and clamping chroma to the sRGB gamut at the new hue via deterministic
 binary search. Achromatic leaves SHALL be untouched. Pairwise hue deltas
 between chromatic leaves SHALL be preserved (±0.5°).

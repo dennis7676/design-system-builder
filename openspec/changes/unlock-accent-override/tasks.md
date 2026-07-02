@@ -47,4 +47,4 @@
 - [x] 5.2 Crystal Ball scenario re-run: pro-emotive brand + accent hue ≈ 350
       (warm rose) builds and demo renders with the requested hue family
 - [x] 5.3 README + docs/uniqueness-roadmap.md lever #1 status update
-- [ ] 5.4 Post-hoc codex cross-check (parallel, non-gating)
+- [x] 5.4 Post-hoc codex cross-check (parallel, non-gating)

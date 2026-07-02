@@ -89,11 +89,17 @@ export function maxSrgbChroma(L: number, H: number): number {
 }
 
 export function clampOklchChroma(color: Oklch): Oklch {
-  const limited = Math.min(Math.max(0, color.C), maxSrgbChroma(color.L, color.H));
+  // Quantize L/H to the serialized precision FIRST: the gamut ceiling must be
+  // computed for the values that will actually be emitted, or a chroma that
+  // fits the pre-rounding L can escape the gamut of the rounded one
+  // (observed near L≈0.004 in an adversarial probe, 2026-07-02).
+  const L = Math.round(color.L * 1000) / 1000;
+  const H = Math.round(normalizeHue(color.H) * 10) / 10;
+  const limited = Math.min(Math.max(0, color.C), maxSrgbChroma(L, H));
   return {
-    L: color.L,
+    L,
     C: Math.floor((limited + 1e-12) * 1000) / 1000,
-    H: normalizeHue(color.H),
+    H,
   };
 }
 

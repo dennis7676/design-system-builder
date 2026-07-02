@@ -195,3 +195,31 @@ describe("G-C7 — bounded repair path (synthetic marginal recipe)", () => {
       .toThrowError(/accent-contrast-unrepairable/);
   });
 });
+
+describe("G-C8 — cross-check hardening (2026-07-02 adversarial findings)", () => {
+  it("achromatic primary anchor fails loudly instead of a silent no-op", () => {
+    const clone = structuredClone(recipe("minimal-tech")) as unknown as {
+      base: { primitive: { color: { blue: Record<string, { $value: string }> } } };
+    };
+    clone.base.primitive.color.blue["600"].$value = "oklch(0.50 0 0)";
+    clone.base.primitive.color.blue["700"].$value = "oklch(0.42 0 0)";
+    expect(() => buildTokens(brand(SAMPLE_TONE, { "visual.accent": 110 } as BrandOverrides), clone as unknown as Recipe))
+      .toThrowError(/accent-anchor-achromatic/);
+  });
+
+  it("achromatic-primary recipe (luxury) anchors on its highest-chroma leaf", () => {
+    const doc = buildTokens(brand(recipe("luxury").toneAnchor as ToneVector, { "visual.accent": 350 } as BrandOverrides), recipe("luxury"));
+    const rotated = parseOklch((doc.primitive as unknown as { color: { accent: Record<string, { $value: string }> } }).color.accent["500"].$value);
+    expect(rotated?.H).toBe(350);
+    expect(rotated?.L).toBe(0.72);
+  });
+
+  it("gamut clamp holds for the exact serialized precision at extreme lightness", () => {
+    for (const L of [0.004, 0.0044, 0.996, 0.9987]) {
+      for (const H of [54.4, 110, 350.07]) {
+        const clamped = clampOklchChroma({ L, C: 0.4, H });
+        expect(isInSrgbGamut(clamped), `L=${L} H=${H} → ${JSON.stringify(clamped)}`).toBe(true);
+      }
+    }
+  });
+});

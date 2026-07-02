@@ -10,7 +10,11 @@ recipe's internal colour grammar while landing the user's hue. Threshold:
 chroma ≥ 0.03 (below = intentional neutral).
 
 Anchor = the primitive leaf that `semantic.color.primary.default` resolves
-to. `delta = ((requestedHue − anchorHue) mod 360)`.
+to **when chromatic**; otherwise the highest-chroma primitive leaf (luxury's
+primary is near-black — anchoring on H=0 would send its gold accent to an
+arbitrary hue, observed pre-fix: luxury@350 → gold at H75). Fully achromatic
+palettes fail with `accent-anchor-achromatic` (cross-check hardening,
+2026-07-02). `delta = ((requestedHue − anchorHue) mod 360)`.
 
 ## D2. Why L is fixed and C is clamped
 

@@ -161,6 +161,15 @@ export interface TokensMeta {
   toneVector: Record<string, number>;
   requiredTargets: string[];
   philosophy: Philosophy;
+  typeScale: {
+    ratio: number;
+    anchors: {
+      caption: number;
+      body: number;
+      heading: number;
+      display: number;
+    };
+  };
   /**
    * Expression dial echoed from brand.json (present only when the brand set
    * it). Meta is excluded from the intent tokenHash, so this never moves the

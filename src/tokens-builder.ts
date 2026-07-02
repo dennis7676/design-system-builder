@@ -38,6 +38,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
     semantic: TokensDocument["semantic"];
     component: TokensDocument["component"];
   };
+  const typeScale = computeTypeScale(base.primitive, recipe.typeScale?.ratio);
 
   applyOverrides(base, brand.overrides ?? {});
   applyLocaleFonts(base, brand, recipe);
@@ -51,6 +52,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       toneVector: normalizeToneVector(brand.branding.tone_vector),
       requiredTargets: targetsFor(brand),
       philosophy: recipe.philosophy as Philosophy,
+      typeScale,
       // Conditional echo: absent brand field ⇒ absent meta key, so existing
       // tokens.json artifacts stay byte-stable. Meta is hash-excluded (R1-safe).
       ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
@@ -65,6 +67,44 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
     component: base.component,
   };
   return doc;
+}
+
+function computeTypeScale(
+  primitive: TokensDocument["primitive"],
+  explicitRatio: number | undefined,
+): TokensDocument["meta"]["typeScale"] {
+  const anchors = {
+    caption: dimensionValueAt(primitive, ["font", "size", "caption"]),
+    body: dimensionValueAt(primitive, ["font", "size", "body"]),
+    heading: dimensionValueAt(primitive, ["font", "size", "heading"]),
+    display: dimensionValueAt(primitive, ["font", "size", "display"]),
+  };
+  return {
+    ratio: explicitRatio ?? round4(Math.sqrt(anchors.display / anchors.body)),
+    anchors,
+  };
+}
+
+function dimensionValueAt(root: Record<string, unknown>, path: readonly string[]): number {
+  let node: unknown = root;
+  for (const key of path) {
+    if (!isRecord(node)) {
+      throw new BuildError(`expected token group at ${path.join(".")}`);
+    }
+    node = node[key];
+  }
+  if (!isRecord(node)) {
+    throw new BuildError(`expected dimension leaf at ${path.join(".")}`);
+  }
+  const value = node["$value"];
+  if (!isRecord(value) || typeof value["value"] !== "number") {
+    throw new BuildError(`expected numeric dimension value at ${path.join(".")}`);
+  }
+  return value["value"];
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
 
 function targetsFor(brand: BrandJson): string[] {

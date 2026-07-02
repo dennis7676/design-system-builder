@@ -48,6 +48,7 @@ export interface Recipe {
   readonly version: string;
   readonly source: string;
   readonly status?: string;
+  readonly typeScale?: { readonly ratio?: number };
   readonly toneAnchor: ToneVector;
   readonly hardConstraintRules: HardConstraintRules;
   readonly philosophy: unknown | null;

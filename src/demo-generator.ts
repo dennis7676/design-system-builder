@@ -191,12 +191,12 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { margin: 0; background: ${surface}; color: ${fg}; font: var(--semantic-typography-body-weight, 400) var(--semantic-typography-body-size, 1rem)/var(--semantic-typography-body-lineHeight, 1.5) var(--semantic-typography-body-family, system-ui, sans-serif); }
+    body { margin: 0; background: ${surface}; color: ${fg}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     h1, h2, h3, p { margin: 0; }
     a { color: inherit; }
-    .brand { font: var(--semantic-typography-heading-weight, 700) 1.2rem/1 var(--semantic-typography-heading-family, system-ui, sans-serif); text-decoration: none; }
+    .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
     .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 78%, ${surface}); font-size: 1.05rem; }
+    .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 78%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ease, transform ${transition} ease; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
@@ -208,16 +208,18 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .topbar nav a:hover { color: ${primary}; }
     main { width: min(72rem, 100%); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
     .hero { padding: clamp(3rem, 8vw, 6rem) 0; display: grid; gap: 1.5rem;${heroBg} }
-    .hero h1 { max-width: 18ch; font: var(--semantic-typography-heading-weight, 700) clamp(2.4rem, 6vw, 4rem)/1.05 var(--semantic-typography-heading-family, system-ui, sans-serif); }
+    .hero h1 { max-width: 18ch; font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .62), 6vw, var(--semantic-typography-display-size))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
     .features { padding: clamp(2rem, 5vw, 4rem) 0; display: grid; gap: 1.5rem; border-top: 1px solid ${hairline}; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+    .features h2 { font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
     .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ease, transform ${transition} ease; }
     .card:hover {${overlay} transform: translateY(-2px); }
-    .card h3 { font: var(--semantic-typography-heading-weight, 700) 1.2rem/1.2 var(--semantic-typography-heading-family, system-ui, sans-serif); }
+    .card h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .link { color: ${primary}; text-decoration: none; font-weight: 600; }
     .signup { padding: clamp(2rem, 5vw, 4rem) 0; }
     .signup-card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: clamp(1.5rem, 4vw, 3rem); background: color-mix(in oklch, ${surface} 94%, ${primary}); display: grid; gap: 1rem; max-width: 34rem;${overlay} }
+    .signup-card h2 { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .signup form { display: grid; gap: .85rem; }
     .signup label { display: grid; gap: .35rem; font-size: .9rem; }
     .signup input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${surface}; color: ${fg}; font: inherit; }
@@ -227,7 +229,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .footer-cols div { display: grid; gap: .4rem; align-content: start; }
     .footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .footer-cols a:hover { color: ${primary}; }
-    .fine { width: min(72rem, 100%); margin: 0 auto; font-size: .85rem; color: color-mix(in oklch, ${fg} 60%, ${surface}); }
+    .fine { width: min(72rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
     @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${koCss(ko)}`;
 }
 
@@ -238,8 +240,10 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
 function koCss(ko: boolean): string {
   if (!ko) return "";
   return `
-    body { word-break: keep-all; overflow-wrap: anywhere; }
-    .hero h1 { letter-spacing: normal; line-height: 1.12; }`;
+    body { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
+    .lead { max-width: min(52ch, 35em); line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
+    .hero h1 { max-width: min(18ch, 15em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
+    .brand, .features h2, .signup-card h2 { letter-spacing: normal; }`;
 }
 
 /** Tier layout overrides, appended after the base rules (same specificity —
@@ -252,13 +256,11 @@ function tierCss(tier: Tier, doc: TokensDocument): string {
   const primary = "var(--semantic-color-primary-default, LinkText)";
   const radius = "var(--semantic-shape-control, .5rem)";
   const inset = "var(--semantic-space-inset, 1.5rem)";
-  const heading = "var(--semantic-typography-heading-family, system-ui, sans-serif)";
-  const headingWeight = "var(--semantic-typography-heading-weight, 700)";
   if (tier === "safe") {
     // Quieter: narrower measure, moderate display clamp, symmetric grid.
     return `
     main { width: min(64rem, 100%); }
-    .hero h1 { font: ${headingWeight} clamp(2.2rem, 5vw, 3.2rem)/1.1 ${heading}; }
+    .hero h1 { font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .58), 5vw, calc(var(--semantic-typography-display-size) * .8))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); }
     .card-grid { grid-template-columns: repeat(3, 1fr); }
     @media (max-width: 760px) { .card-grid { grid-template-columns: 1fr; } }`;
   }
@@ -276,15 +278,15 @@ function tierCss(tier: Tier, doc: TokensDocument): string {
     main { width: min(76rem, 100%); }
     .hero { grid-template-columns: 1.1fr .9fr; column-gap: 2.5rem; align-items: center; padding: clamp(3rem, 7vw, 5.5rem) 0; }
     .hero-copy { display: grid; gap: 1.5rem; }
-    .hero h1 { font: ${headingWeight} clamp(3rem, 7vw, 4.75rem)/.98 ${heading}; letter-spacing: -.01em; }
+    .hero h1 { font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .78), 7vw, calc(var(--semantic-typography-display-size) * 1.18))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .hero-panel { align-self: stretch; min-height: 20rem; border-radius: calc(${radius} * 1.4); background: ${panelBg}; display: grid; place-content: center; padding: 2rem; overflow: hidden;${panelShadow} }
-    .hero-panel .glyph { font: ${headingWeight} clamp(5rem, 12vw, 9rem)/1 ${heading}; color: ${primary}; }
+    .hero-panel .glyph { font: var(--semantic-typography-display-weight) clamp(5rem, 12vw, 9rem)/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); color: ${primary}; }
     .features { padding: clamp(2.5rem, 6vw, 5rem) 0; }
-    .features h2 { font: ${headingWeight} clamp(1.8rem, 4vw, 2.6rem)/1.15 ${heading}; max-width: 22ch; }
+    .features h2 { font: var(--semantic-typography-h2-weight) clamp(var(--semantic-typography-h2-size), 4vw, calc(var(--semantic-typography-h2-size) * 1.35))/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); max-width: 22ch; }
     .card-grid { grid-template-columns: 2fr 1fr; }
     .card { padding: calc(${inset} * 1.1); }
     .card:first-child { grid-row: span 2; background: ${spotlightBg}; align-content: end; min-height: 20rem; }
-    .card:first-child h3 { font-size: 1.8rem; }
+    .card:first-child h3 { font-size: calc(var(--semantic-typography-h3-size) * 1.45); }
     @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .card-grid { grid-template-columns: 1fr; } .card:first-child { grid-row: auto; min-height: 0; } }`;
 }
 

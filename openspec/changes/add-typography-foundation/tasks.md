@@ -32,24 +32,24 @@
       fresh `build(minimal-tech)` output
 - [x] 2.4 ⏸ OPERATOR GATE — present G-T0 result + audited diff (added paths
       only); on approval regenerate `golden/sample.tokens.json` (L3)
-- [ ] 2.5 `src/demo-generator.ts` + `src/styleguide-generator.ts` — consume
+- [x] 2.5 `src/demo-generator.ts` + `src/styleguide-generator.ts` — consume
       six roles; remove hardcoded font sizing on role elements (design D5);
       styleguide type-scale section
-- [ ] 2.6 Goldens: G-T2 (six roles × five fields resolve for all 8 recipes),
+- [x] 2.6 Goldens: G-T2 (six roles × five fields resolve for all 8 recipes),
       G-T3 (1.25 ≤ h1/body ≤ 2.0; monotone caption<body<h3<h2<h1≤display),
       G-T5 (demo: no literal rem/px font-size on role elements; orphan WARN
       count for font.size.* is zero)
-- [ ] 2.7 Verify: full suite green; ko probe (minimal-tech + luxury) renders
+- [x] 2.7 Verify: full suite green; ko probe (minimal-tech + luxury) renders
       with roles; commit Phase 2
 
 ## 3. Phase 3 — ko measure & body leading (generator-only)
 
-- [ ] 3.1 Demo/styleguide ko path — em-based measure caps (body ≈ 35em
+- [x] 3.1 Demo/styleguide ko path — em-based measure caps (body ≈ 35em
       desktop, hero ≈ 15em; design D7); body line-height floor 1.7; token
       documents untouched
-- [ ] 3.2 G-T4 golden — ko demo carries measure caps + effective body
+- [x] 3.2 G-T4 golden — ko demo carries measure caps + effective body
       line-height ≥ 1.7; non-ko output byte-identical to Phase 2 output
-- [ ] 3.3 `docs/locale-typography-ko.md` — backlog items 1–2 marked shipped,
+- [x] 3.3 `docs/locale-typography-ko.md` — backlog items 1–2 marked shipped,
       research-report figures folded into §2 table; commit Phase 3
 
 ## 4. Phase 4 — Korean font promotions (visual sign-off gated)

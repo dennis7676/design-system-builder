@@ -4,6 +4,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildTokens } from "../src/tokens-builder.js";
 import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
+import { generateDemo } from "../src/demo-generator.js";
+import { toRealizedWeb } from "../src/transformer.js";
+import { validateTokens } from "../src/validator.js";
 import type { BrandJson, ToneVector } from "../src/brand-schema.js";
 import type { TokensDocument } from "../src/tokens-schema.js";
 
@@ -38,6 +41,8 @@ const recipe = (key: string): Recipe => {
 };
 
 const round4 = (value: number): number => Math.round(value * 10000) / 10000;
+const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption"] as const;
+const TYPOGRAPHY_FIELDS = ["family", "size", "weight", "lineHeight", "tracking"] as const;
 
 const minimalTechSampleBrand = (): BrandJson =>
   brand({
@@ -86,6 +91,83 @@ describe("G-T0 — pre-typography keystone is a value-identical subset", () => {
   });
 });
 
+describe("G-T2 — semantic typography roles resolve to terminal web values", () => {
+  for (const r of RECIPES) {
+    it(`${r.key} resolves six roles across five fields`, () => {
+      const built = buildTokens(brand({ tone: r.toneAnchor }), r);
+      const realized = toRealizedWeb(built);
+
+      for (const role of TYPOGRAPHY_ROLES) {
+        for (const field of TYPOGRAPHY_FIELDS) {
+          const path = `semantic.typography.${role}.${field}`;
+          const resolved = realized.get(path);
+          expect(resolved, `${r.key} ${path}`).toBeDefined();
+          expect(resolved, `${r.key} ${path}`).not.toMatch(/^\{.+\}$/);
+          expect(resolved, `${r.key} ${path}`).not.toBe("");
+        }
+      }
+    });
+  }
+});
+
+describe("G-T3 — role scale stays bounded and strictly monotone", () => {
+  for (const r of RECIPES) {
+    it(`${r.key} role sizes are monotone with bounded h1/body ratio`, () => {
+      const built = buildTokens(brand({ tone: r.toneAnchor }), r);
+      const realized = toRealizedWeb(built);
+      const caption = remNumber(realized, "semantic.typography.caption.size");
+      const body = remNumber(realized, "semantic.typography.body.size");
+      const h3 = remNumber(realized, "semantic.typography.h3.size");
+      const h2 = remNumber(realized, "semantic.typography.h2.size");
+      const h1 = remNumber(realized, "semantic.typography.h1.size");
+      const display = remNumber(realized, "semantic.typography.display.size");
+
+      expect(h1 / body).toBeGreaterThanOrEqual(1.25);
+      expect(h1 / body).toBeLessThanOrEqual(2);
+      expect(caption).toBeLessThan(body);
+      expect(body).toBeLessThan(h3);
+      expect(h3).toBeLessThan(h2);
+      expect(h2).toBeLessThan(h1);
+      expect(h1).toBeLessThanOrEqual(display);
+    });
+  }
+});
+
+describe("G-T5 — demo typography roles are consumed without literal role font sizes", () => {
+  it("hero h1, card h3, and fine print font sizing comes from role variables", () => {
+    const html = generateDemo(buildTokens(minimalTechSampleBrand(), recipe("minimal-tech")));
+    const css = cssOf(html);
+
+    for (const selector of [".hero h1", ".card h3", ".fine"] as const) {
+      const block = lastRuleBlock(css, selector);
+      expect(block, selector).toContain("var(--semantic-typography-");
+      expect(block, selector).not.toMatch(/font(?:-size)?\s*:[^;]*(?:rem|px)/);
+    }
+  });
+
+  it("validator reports zero orphan warnings for role-terminal primitive font size tokens", () => {
+    const roleSizeTerminals = new Set([
+      "primitive.font.size.caption",
+      "primitive.font.size.body",
+      "primitive.font.size.heading",
+      "primitive.font.size.display",
+      "primitive.font.size.h2",
+      "primitive.font.size.h3",
+    ]);
+    for (const r of RECIPES) {
+      const built = buildTokens(brand({ tone: r.toneAnchor }), r);
+      const orphanFontSizes = validateTokens(built).findings.filter(
+        (finding) =>
+          finding.severity === "warn" &&
+          finding.code === "orphan-token" &&
+          finding.path !== undefined &&
+          roleSizeTerminals.has(finding.path),
+      );
+      expect(orphanFontSizes, r.key).toEqual([]);
+    }
+  });
+});
+
 function dimensionValueAt(root: unknown, path: readonly string[]): number {
   const node = valueAt(root, path);
   if (!node.exists || !isRecord(node.value)) {
@@ -129,4 +211,33 @@ function deepEqual(left: unknown, right: unknown): boolean {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function remNumber(realized: ReadonlyMap<string, string>, path: string): number {
+  const value = realized.get(path);
+  if (value === undefined) {
+    throw new Error(`missing realized value: ${path}`);
+  }
+  const match = value.match(/^([0-9.]+)rem$/);
+  if (match === null || match[1] === undefined) {
+    throw new Error(`expected rem value at ${path}: ${value}`);
+  }
+  return Number(match[1]);
+}
+
+function cssOf(html: string): string {
+  return html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+}
+
+function lastRuleBlock(css: string, selector: string): string {
+  const index = css.lastIndexOf(selector);
+  if (index < 0) {
+    throw new Error(`missing CSS selector: ${selector}`);
+  }
+  const start = css.indexOf("{", index);
+  const end = css.indexOf("}", start);
+  if (start < 0 || end < 0) {
+    throw new Error(`missing CSS block: ${selector}`);
+  }
+  return css.slice(start + 1, end);
 }

@@ -23,6 +23,8 @@ import {
   usageHint,
 } from "./render-utils.js";
 
+const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
+
 export function generateStyleguide(doc: TokensDocument): string {
   const hash = computeTokenHash(doc);
   const ko = doc.meta.locales?.includes("ko") ?? false;
@@ -46,8 +48,7 @@ export function generateStyleguide(doc: TokensDocument): string {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${htmlEscape(doc.meta.recipe)} Design System</title>`,
-    // ko: keep-all appended after baseCss so Korean text wraps at word bounds.
-    `<style>${baseCss(doc)}${ko ? "\n    body { word-break: keep-all; overflow-wrap: anywhere; }" : ""}</style>`,
+    `<style>${baseCss(doc)}${koCss(ko)}</style>`,
     "</head>",
     "<body>",
     `<nav aria-label="Sections">${nav(doc)}</nav>`,
@@ -110,7 +111,7 @@ function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>): str
 
 function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
   const samples = typographyRoles(doc, realized)
-    .map((role) => `<article data-type-sample class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)}">${htmlEscape(typeSentence(role.name))}</p><code>line-height ${htmlEscape(role.lineHeight)}</code></article>`)
+    .map((role) => `<article data-type-sample data-type-role="${role.name}" class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)};letter-spacing:${htmlEscape(role.tracking)}em">${htmlEscape(typeSentence(role.name))}</p><dl class="type-fields"><div><dt>family</dt><dd>${htmlEscape(role.family)}</dd></div><div><dt>size</dt><dd>${htmlEscape(role.size)}</dd></div><div><dt>weight</dt><dd>${htmlEscape(role.weight)}</dd></div><div><dt>line-height</dt><dd>${htmlEscape(role.lineHeight)}</dd></div><div><dt>tracking</dt><dd>${htmlEscape(role.tracking)}</dd></div></dl></article>`)
     .join("");
   return section("typography", "Typography", `<p class="section-lead">The ramp uses the realized typography tokens directly, so specimens show the same scale and weight that components consume.</p><div class="type-ramp">${samples}</div>`);
 }
@@ -179,21 +180,26 @@ function typographyRoles(doc: TokensDocument, realized: ReadonlyMap<string, stri
     values.set(prop, realized.get(entry.path) ?? "");
     roles.set(role, values);
   }
-  return [...roles].map(([name, values]) => ({
+  return TYPOGRAPHY_ROLES.map((name) => {
+    const values = roles.get(name) ?? new Map<string, string>();
+    return {
     name,
-    size: values.get("size") ?? "1rem",
-    weight: values.get("weight") ?? "400",
-    lineHeight: values.get("lineHeight") ?? "1.5",
-    family: values.get("family") ?? "system-ui, sans-serif",
-  }));
+      family: values.get("family") ?? "",
+      size: values.get("size") ?? "",
+      weight: values.get("weight") ?? "",
+      lineHeight: values.get("lineHeight") ?? "",
+      tracking: values.get("tracking") ?? "0",
+    };
+  });
 }
 
 interface RoleStyle {
   readonly name: string;
+  readonly family: string;
   readonly size: string;
   readonly weight: string;
   readonly lineHeight: string;
-  readonly family: string;
+  readonly tracking: string;
 }
 
 function hasElevation(doc: TokensDocument): boolean {
@@ -214,21 +220,21 @@ function baseCss(doc: TokensDocument): string {
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; overflow-x: hidden; }
-    body { margin: 0; overflow-x: hidden; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight, 400) var(--semantic-typography-body-size, 1rem)/var(--semantic-typography-body-lineHeight, 1.5) var(--semantic-typography-body-family, system-ui, sans-serif); display: grid; grid-template-columns: 15rem minmax(0, 1fr); }
+    body { margin: 0; overflow-x: hidden; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); display: grid; grid-template-columns: 15rem minmax(0, 1fr); }
     nav { position: sticky; top: 0; height: 100vh; padding: var(--semantic-space-inset, 1.5rem); border-right: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 92%, transparent); backdrop-filter: blur(.75rem); }
     nav a { display: block; color: inherit; padding: .55rem .75rem; border-radius: var(--semantic-shape-control, .5rem); text-decoration: none; transition: background var(--semantic-motion-transition, 160ms) ease, color var(--semantic-motion-transition, 160ms) ease; }
     nav a:hover, nav a.is-active { color: var(--semantic-color-primary-default, currentColor); background: color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 10%, transparent); }
     main { width: min(78rem, 100%); max-width: 100%; padding: clamp(1.25rem, 3vw, 3rem); }
     section { padding: clamp(2.25rem, 5vw, 5rem) 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); scroll-margin-top: 2rem; }
     h1, h2, h3, p { margin-top: 0; }
-    h1 { max-width: 13ch; margin-bottom: 1rem; font: var(--semantic-typography-heading-weight, 700) 4.5rem/1 var(--semantic-typography-heading-family, system-ui, sans-serif); overflow-wrap: anywhere; }
-    h2 { margin-bottom: 1rem; font: var(--semantic-typography-heading-weight, 700) var(--semantic-typography-heading-size, 1.75rem)/var(--semantic-typography-heading-lineHeight, 1.2) var(--semantic-typography-heading-family, system-ui, sans-serif); }
-    h3 { margin-bottom: .75rem; font-size: 1rem; }
+    h1 { max-width: 13ch; margin-bottom: 1rem; font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .92), 7vw, calc(var(--semantic-typography-display-size) * 1.16))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); overflow-wrap: anywhere; }
+    h2 { margin-bottom: 1rem; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
+    h3 { margin-bottom: .75rem; font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     table { width: 100%; table-layout: fixed; border-collapse: collapse; margin-top: 1rem; font-size: .92rem; }
     th, td { border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); padding: .75rem; text-align: left; vertical-align: top; overflow-wrap: anywhere; word-break: break-word; }
     code, .type-meta, .meta-label, .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .78rem; }
     .hero-panel { width: 100%; max-width: 100%; padding: clamp(1.5rem, 4vw, 3rem); border-radius: var(--semantic-shape-control, .5rem); background: linear-gradient(135deg, color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 16%, var(--semantic-color-surface-default, Canvas)), var(--semantic-color-surface-default, Canvas)); border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
-    .lead, .section-lead { max-width: 62rem; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 76%, var(--semantic-color-surface-default, Canvas)); font-size: 1.08rem; overflow-wrap: anywhere; word-break: break-word; line-break: loose; }
+    .lead, .section-lead { max-width: 62rem; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 76%, var(--semantic-color-surface-default, Canvas)); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); overflow-wrap: anywhere; word-break: break-word; line-break: loose; }
     .eyebrow, .meta-label, .type-meta { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 58%, var(--semantic-color-surface-default, Canvas)); text-transform: uppercase; letter-spacing: 0; }
     .tone-grid, .swatch-grid, .shape-grid, .type-ramp, .component-stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
     .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 96%, var(--semantic-color-primary-default, currentColor)); padding: var(--semantic-space-inset, 1.5rem); }
@@ -249,6 +255,10 @@ function baseCss(doc: TokensDocument): string {
     .pass { color: var(--semantic-color-primary-default, currentColor); }
     .fail { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 82%, var(--semantic-color-primary-default, currentColor)); }
     .type-card p { margin: .75rem 0; }
+    .type-fields { display: grid; gap: .4rem; margin: .75rem 0 0; }
+    .type-fields div { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: .75rem; }
+    .type-fields dt { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 58%, var(--semantic-color-surface-default, Canvas)); }
+    .type-fields dd { margin: 0; overflow-wrap: anywhere; }
     .bars div { display: grid; grid-template-columns: minmax(9rem, 14rem) minmax(3rem, 1fr) 6rem; align-items: center; gap: 1rem; margin: .75rem 0; }
     .bars i { height: 1rem; background: var(--semantic-color-primary-default, currentColor); }
     .demo-button { background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); color: var(--component-button-foreground, ButtonText); border: 0; border-radius: var(--component-button-radius, var(--semantic-shape-control, .5rem)); padding: .75rem var(--component-button-paddingX, 1.25rem); transition: background var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease, transform var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease, opacity var(--component-button-transition, var(--semantic-motion-transition, 160ms)) ease; }
@@ -258,6 +268,15 @@ function baseCss(doc: TokensDocument): string {
     .playground-toolbar button.is-selected { color: var(--component-button-foreground, ButtonText); background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); border-color: transparent; }
     .component-stage { align-items: stretch; }
     .sample-card { display: grid; gap: .4rem; align-content: start; }
-    @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: 2rem; } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
+    @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: calc(var(--semantic-typography-display-size) * .72); } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
 ${reduce}`;
+}
+
+function koCss(ko: boolean): string {
+  if (!ko) return "";
+  return `
+    body { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
+    h1 { max-width: min(13ch, 15em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
+    h2 { letter-spacing: normal; }
+    .lead, .section-lead { max-width: 35em; }`;
 }

@@ -108,7 +108,7 @@ describe("G-L3 — ko surface rules + demo contracts", () => {
     // ko override appended after tierCss → wins the cascade
     const lastH1Rule = css.lastIndexOf(".hero h1");
     expect(css.slice(lastH1Rule)).toContain("letter-spacing: normal");
-    expect(css.slice(lastH1Rule)).toContain("line-height: 1.12");
+    expect(css.slice(lastH1Rule)).toContain("line-height: max(1.12, var(--semantic-typography-display-lineHeight))");
   });
   it("styleguide ko: lang + keep-all", () => {
     const html = generateStyleguide(buildFor("luxury", { locales: ["ko"] }));
@@ -136,3 +136,56 @@ describe("G-L5 — R1 keystone unmoved by locales", () => {
     expect(computeTokenHash(buildFor("minimal-tech", { locales: ["ko"] }))).not.toBe(keystone);
   });
 });
+
+describe("G-T4 — Korean measure and leading are generator-only", () => {
+  it("ko demo appends em measure caps and a body line-height floor", () => {
+    const html = generateDemo(buildFor("minimal-tech", { locales: ["ko"] }));
+    const css = cssOf(html);
+    const bodyBlock = lastRuleBlock(css, "body");
+    const heroBlock = lastRuleBlock(css, ".hero h1");
+    const leadBlock = lastRuleBlock(css, ".lead");
+
+    expect(bodyBlock).toContain("line-height: max(1.7, var(--semantic-typography-body-lineHeight))");
+    expect(heroBlock).toContain("max-width: min(18ch, 15em)");
+    expect(leadBlock).toContain("max-width: min(52ch, 35em)");
+    // .lead re-declares the body font shorthand (which resets line-height),
+    // so the ko floor must be restated on .lead itself.
+    expect(leadBlock).toContain("line-height: max(1.7, var(--semantic-typography-body-lineHeight))");
+    expect(Number(rootVar(html, "--semantic-typography-body-lineHeight"))).toBeLessThanOrEqual(1.7);
+  });
+
+  it("non-ko demo never emits Korean-only typography overrides", () => {
+    const html = generateDemo(buildFor("minimal-tech"));
+    expect(html).toContain('<html lang="en">');
+    expect(html).not.toContain("max-width: min(18ch, 15em)");
+    expect(html).not.toContain("max-width: min(52ch, 35em)");
+    expect(html).not.toContain("line-height: max(1.7, var(--semantic-typography-body-lineHeight))");
+    expect(html).not.toContain("word-break: keep-all");
+  });
+});
+
+function cssOf(html: string): string {
+  return html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+}
+
+function rootVar(html: string, name: string): string {
+  const match = html.match(new RegExp(`${name}:\\s*([^;]+);`));
+  if (match?.[1] === undefined) {
+    throw new Error(`missing root var: ${name}`);
+  }
+  return match[1].trim();
+}
+
+function lastRuleBlock(css: string, selector: string): string {
+  const ruleStart = `${selector} {`;
+  const index = css.lastIndexOf(ruleStart);
+  if (index < 0) {
+    throw new Error(`missing CSS selector: ${selector}`);
+  }
+  const start = css.indexOf("{", index);
+  const end = css.indexOf("}", start);
+  if (start < 0 || end < 0) {
+    throw new Error(`missing CSS block: ${selector}`);
+  }
+  return css.slice(start + 1, end);
+}

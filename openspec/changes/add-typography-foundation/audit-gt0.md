@@ -1,0 +1,285 @@
+# G-T0 Audit — add-typography-foundation
+
+Generated: 2026-07-02
+
+## Result
+
+- G-T0 superset gate: PASS
+- Existing recipe leaf `$value`s changed: 0
+- `golden/sample.tokens.json` regenerated: no
+- Added token leaves per recipe: 31
+
+## Added Token Paths
+
+### creative-multiscale
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### enterprise
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### expressive
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### luxury
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### minimal-tech
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### pro-emotive
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### retro
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+
+### warm-creator
+
+- primitive.font.size.h2
+- primitive.font.size.h3
+- primitive.font.tracking.body
+- primitive.font.tracking.caption
+- primitive.font.tracking.heading
+- semantic.typography.body.tracking
+- semantic.typography.caption.family
+- semantic.typography.caption.lineHeight
+- semantic.typography.caption.size
+- semantic.typography.caption.tracking
+- semantic.typography.caption.weight
+- semantic.typography.display.family
+- semantic.typography.display.lineHeight
+- semantic.typography.display.size
+- semantic.typography.display.tracking
+- semantic.typography.display.weight
+- semantic.typography.h1.family
+- semantic.typography.h1.lineHeight
+- semantic.typography.h1.size
+- semantic.typography.h1.tracking
+- semantic.typography.h1.weight
+- semantic.typography.h2.family
+- semantic.typography.h2.lineHeight
+- semantic.typography.h2.size
+- semantic.typography.h2.tracking
+- semantic.typography.h2.weight
+- semantic.typography.h3.family
+- semantic.typography.h3.lineHeight
+- semantic.typography.h3.size
+- semantic.typography.h3.tracking
+- semantic.typography.h3.weight
+

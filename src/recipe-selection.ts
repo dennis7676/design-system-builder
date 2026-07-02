@@ -9,7 +9,7 @@
  */
 
 import { readFileSync, readdirSync } from "node:fs";
-import { TONE_AXES, type BrandJson, type ToneVector, type OverrideAxis } from "./brand-schema.js";
+import { TONE_AXES, type BrandJson, type ToneVector } from "./brand-schema.js";
 
 /** Stable load + tie-break order. B1 (d8): +4 structural recipes (7-family ceiling). */
 export const RECIPE_ORDER = [
@@ -25,8 +25,6 @@ export const RECIPE_ORDER = [
 
 /** Override axes recognized but intentionally not implemented in the pilot. */
 export const DEFERRED_OVERRIDES = [
-  "visual.accent",
-  "tone_vector.cold_warm",
   "motion.easing",
 ] as const;
 
@@ -168,7 +166,7 @@ export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): Reci
 export function validateOverrides(brand: BrandJson): Conflict[] {
   const conflicts: Conflict[] = [];
   const overrides = brand.overrides ?? {};
-  const axes = Object.keys(overrides) as OverrideAxis[];
+  const axes = Object.keys(overrides);
   if (axes.length > 3) {
     conflicts.push({
       code: "too-many-overrides",
@@ -176,6 +174,13 @@ export function validateOverrides(brand: BrandJson): Conflict[] {
     });
   }
   for (const axis of axes) {
+    if (axis === "tone_vector.cold_warm") {
+      conflicts.push({
+        code: "override-unknown",
+        message: "override axis 'tone_vector.cold_warm' is subsumed; use 'visual.accent' hue 0..359 instead",
+      });
+      continue;
+    }
     if ((DEFERRED_OVERRIDES as readonly string[]).includes(axis)) {
       conflicts.push({
         code: "override-deferred",

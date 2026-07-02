@@ -78,18 +78,27 @@ Ask, conversationally: **medium?** (web / app / video — pilot supports `web`),
 
 ### Phase 2 — Visual (→ constraints + overrides)
 Light/dark (dark = non-normative M3), accent leaning, excluded colors, font
-feel, density, **corner radius feel** (tight ↔ rounded).
+feel, density, **corner radius feel** (tight ↔ rounded), **brand colour**.
 - Radius feel → at most one `overrides["visual.radius"]` = `tighter` | `looser`
   (omit if the recipe default fits — overrides are exceptions, not defaults).
+- **Brand colour** → "제품을 대표하는 색이 있나요?" If the user names one,
+  map it to an integer hue and emit `overrides["visual.accent"]` = `0–359`
+  (e.g. rose ≈ 350, coral ≈ 25, gold ≈ 85, green ≈ 145, teal ≈ 195,
+  blue ≈ 255, violet ≈ 300). The whole chromatic palette rotates coherently;
+  WCAG floors are re-proven with bounded nearest-fix (build fails hard if a
+  hue is unrepairable — offer a neighbouring hue). Warm/cool leanings without
+  a named colour also land here (cold_warm override is subsumed by this).
+- **Expression amplitude** → "레이아웃 표현 강도는?" quiet/standard/statement →
+  `expression` = `safe` | `balanced`(default, omit) | `bold`.
 - Accessibility need → `accessibility.minContrast` = `AA` (default) | `AAA`.
 
 ### Phase 3 — Motion (→ override)
 Snappy ↔ smooth, reduce-motion respect.
 - Speed feel → at most one `overrides["motion.speed"]` = `snappier` | `calmer`.
-- **Deferred in this pilot** (do not emit; tell the user they are coming):
-  `overrides["motion.easing"]`, `overrides["visual.accent"]`,
-  `overrides["tone_vector.cold_warm"]` — hue/easing changes need contrast
-  re-derivation or a token type that does not exist yet.
+- **Deferred in this pilot** (do not emit; tell the user it is coming):
+  `overrides["motion.easing"]` — the easing token type arrives with the
+  motion-vocabulary increment. (`visual.accent` unlocked 2026-07-02;
+  `tone_vector.cold_warm` is subsumed by it.)
 
 ### Phase 4 — Constraints (→ hard constraints)
 Existing brand guidelines / locked hex? Consistency targets?
@@ -118,7 +127,9 @@ Build this object from the answers (see `src/brand-schema.ts` for the type):
 ```
 
 Rules: tone_vector all 5 axes, integers 1–7. `overrides` ≤ 3 axes, omit when
-empty. Only emit `visual.radius` / `motion.speed` (others deferred).
+empty. Emit `visual.radius` / `motion.speed` / `visual.accent` (integer hue
+0–359); `motion.easing` stays deferred. Add top-level `expression` only for
+safe/bold (balanced = default).
 
 ---
 
@@ -138,7 +149,7 @@ empty. Only emit `visual.radius` / `motion.speed` (others deferred).
    | `no-recipe-satisfies-hard-constraints` | constraints/medium exclude all recipes | relax a `constraints[]` tag or change medium; re-ask Phase 4 |
    | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
-   | `override-deferred` *and/or* a `BRAND [overrides.<axis>] unknown override axis` line | used a deferred axis (e.g. `visual.accent`); it is not in `OVERRIDE_RANGES`, so `validateBrand` flags it as unknown *and* `validateOverrides` flags it deferred — both can appear | remove it (see Phase 3) |
+   | `override-deferred` *and/or* a `BRAND [overrides.<axis>] unknown override axis` line | used a deferred axis (e.g. `motion.easing`); it is not in `OVERRIDE_RANGES`, so `validateBrand` flags it as unknown *and* `validateOverrides` flags it deferred — both can appear | remove it (see Phase 3). `tone_vector.cold_warm` → use `visual.accent` hue instead |
 4. **Build with confirmation** → writes the intent-token SSOT:
    ```
    node dist/cli.js build brand.json --out out/tokens.json --confirm

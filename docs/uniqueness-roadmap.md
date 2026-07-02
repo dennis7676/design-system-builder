@@ -16,7 +16,7 @@ the byte-reproducibility seal that defines this tool.
 
 | # | Lever | What it unlocks | Risk / prerequisite |
 |---|-------|-----------------|---------------------|
-| 1 | **B3 colour-override 삼분해** — `visual.accent` hue request → automated contrast re-derivation (fix L, steer H/C, re-run pair floors) | The user's *actual* colour lands in the system (Crystal Ball "warm feminine" gap). Unlocks the deferred `visual.accent` / `cold_warm` overrides | Medium — needs an L-preserving hue-shift derivation + full pair re-validation; the gate stays the oracle |
+| 1 | ~~**B3 colour-override**~~ — **SHIPPED 2026-07-02** (`unlock-accent-override`): integer hue 0–359 → coherent chromatic rotation (L fixed, C gamut-clamped) → pair floors re-proven with bounded nearest-fix (±0.06 L). `cold_warm` subsumed. 2880-cell hue probe: zero unrepairable | done |
 | 2 | **Per-recipe skeletons** — each recipe gets a layout archetype of its own (luxury = editorial whitespace, enterprise = data density, retro = poster rhythm), orthogonal to tiers. **User green-lit exploration (2026-07-02: "조금 더 베리에이션·아이덴티티 구분 여지 판단 OK")** | Kills the residual "same skeleton, different clothes" reading; combination space gains a structural axis | High authoring cost — 8 skeletons × goldens; ship one recipe at a time |
 | 3 | **Motif tokens** — extend the bold glyph into a small enum of brand motifs (`glyph | geometric | rule-lines | none`) rendered from tokens | Instant signature element per brand | Medium — new `$type` or component token + demo consumption |
 | 4 | **Edge-point HITL step** (see below) | Lets a user opt into high-personality effects (glass, heavy texture) *before* final confirmation | Medium — glass needs the Tier-2 contrast-floor mechanism first |

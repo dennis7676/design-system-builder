@@ -36,24 +36,33 @@ export const EXPRESSION_TIERS = ["safe", "balanced", "bold"] as const;
 export type ExpressionTier = (typeof EXPRESSION_TIERS)[number];
 
 /**
- * Bounded, contrast-safe pilot overrides. Each maps to a scalar mutation on
- * existing intent tokens, so it can never break a WCAG pair the recipe already
- * satisfies.
+ * Bounded overrides. Scalar axes mutate dimensions/durations; visual.accent is
+ * an integer OKLCH hue that triggers contrast re-derivation in the builder.
  *
- * Deferred (need contrast re-derivation or a new token type — out of pilot
- * scope, see recipe-selection DEFERRED_OVERRIDES): visual.accent,
- * tone_vector.cold_warm (hue shifts → contrast), motion.easing (easing-curve
- * token does not exist in the base tree yet).
+ * Deferred (needs a new token type — out of this increment, see
+ * recipe-selection DEFERRED_OVERRIDES): motion.easing.
  */
+export interface NumericOverrideRange {
+  readonly type: "integer";
+  readonly min: number;
+  readonly max: number;
+}
+
+type OverrideRange = readonly string[] | NumericOverrideRange;
+
 export const OVERRIDE_RANGES = {
   "visual.radius": ["tighter", "looser"],
   "motion.speed": ["snappier", "calmer"],
-} as const;
+  "visual.accent": { type: "integer", min: 0, max: 359 },
+} as const satisfies Record<string, OverrideRange>;
 
 export type OverrideAxis = keyof typeof OVERRIDE_RANGES;
 
+type OverrideValue<K extends OverrideAxis> =
+  (typeof OVERRIDE_RANGES)[K] extends readonly (infer V)[] ? V : number;
+
 export type BrandOverrides = {
-  [K in OverrideAxis]?: (typeof OVERRIDE_RANGES)[K][number];
+  [K in OverrideAxis]?: OverrideValue<K>;
 };
 
 /** Pilot locale set. Only "ko" is recognized; others are validation errors. */
@@ -153,12 +162,24 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
     const ov = b.overrides as Record<string, unknown>;
     for (const [axis, value] of Object.entries(ov)) {
       if (!(axis in OVERRIDE_RANGES)) {
-        errors.push({ path: `overrides.${axis}`, message: "unknown override axis" });
+        const hint = axis === "tone_vector.cold_warm"
+          ? "; warmth is now expressed with overrides.visual.accent (hue 0..359)"
+          : "";
+        errors.push({ path: `overrides.${axis}`, message: `unknown override axis${hint}` });
         continue;
       }
-      const allowed = OVERRIDE_RANGES[axis as OverrideAxis] as readonly string[];
-      if (!allowed.includes(value as string)) {
-        errors.push({ path: `overrides.${axis}`, message: `must be one of ${allowed.join("|")}` });
+      const range = OVERRIDE_RANGES[axis as OverrideAxis];
+      if ("type" in range) {
+        if (
+          typeof value !== "number" ||
+          !Number.isInteger(value) ||
+          value < range.min ||
+          value > range.max
+        ) {
+          errors.push({ path: `overrides.${axis}`, message: `integer ${range.min}..${range.max} required` });
+        }
+      } else if (!range.includes(value as never)) {
+        errors.push({ path: `overrides.${axis}`, message: `must be one of ${range.join("|")}` });
       }
     }
   }

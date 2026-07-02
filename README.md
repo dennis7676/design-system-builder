@@ -116,7 +116,7 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 - 현재 스코프: **web 단일 타깃** (M2/M3). 영상(Remotion) 어댑터는 M4.
 - 진행 SSOT: 볼트 `prd_2026-06-29_design-system-builder-skill.md` (M0~M6)
 - 고유성 레버: [docs/uniqueness-roadmap.md](docs/uniqueness-roadmap.md) —
-  B3 색 해제 → per-recipe 골격 → 모티프 → **엣지포인트**(컨셉 정합 제안형
+  ~~B3 색 해제~~(✅ 2026-07-02 `visual.accent` hue 0–359, 대비 재유도+최근접 보정) → per-recipe 골격 → 모티프 → **엣지포인트**(컨셉 정합 제안형
   HITL+메뉴+게이트) → 모션 어휘(시스템 내부 DSL)
 - 어휘 티어: [docs/expressive-vocabulary-roadmap.md](docs/expressive-vocabulary-roadmap.md)
 

@@ -155,6 +155,19 @@ export interface TransformContract {
   color?: { web?: "oklch" | "hex" };
 }
 
+export interface ColorOverrideCorrection {
+  readonly path: string;
+  readonly from: string;
+  readonly to: string;
+  readonly pair: string;
+}
+
+export interface ColorOverrideMeta {
+  readonly requestedHue: number;
+  readonly delta: number;
+  readonly corrections: readonly ColorOverrideCorrection[];
+}
+
 export interface TokensMeta {
   generatedAt: string;
   recipe: string;
@@ -181,6 +194,7 @@ export interface TokensMeta {
    * hash-excluded; generators use it for script-conditional rendering rules.
    */
   locales?: string[];
+  colorOverride?: ColorOverrideMeta;
 }
 
 export interface TokensDocument {

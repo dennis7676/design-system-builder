@@ -9,17 +9,27 @@ export interface LinearRGB {
   b: number;
 }
 
+export interface Oklch {
+  L: number;
+  C: number;
+  H: number;
+}
+
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
 /** Parse "oklch(L C H)" — L in [0,1], C ≥ 0, H in degrees. */
-function parseOklch(s: string): { L: number; C: number; h: number } | null {
+export function parseOklch(s: string): Oklch | null {
   const m = s
     .trim()
-    .match(/^oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)\s*\)$/i);
+    .match(/^oklch\(\s*([+-]?(?:\d+|\d*\.\d+)%?)\s+([+-]?(?:\d+|\d*\.\d+))\s+([+-]?(?:\d+|\d*\.\d+))\s*\)$/i);
   if (!m) return null;
   let L = parseFloat(m[1]!);
   if (m[1]!.endsWith("%")) L /= 100;
-  return { L, C: parseFloat(m[2]!), h: parseFloat(m[3]!) };
+  return { L, C: parseFloat(m[2]!), H: normalizeHue(parseFloat(m[3]!)) };
+}
+
+export function formatOklch(color: Oklch): string {
+  return `oklch(${color.L.toFixed(3)} ${color.C.toFixed(3)} ${normalizeHue(color.H).toFixed(1)})`;
 }
 
 /** Parse "#rgb" / "#rrggbb" into linear sRGB. */
@@ -37,7 +47,7 @@ function toLinear(c: number): number {
 }
 
 /** OKLCH → linear sRGB (Björn Ottosson's matrices). */
-function oklchToLinearRGB(L: number, C: number, hDeg: number): LinearRGB {
+export function oklchToLinearRGB(L: number, C: number, hDeg: number): LinearRGB {
   const h = (hDeg * Math.PI) / 180;
   const a = C * Math.cos(h);
   const b = C * Math.sin(h);
@@ -57,10 +67,40 @@ function oklchToLinearRGB(L: number, C: number, hDeg: number): LinearRGB {
   };
 }
 
+export function isInSrgbGamut(color: Oklch): boolean {
+  const rgb = oklchToLinearRGB(color.L, color.C, color.H);
+  const epsilon = 1e-10;
+  return (
+    rgb.r >= -epsilon && rgb.r <= 1 + epsilon &&
+    rgb.g >= -epsilon && rgb.g <= 1 + epsilon &&
+    rgb.b >= -epsilon && rgb.b <= 1 + epsilon
+  );
+}
+
+export function maxSrgbChroma(L: number, H: number): number {
+  let lo = 0;
+  let hi = 1;
+  for (let i = 0; i < 24; i++) {
+    const mid = (lo + hi) / 2;
+    if (isInSrgbGamut({ L, C: mid, H })) lo = mid;
+    else hi = mid;
+  }
+  return lo;
+}
+
+export function clampOklchChroma(color: Oklch): Oklch {
+  const limited = Math.min(Math.max(0, color.C), maxSrgbChroma(color.L, color.H));
+  return {
+    L: color.L,
+    C: Math.floor((limited + 1e-12) * 1000) / 1000,
+    H: normalizeHue(color.H),
+  };
+}
+
 /** Parse a color string into linear sRGB. Returns null if unparseable. */
 export function parseColor(s: string): LinearRGB | null {
   const ok = parseOklch(s);
-  if (ok) return oklchToLinearRGB(ok.L, ok.C, ok.h);
+  if (ok) return oklchToLinearRGB(ok.L, ok.C, ok.H);
   return parseHex(s);
 }
 
@@ -82,4 +122,8 @@ export function contrastRatio(fg: string, bg: string): number | null {
   const lighter = Math.max(lf, lb);
   const darker = Math.min(lf, lb);
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+function normalizeHue(h: number): number {
+  return ((h % 360) + 360) % 360;
 }

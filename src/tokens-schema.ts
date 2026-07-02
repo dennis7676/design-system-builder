@@ -167,6 +167,11 @@ export interface TokensMeta {
    * R1 keystone or any recipe hash. Consumers resolve absent ⇒ "balanced".
    */
   expression?: "safe" | "balanced" | "bold";
+  /**
+   * Content locales echoed from brand.json (present only when set). Meta is
+   * hash-excluded; generators use it for script-conditional rendering rules.
+   */
+  locales?: string[];
 }
 
 export interface TokensDocument {

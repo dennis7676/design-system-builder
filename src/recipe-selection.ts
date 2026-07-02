@@ -37,6 +37,12 @@ export interface HardConstraintRules {
   readonly tags: readonly string[];
 }
 
+/** Per-locale font families spliced by the builder (lives OUTSIDE base —
+ * never part of the intent hash; non-localized builds ignore it entirely). */
+export interface RecipeLocaleFonts {
+  readonly append: Readonly<Record<string, readonly string[]>>;
+}
+
 export interface Recipe {
   readonly key: string;
   readonly version: string;
@@ -46,6 +52,7 @@ export interface Recipe {
   readonly hardConstraintRules: HardConstraintRules;
   readonly philosophy: unknown | null;
   readonly base: Record<string, unknown> | null;
+  readonly locales?: Readonly<Record<string, RecipeLocaleFonts>>;
 }
 
 export interface Conflict {

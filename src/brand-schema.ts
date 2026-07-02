@@ -56,9 +56,14 @@ export type BrandOverrides = {
   [K in OverrideAxis]?: (typeof OVERRIDE_RANGES)[K][number];
 };
 
+/** Pilot locale set. Only "ko" is recognized; others are validation errors. */
+export const KNOWN_LOCALES = ["ko"] as const;
+
 export interface BrandProduct {
   readonly name: string;
   readonly medium: Medium;
+  /** Target content locales. Absent/[] ⇒ Latin-only (pre-locale behavior). */
+  readonly locales?: readonly string[];
 }
 
 export interface BrandBranding {
@@ -114,6 +119,17 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
     }
     if (b.product.medium !== "web" && b.product.medium !== "app" && b.product.medium !== "video") {
       errors.push({ path: "product.medium", message: "must be web|app|video" });
+    }
+    if (b.product.locales !== undefined) {
+      if (!Array.isArray(b.product.locales)) {
+        errors.push({ path: "product.locales", message: "must be a string array" });
+      } else {
+        for (const loc of b.product.locales) {
+          if (!(KNOWN_LOCALES as readonly string[]).includes(loc as string)) {
+            errors.push({ path: "product.locales", message: `unknown locale '${String(loc)}' (known: ${KNOWN_LOCALES.join(", ")})` });
+          }
+        }
+      }
     }
   }
   if (b.branding === undefined || typeof b.branding !== "object") {

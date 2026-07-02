@@ -25,6 +25,7 @@ import {
 
 export function generateStyleguide(doc: TokensDocument): string {
   const hash = computeTokenHash(doc);
+  const ko = doc.meta.locales?.includes("ko") ?? false;
   const realized = toRealizedWeb(doc);
   const sections = [
     philosophy(doc),
@@ -40,12 +41,13 @@ export function generateStyleguide(doc: TokensDocument): string {
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
   return [
     "<!doctype html>",
-    '<html lang="en">',
+    `<html lang="${ko ? "ko" : "en"}">`,
     "<head>",
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${htmlEscape(doc.meta.recipe)} Design System</title>`,
-    `<style>${baseCss(doc)}</style>`,
+    // ko: keep-all appended after baseCss so Korean text wraps at word bounds.
+    `<style>${baseCss(doc)}${ko ? "\n    body { word-break: keep-all; overflow-wrap: anywhere; }" : ""}</style>`,
     "</head>",
     "<body>",
     `<nav aria-label="Sections">${nav(doc)}</nav>`,

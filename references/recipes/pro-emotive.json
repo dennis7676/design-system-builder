@@ -496,5 +496,20 @@
         }
       }
     }
+  },
+  "locales": {
+    "ko": {
+      "append": {
+        "sans": [
+          "Pretendard Variable",
+          "Pretendard",
+          "Apple SD Gothic Neo"
+        ],
+        "serif": [
+          "Noto Serif KR",
+          "Apple SD Gothic Neo"
+        ]
+      }
+    }
   }
 }

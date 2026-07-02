@@ -1,0 +1,138 @@
+/**
+ * Locale typography (ko pilot) — spec: locale-typography.
+ *
+ * Invariants: no-locale builds/demos byte-identical to pre-change (G-L1);
+ * ko builds splice Korean families personality-aligned (G-L2); ko surfaces
+ * carry lang/keep-all/metric rules + Korean copy while keeping every demo
+ * contract (G-L3); the brand gate rejects unknown locales (G-L4); the R1
+ * keystone never moves (G-L5).
+ */
+import { describe, it, expect } from "vitest";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+import {
+  checkManifest,
+  computeTokenHash,
+  generateDemo,
+  generateDesignMd,
+  generateStyleguide,
+} from "../src/index.js";
+import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
+import { buildTokens } from "../src/tokens-builder.js";
+import { validateBrand, type BrandJson, type ExpressionTier } from "../src/brand-schema.js";
+import type { TokensDocument } from "../src/tokens-schema.js";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
+const RECIPES = loadRecipes(join(here, "../references/recipes"));
+const recipe = (key: string): Recipe => RECIPES.find((r) => r.key === key)!;
+
+const brandFor = (key: string, opts: { locales?: string[]; expression?: ExpressionTier } = {}): BrandJson =>
+  ({
+    schemaVersion: "2026-06-30",
+    product: { name: "Demo", medium: "web", ...(opts.locales !== undefined ? { locales: opts.locales } : {}) },
+    branding: { tone_vector: recipe(key).toneAnchor },
+    ...(opts.expression !== undefined ? { expression: opts.expression } : {}),
+  }) as BrandJson;
+
+const buildFor = (key: string, opts: { locales?: string[]; expression?: ExpressionTier } = {}): TokensDocument =>
+  buildTokens(brandFor(key, opts), recipe(key));
+
+const familyStacks = (doc: TokensDocument): Record<string, string[]> => {
+  const fam = (doc.primitive as { font?: { family?: Record<string, { $value: string[] }> } }).font?.family ?? {};
+  return Object.fromEntries(Object.entries(fam).map(([k, v]) => [k, v.$value]));
+};
+
+const demoErrors = (doc: TokensDocument) =>
+  checkManifest(doc, {
+    styleguideHtml: generateStyleguide(doc),
+    designMd: generateDesignMd(doc),
+    demoHtml: generateDemo(doc),
+  }).filter((f) => f.severity === "error" && f.meta?.surface === "demo");
+
+describe("G-L1 — no-locale anchor (byte identity)", () => {
+  it("tokens and demos without locales are unchanged across tiers", () => {
+    for (const key of ["minimal-tech", "luxury"]) {
+      const plain = buildFor(key);
+      const empty = buildFor(key, { locales: [] });
+      expect(JSON.stringify(empty)).toBe(JSON.stringify(plain));
+      expect("locales" in plain.meta).toBe(false);
+      for (const tier of ["safe", "balanced", "bold"] as const) {
+        const doc = buildFor(key, { expression: tier });
+        const html = generateDemo(doc);
+        expect(html).toContain('<html lang="en">');
+        expect(html).not.toContain("keep-all");
+      }
+    }
+  });
+});
+
+describe("G-L2 — Korean family splice (personality-aligned)", () => {
+  it("luxury ko: serif stack gains Noto Serif KR, sans gains Pretendard, generic stays last", () => {
+    const stacks = familyStacks(buildFor("luxury", { locales: ["ko"] }));
+    expect(stacks.serif).toContain("Noto Serif KR");
+    expect(stacks.serif![stacks.serif!.length - 1]).toBe("serif");
+    expect(stacks.sans).toContain("Pretendard");
+    expect(stacks.sans![stacks.sans!.length - 1]).toBe("sans-serif");
+    expect(stacks.mono).not.toContain("Pretendard"); // mono untouched
+  });
+  it("every recipe ko build carries a Korean family in its heading-capable stacks", () => {
+    for (const r of RECIPES) {
+      const stacks = familyStacks(buildFor(r.key, { locales: ["ko"] }));
+      const all = Object.entries(stacks).filter(([k]) => k !== "mono");
+      for (const [, stack] of all) {
+        const hasKorean = stack.some((f) => /Pretendard|Noto Serif KR|Apple SD Gothic Neo/.test(f));
+        expect(hasKorean, `${r.key} stack missing Korean family: ${stack.join(", ")}`).toBe(true);
+      }
+    }
+  });
+});
+
+describe("G-L3 — ko surface rules + demo contracts", () => {
+  for (const key of ["minimal-tech", "luxury"]) {
+    for (const tier of ["safe", "balanced", "bold"] as const) {
+      it(`${key} @ ${tier}: lang, keep-all, Korean copy, zero demo errors`, () => {
+        const doc = buildFor(key, { locales: ["ko"], expression: tier });
+        const html = generateDemo(doc);
+        expect(html).toContain('<html lang="ko">');
+        expect(html).toContain("word-break: keep-all");
+        expect(html).toContain("당신의 브랜드다움이 그대로 느껴지는 제품을 만드세요.");
+        expect(demoErrors(doc)).toEqual([]);
+      });
+    }
+  }
+  it("bold ko: no negative h1 letter-spacing survives; line-height floor present", () => {
+    const html = generateDemo(buildFor("luxury", { locales: ["ko"], expression: "bold" }));
+    const css = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+    // ko override appended after tierCss → wins the cascade
+    const lastH1Rule = css.lastIndexOf(".hero h1");
+    expect(css.slice(lastH1Rule)).toContain("letter-spacing: normal");
+    expect(css.slice(lastH1Rule)).toContain("line-height: 1.12");
+  });
+  it("styleguide ko: lang + keep-all", () => {
+    const html = generateStyleguide(buildFor("luxury", { locales: ["ko"] }));
+    expect(html).toContain('<html lang="ko">');
+    expect(html).toContain("word-break: keep-all");
+  });
+});
+
+describe("G-L4 — brand locale gate", () => {
+  it("accepts ko/absence/empty, rejects unknown", () => {
+    expect(validateBrand(brandFor("minimal-tech"))).toEqual([]);
+    expect(validateBrand(brandFor("minimal-tech", { locales: [] }))).toEqual([]);
+    expect(validateBrand(brandFor("minimal-tech", { locales: ["ko"] }))).toEqual([]);
+    expect(validateBrand(brandFor("minimal-tech", { locales: ["xx"] }))).toEqual([
+      expect.objectContaining({ path: "product.locales" }),
+    ]);
+  });
+});
+
+describe("G-L5 — R1 keystone unmoved by locales", () => {
+  it("minimal-tech intent hash === sample without locales; ko build differs (different input)", () => {
+    const keystone = computeTokenHash(SAMPLE);
+    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(keystone);
+    // ko splices families into intent → hash differs BY DESIGN (like overrides)
+    expect(computeTokenHash(buildFor("minimal-tech", { locales: ["ko"] }))).not.toBe(keystone);
+  });
+});

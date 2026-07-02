@@ -496,5 +496,21 @@
         }
       }
     }
+  },
+  "locales": {
+    "ko": {
+      "append": {
+        "sans": [
+          "Pretendard Variable",
+          "Pretendard",
+          "Apple SD Gothic Neo"
+        ],
+        "display": [
+          "Pretendard Variable",
+          "Pretendard",
+          "Apple SD Gothic Neo"
+        ]
+      }
+    }
   }
 }

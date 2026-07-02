@@ -40,6 +40,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
   };
 
   applyOverrides(base, brand.overrides ?? {});
+  applyLocaleFonts(base, brand, recipe);
 
   const doc: TokensDocument = {
     version: "1.0.0",
@@ -53,6 +54,9 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       // Conditional echo: absent brand field ⇒ absent meta key, so existing
       // tokens.json artifacts stay byte-stable. Meta is hash-excluded (R1-safe).
       ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
+      ...(brand.product.locales !== undefined && brand.product.locales.length > 0
+        ? { locales: [...brand.product.locales] }
+        : {}),
     },
     transformContract: base.transformContract,
     contrastPairs: base.contrastPairs,
@@ -74,6 +78,36 @@ function applyOverrides(base: { primitive: Record<string, unknown> }, overrides:
   }
   if (overrides["motion.speed"] !== undefined) {
     scaleDimensionGroup(base.primitive, "duration", SPEED_FACTOR[overrides["motion.speed"]]);
+  }
+}
+
+/**
+ * Locale font splice (design d-locale): when brand locales include a locale
+ * the recipe declares under its (base-external) `locales` key, prepend that
+ * locale's families into each matching font.family stack, just before the
+ * trailing generic keyword. Absent locales ⇒ this is a no-op, so
+ * non-localized builds stay byte-identical (R1 anchor).
+ */
+function applyLocaleFonts(
+  base: { primitive: Record<string, unknown> },
+  brand: BrandJson,
+  recipe: Recipe,
+): void {
+  const wanted = brand.product.locales ?? [];
+  if (wanted.length === 0 || recipe.locales === undefined) return;
+  const family = (base.primitive as { font?: { family?: Record<string, { $value?: unknown }> } }).font?.family;
+  if (family === undefined) return;
+  for (const loc of wanted) {
+    const spec = recipe.locales[loc];
+    if (spec === undefined) continue;
+    for (const [cls, extra] of Object.entries(spec.append)) {
+      const leaf = family[cls];
+      if (leaf === undefined || !Array.isArray(leaf.$value)) continue;
+      const stack = leaf.$value as string[];
+      const fresh = extra.filter((f) => !stack.includes(f));
+      // insert before the trailing generic keyword (sans-serif/serif/monospace)
+      stack.splice(Math.max(stack.length - 1, 0), 0, ...fresh);
+    }
   }
 }
 

@@ -13,6 +13,8 @@ import { toCssVars } from "./adapters/css-adapter.js";
 import { computeTokenHash } from "./validator.js";
 import { hasTokenPath } from "./surface-data.js";
 import { htmlEscape } from "./render-utils.js";
+import { generateEditorialDemo } from "./demo-editorial.js";
+import { COPY, type DemoCopy } from "./demo-copy.js";
 
 /** Regions the completeness contract (manifest.checkDemo) requires. */
 export const DEMO_REGIONS = ["nav", "hero", "features", "form", "footer"] as const;
@@ -22,70 +24,16 @@ export const DEMO_REGIONS = ["nav", "hero", "features", "form", "footer"] as con
  * (backward-compat anchor — golden G-X1). */
 type Tier = "safe" | "balanced" | "bold";
 
-/** Copy decks. EN is the verbatim pre-locale copy (byte-identity anchor);
- * KO is a fixed Korean deck rendered when meta.locales includes "ko". */
-const COPY = {
-  en: {
-    eyebrow: (brand: string) => `Introducing ${brand}`,
-    headline: "Ship a product that feels unmistakably yours.",
-    lead: "Every color, type ramp, radius, and motion on this page is driven by one brand token set — nothing here is hardcoded.",
-    ctaPrimary: "Start free",
-    ctaGhost: "Book a demo",
-    navCta: "Get started",
-    featuresTitle: "Built on the brand's own tokens",
-    cards: [
-      ["Token-driven", "One tokens.json compiles into every surface — catalog, docs, and this applied page."],
-      ["Accessible by gate", "Contrast pairs pass a deterministic WCAG export gate before anything ships."],
-      ["Recipe families", "Structural recipes give each brand its own room; overrides fine-tune within it."],
-    ],
-    learnMore: "Learn more",
-    formTitle: "Request access",
-    formLead: "See the applied page rendered for your brand.",
-    formSubmit: "Request access",
-    fields: [
-      ["Name", "text", "name", "Ada Lovelace"],
-      ["Work email", "email", "email", "ada@example.com"],
-      ["Company", "text", "company", "Analytical Engines"],
-    ],
-    footTagline: "Design tokens, applied.",
-    fine: (brand: string) => `© ${brand}. Styled entirely by brand tokens.`,
-  },
-  ko: {
-    eyebrow: (brand: string) => `${brand}를 소개합니다`,
-    headline: "당신의 브랜드다움이 그대로 느껴지는 제품을 만드세요.",
-    lead: "이 페이지의 모든 색상, 타이포그래피, 곡률, 모션은 하나의 브랜드 토큰 세트에서 파생됩니다 — 하드코딩된 값은 없습니다.",
-    ctaPrimary: "무료로 시작",
-    ctaGhost: "데모 신청",
-    navCta: "시작하기",
-    featuresTitle: "브랜드 고유 토큰으로 빌드됩니다",
-    cards: [
-      ["토큰 기반 설계", "하나의 tokens.json이 카탈로그, 문서, 그리고 이 적용 페이지까지 모든 표면으로 컴파일됩니다."],
-      ["게이트로 보장되는 접근성", "대비쌍은 출고 전 결정론적 WCAG 게이트를 통과합니다."],
-      ["레시피 패밀리", "구조적 레시피가 브랜드마다 고유한 공간을 제공합니다."],
-    ],
-    learnMore: "자세히 보기",
-    formTitle: "접근 요청",
-    formLead: "당신의 브랜드로 렌더링된 적용 페이지를 확인하세요.",
-    formSubmit: "접근 요청",
-    fields: [
-      ["이름", "text", "name", "홍길동"],
-      ["업무용 이메일", "email", "email", "hong@example.com"],
-      ["회사", "text", "company", "분석기관"],
-    ],
-    footTagline: "디자인 토큰, 그대로 적용.",
-    fine: (brand: string) => `© ${brand}. 모든 스타일은 브랜드 토큰에서 나옵니다.`,
-  },
-} as const;
-
-type Copy = (typeof COPY)[keyof typeof COPY];
-
 export function generateDemo(doc: TokensDocument): string {
   const tier: Tier = doc.meta.expression ?? "balanced";
   const ko = doc.meta.locales?.includes("ko") ?? false;
-  const copy: Copy = ko ? COPY.ko : COPY.en;
+  const copy: DemoCopy = ko ? COPY.ko : COPY.en;
   const hash = computeTokenHash(doc);
   const brand = htmlEscape(doc.meta.recipe);
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
+  if (doc.meta.skeleton === "editorial") {
+    return generateEditorialDemo(doc, tier, ko, copy, brand, snapshot);
+  }
   return [
     "<!doctype html>",
     `<html lang="${ko ? "ko" : "en"}">`,
@@ -109,30 +57,30 @@ export function generateDemo(doc: TokensDocument): string {
   ].join("\n");
 }
 
-function header(brand: string, copy: Copy): string {
+function header(brand: string, copy: DemoCopy): string {
   const links = ["Product", "Pricing", "Docs", "Company"]
     .map((l) => `<a href="#">${htmlEscape(l)}</a>`)
     .join("");
   return `<header data-demo-region="nav" class="topbar"><a class="brand" href="#">${brand}</a><nav aria-label="Primary">${links}</nav><button class="btn btn-primary">${htmlEscape(copy.navCta)}</button></header>`;
 }
 
-function heroInner(brand: string, copy: Copy): string {
+function heroInner(brand: string, copy: DemoCopy): string {
   // brand arrives pre-escaped; copy deck literals are static and HTML-safe.
   return `<p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div>`;
 }
 
-function hero(brand: string, copy: Copy): string {
+function hero(brand: string, copy: DemoCopy): string {
   return `<section data-demo-region="hero" class="hero">${heroInner(brand, copy)}</section>`;
 }
 
 /** Bold tier: split hero — copy column ↔ brand panel with a display glyph.
  * Same region contract; the glyph is the brand's first letter (deterministic). */
-function heroBold(brand: string, copy: Copy): string {
+function heroBold(brand: string, copy: DemoCopy): string {
   const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
   return `<section data-demo-region="hero" class="hero"><div class="hero-copy">${heroInner(brand, copy)}</div><div class="hero-panel" aria-hidden="true"><span class="glyph">${glyph}</span></div></section>`;
 }
 
-function features(copy: Copy): string {
+function features(copy: DemoCopy): string {
   const cards = (copy.cards as ReadonlyArray<readonly [string, string]>)
     .map(
       ([t, b]) =>
@@ -142,7 +90,7 @@ function features(copy: Copy): string {
   return `<section data-demo-region="features" class="features"><h2>${htmlEscape(copy.featuresTitle)}</h2><div class="card-grid">${cards}</div></section>`;
 }
 
-function form(copy: Copy): string {
+function form(copy: DemoCopy): string {
   const fields = (copy.fields as ReadonlyArray<readonly [string, string, string, string]>)
     .map(
       ([label, type, name, ph]) =>
@@ -152,7 +100,7 @@ function form(copy: Copy): string {
   return `<section data-demo-region="form" class="signup"><div class="signup-card"><h2>${htmlEscape(copy.formTitle)}</h2><p class="lead">${htmlEscape(copy.formLead)}</p><form>${fields}<button type="submit" class="btn btn-primary">${htmlEscape(copy.formSubmit)}</button></form></div></section>`;
 }
 
-function footer(brand: string, copy: Copy): string {
+function footer(brand: string, copy: DemoCopy): string {
   const cols = ["Product", "Resources", "Company"]
     .map(
       (c) =>

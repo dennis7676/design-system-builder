@@ -2,6 +2,7 @@
   "key": "luxury",
   "version": "1.0.0",
   "source": "Editorial-luxury-like (nominative reference; no code/token values copied)",
+  "skeleton": "editorial",
   "toneAnchor": {
     "static_dynamic": 2,
     "cold_warm": 5,

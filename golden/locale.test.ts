@@ -117,7 +117,7 @@ describe("G-L3 — ko surface rules + demo contracts", () => {
     }
   }
   it("bold ko: no negative h1 letter-spacing survives; line-height floor present", () => {
-    const html = generateDemo(buildFor("luxury", { locales: ["ko"], expression: "bold" }));
+    const html = generateDemo(buildFor("minimal-tech", { locales: ["ko"], expression: "bold" }));
     const css = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
     // ko override appended after tierCss → wins the cascade
     const lastH1Rule = css.lastIndexOf(".hero h1");

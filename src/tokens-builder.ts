@@ -47,6 +47,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       typeScale,
       ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
       ...(brand.product.locales !== undefined && brand.product.locales.length > 0 ? { locales: [...brand.product.locales] } : {}),
+      ...(recipe.skeleton !== undefined ? { skeleton: recipe.skeleton } : {}),
       ...(overrideMeta.colorOverride !== undefined ? { colorOverride: overrideMeta.colorOverride } : {}),
       ...(overrideMeta.motionOverride !== undefined ? { motionOverride: overrideMeta.motionOverride } : {}),
     },

@@ -207,6 +207,11 @@ export interface TokensMeta {
    * hash-excluded; generators use it for script-conditional rendering rules.
    */
   locales?: string[];
+  /**
+   * Recipe-declared layout skeleton. Meta is excluded from the intent hash;
+   * absent resolves to the standard demo skeleton for backward compatibility.
+   */
+  skeleton?: "standard" | "editorial";
   colorOverride?: ColorOverrideMeta;
   motionOverride?: MotionOverrideMeta;
 }

@@ -2,6 +2,7 @@
   "key": "enterprise",
   "version": "1.0.0",
   "source": "Carbon/Atlassian-like (nominative reference; no code/token values copied). Color primitives shared with minimal-tech for pilot WCAG safety; differentiation in typography/space/shape/motion.",
+  "skeleton": "briefing",
   "toneAnchor": {
     "static_dynamic": 3,
     "cold_warm": 4,

@@ -40,4 +40,4 @@
 - [x] 3.2 Synthetic end-to-end: generate `tokens.ts` for one recipe via CLI,
       compile it standalone with `tsc --strict --noEmit` (guards against
       always-pass string assertions), import via tsx and spot-check values
-- [ ] 3.3 Commit (operator pattern), archive change → specs on approval
+- [x] 3.3 Commit (operator pattern), archive change → specs on approval

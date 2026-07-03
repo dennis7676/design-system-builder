@@ -6,4 +6,4 @@
 - [x] 1.4 demo-generator dispatch (3 imports + 3 lines)
 - [x] 2.1 `golden/skeleton-b.test.ts`: 5-region completeness ×3, structural markers, anti-hardcode, meta echo + keystone unchanged, ko render ×3
 - [x] 2.2 Suite fully green + typecheck clean
-- [ ] 3.1 (operator) render QA + merge + archive
+- [x] 3.1 (operator) render QA + merge + archive

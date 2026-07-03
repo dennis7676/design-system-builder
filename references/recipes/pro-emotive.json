@@ -361,6 +361,40 @@
           "$class": "portable",
           "$description": "pro-emotive elevation lg"
         }
+      },
+      "motion": {
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.4,
+              0,
+              0.2,
+              1
+            ],
+            "$class": "portable"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": [
+              0,
+              0,
+              0.1,
+              1
+            ],
+            "$class": "portable"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.4,
+              0,
+              1,
+              1
+            ],
+            "$class": "portable"
+          }
+        }
       }
     },
     "semantic": {
@@ -419,6 +453,23 @@
           "$type": "duration",
           "$value": "{primitive.duration.normal}",
           "$class": "adapter-derived"
+        },
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.standard}",
+            "$class": "adapter-derived"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.enter}",
+            "$class": "adapter-derived"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.exit}",
+            "$class": "adapter-derived"
+          }
         }
       },
       "typography": {

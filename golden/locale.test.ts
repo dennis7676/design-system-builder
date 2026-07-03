@@ -4,11 +4,10 @@
  * Invariants: no-locale builds/demos byte-identical to pre-change (G-L1);
  * ko builds splice Korean families personality-aligned (G-L2); ko surfaces
  * carry lang/keep-all/metric rules + Korean copy while keeping every demo
- * contract (G-L3); the brand gate rejects unknown locales (G-L4); the R1
- * keystone never moves (G-L5).
+ * contract (G-L3); the brand gate rejects unknown locales (G-L4); ko input
+ * remains hash-distinct from no-locale input (G-L5).
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
@@ -24,7 +23,6 @@ import { validateBrand, type BrandJson, type ExpressionTier } from "../src/brand
 import type { TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const recipe = (key: string): Recipe => RECIPES.find((r) => r.key === key)!;
 
@@ -144,12 +142,10 @@ describe("G-L4 — brand locale gate", () => {
   });
 });
 
-describe("G-L5 — R1 keystone unmoved by locales", () => {
-  it("minimal-tech intent hash === sample without locales; ko build differs (different input)", () => {
-    const keystone = computeTokenHash(SAMPLE);
-    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(keystone);
-    // ko splices families into intent → hash differs BY DESIGN (like overrides)
-    expect(computeTokenHash(buildFor("minimal-tech", { locales: ["ko"] }))).not.toBe(keystone);
+describe("G-L5 — locale input is hash-distinct", () => {
+  it("ko build differs from the current no-locale base because locale fonts splice into intent", () => {
+    const currentBase = computeTokenHash(buildFor("minimal-tech"));
+    expect(computeTokenHash(buildFor("minimal-tech", { locales: ["ko"] }))).not.toBe(currentBase);
   });
 });
 

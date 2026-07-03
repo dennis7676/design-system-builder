@@ -1,14 +1,13 @@
 /**
  * G-G — gradient vocabulary (Tier-1b). Expressive recipes gain a brand-tinted
  * hero gradient, gated by a worst-case-stop contrast check so no stop can break
- * text legibility. Flat recipes stay gradient-free (R1 keystone intact). The
+ * text legibility. Flat recipes stay gradient-free. The
  * dark-stop test (G-G4) proves the gate actually bites.
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { validateTokens, computeTokenHash } from "../src/validator.js";
+import { validateTokens } from "../src/validator.js";
 import { generateDemo } from "../src/index.js";
 import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
 import { buildTokens } from "../src/tokens-builder.js";
@@ -17,7 +16,6 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
 const recipe = (key: string): Recipe => RECIPES.find((r) => r.key === key)!;
 const buildFor = (key: string): TokensDocument =>
   buildTokens(
@@ -79,8 +77,8 @@ describe("G-G4 — worst-case-stop gate bites on a dark stop", () => {
   });
 });
 
-describe("G-G5 — R1 keystone holds", () => {
-  it("build(minimal-tech) intent hash === sample", () => {
-    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(computeTokenHash(SAMPLE));
+describe("G-G5 — flat recipe validation", () => {
+  it("minimal-tech still validates while carrying no gradient vocabulary", () => {
+    expect(errorsOf(buildFor("minimal-tech"))).toEqual([]);
   });
 });

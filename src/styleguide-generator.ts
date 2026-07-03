@@ -8,7 +8,9 @@ import {
   contrastResults,
   entriesFrom,
   hasTokenPath,
+  resolveToken,
   tokenEntries,
+  tokenMap,
 } from "./surface-data.js";
 import {
   axisLabel,
@@ -146,7 +148,22 @@ function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string
     .filter((entry) => /(^|\.)duration(\.|$)|(^|\.)motion(\.|$)/.test(entry.path))
     .map((entry) => `<tr data-motion-row><td>${entry.path}</td><td>${realized.get(entry.path) ?? ""}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td></tr>`)
     .join("");
-  return section("motion", "Motion", `<table><tbody>${rows}</tbody></table><button class="demo-button">Motion demo</button>`);
+  const easing = easingRows(doc);
+  const easingTable = easing === "" ? "" : `<h3>Easing roles</h3><table><tbody>${easing}</tbody></table>`;
+  return section("motion", "Motion", `${easingTable}<table><tbody>${rows}</tbody></table><button class="demo-button">Motion demo</button>`);
+}
+
+function easingRows(doc: TokensDocument): string {
+  const leaves = tokenMap(doc);
+  return ["standard", "enter", "exit"]
+    .map((role) => {
+      const path = `semantic.motion.easing.${role}`;
+      if (!leaves.has(path)) return "";
+      const resolved = resolveToken(path, leaves);
+      const raw = Array.isArray(resolved.$value) ? `[${resolved.$value.join(", ")}]` : String(resolved.$value);
+      return `<tr data-motion-easing-row><td>${path}</td><td>${htmlEscape(raw)}</td><td>${htmlEscape(role)}</td></tr>`;
+    })
+    .join("");
 }
 
 function components(doc: TokensDocument): string {

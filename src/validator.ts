@@ -14,6 +14,7 @@ import {
   type DimensionUnit,
   isLeaf,
   isAlias,
+  isCubicBezierValue,
   isDimensionIntent,
   isGradientValue,
   aliasPath,
@@ -165,6 +166,8 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
       } else if (!VALID_UNITS.includes(leaf.$value.unit)) {
         findings.push({ severity: "error", code: "unit-invalid", path, message: `미허용 unit: ${leaf.$value.unit}` });
       }
+    } else if (leaf.$type === "cubicBezier") {
+      checkCubicBezier(path, leaf, findings);
     }
   }
 
@@ -190,6 +193,36 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
 
   const ok = !findings.some((f) => f.severity === "error");
   return { ok, tokenHash: computeTokenHash(doc), findings };
+}
+
+function checkCubicBezier(path: string, leaf: LeafToken, findings: Finding[]): void {
+  if (!isCubicBezierValue(leaf.$value)) {
+    findings.push({
+      severity: "error",
+      code: "cubic-bezier-invalid",
+      path,
+      message: `${path}: cubicBezier $value must be exactly 4 numbers`,
+    });
+    return;
+  }
+  const [x1, y1, x2, y2] = leaf.$value;
+  if (![x1, y1, x2, y2].every(Number.isFinite)) {
+    findings.push({
+      severity: "error",
+      code: "cubic-bezier-invalid",
+      path,
+      message: `${path}: cubicBezier coordinates must be finite numbers`,
+    });
+    return;
+  }
+  if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1) {
+    findings.push({
+      severity: "error",
+      code: "cubic-bezier-invalid",
+      path,
+      message: `${path}: cubicBezier x1/x2 must be within 0..1`,
+    });
+  }
 }
 
 function colorValueOf(path: string, leaves: Map<string, LeafToken>): string | null {

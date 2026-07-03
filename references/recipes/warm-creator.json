@@ -350,6 +350,40 @@
           "$class": "portable",
           "$description": "warm-creator elevation lg"
         }
+      },
+      "motion": {
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.25,
+              0.46,
+              0.45,
+              0.94
+            ],
+            "$class": "portable"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.1,
+              0.6,
+              0.3,
+              1
+            ],
+            "$class": "portable"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.5,
+              0,
+              0.75,
+              0.7
+            ],
+            "$class": "portable"
+          }
+        }
       }
     },
     "semantic": {
@@ -408,6 +442,23 @@
           "$type": "duration",
           "$value": "{primitive.duration.normal}",
           "$class": "adapter-derived"
+        },
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.standard}",
+            "$class": "adapter-derived"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.enter}",
+            "$class": "adapter-derived"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.exit}",
+            "$class": "adapter-derived"
+          }
         }
       },
       "typography": {

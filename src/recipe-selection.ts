@@ -23,10 +23,8 @@ export const RECIPE_ORDER = [
   "retro",
 ] as const;
 
-/** Override axes recognized but intentionally not implemented in the pilot. */
-export const DEFERRED_OVERRIDES = [
-  "motion.easing",
-] as const;
+/** Empty while all recognized override axes are implemented. */
+export const DEFERRED_OVERRIDES = [] as const;
 
 export interface HardConstraintRules {
   readonly requires: { readonly mediums: readonly string[] };

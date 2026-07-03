@@ -367,6 +367,40 @@
           "$class": "portable",
           "$description": "luxury elevation lg"
         }
+      },
+      "motion": {
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.19,
+              1,
+              0.22,
+              1
+            ],
+            "$class": "portable"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.1,
+              0.8,
+              0.2,
+              1
+            ],
+            "$class": "portable"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": [
+              0.55,
+              0,
+              0.85,
+              0.5
+            ],
+            "$class": "portable"
+          }
+        }
       }
     },
     "semantic": {
@@ -432,6 +466,23 @@
           "$type": "duration",
           "$value": "{primitive.duration.normal}",
           "$class": "adapter-derived"
+        },
+        "easing": {
+          "standard": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.standard}",
+            "$class": "adapter-derived"
+          },
+          "enter": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.enter}",
+            "$class": "adapter-derived"
+          },
+          "exit": {
+            "$type": "cubicBezier",
+            "$value": "{primitive.motion.easing.exit}",
+            "$class": "adapter-derived"
+          }
         }
       },
       "typography": {

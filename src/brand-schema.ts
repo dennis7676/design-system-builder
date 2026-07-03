@@ -39,8 +39,6 @@ export type ExpressionTier = (typeof EXPRESSION_TIERS)[number];
  * Bounded overrides. Scalar axes mutate dimensions/durations; visual.accent is
  * an integer OKLCH hue that triggers contrast re-derivation in the builder.
  *
- * Deferred (needs a new token type — out of this increment, see
- * recipe-selection DEFERRED_OVERRIDES): motion.easing.
  */
 export interface NumericOverrideRange {
   readonly type: "integer";
@@ -54,6 +52,7 @@ export const OVERRIDE_RANGES = {
   "visual.radius": ["tighter", "looser"],
   "motion.speed": ["snappier", "calmer"],
   "visual.accent": { type: "integer", min: 0, max: 359 },
+  "motion.easing": ["subtle", "standard", "expressive", "dramatic"],
 } as const satisfies Record<string, OverrideRange>;
 
 export type OverrideAxis = keyof typeof OVERRIDE_RANGES;

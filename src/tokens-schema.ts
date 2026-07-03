@@ -33,6 +33,8 @@ export interface GradientValue {
   stops: string[];
 }
 
+export type CubicBezierValue = readonly [number, number, number, number];
+
 export type LeafType =
   | "color"
   | "dimension"
@@ -53,7 +55,7 @@ export type LeafType =
  */
 export interface LeafToken {
   $type: LeafType;
-  $value: string | number | string[] | DimensionIntent | AliasValue | GradientValue;
+  $value: string | number | string[] | DimensionIntent | AliasValue | GradientValue | CubicBezierValue;
   $class: TokenClass;
   $description?: string;
 }
@@ -92,6 +94,10 @@ export function isGradientValue(v: unknown): v is GradientValue {
     Array.isArray((v as GradientValue).stops) &&
     "kind" in v
   );
+}
+
+export function isCubicBezierValue(v: unknown): v is CubicBezierValue {
+  return Array.isArray(v) && v.length === 4 && v.every((n) => typeof n === "number");
 }
 
 /** Is `$value` an alias reference like "{a.b.c}". */
@@ -171,6 +177,10 @@ export interface ColorOverrideMeta {
   readonly corrections: readonly ColorOverrideCorrection[];
 }
 
+export interface MotionOverrideMeta {
+  readonly preset: "subtle" | "standard" | "expressive" | "dramatic";
+}
+
 export interface TokensMeta {
   generatedAt: string;
   recipe: string;
@@ -198,6 +208,7 @@ export interface TokensMeta {
    */
   locales?: string[];
   colorOverride?: ColorOverrideMeta;
+  motionOverride?: MotionOverrideMeta;
 }
 
 export interface TokensDocument {

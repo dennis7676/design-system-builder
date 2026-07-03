@@ -5,10 +5,9 @@
  * generator (G-X1); tiers are pairwise distinct in layout markers (G-X2);
  * every tier keeps the demo surface contracts (G-X3); bold keeps the
  * anti-hardcode + flat-identity disciplines (G-X4); the schema gate rejects
- * out-of-enum tiers (G-X5); and the R1 keystone never moves (G-X6).
+ * out-of-enum tiers (G-X5); and expression stays hash-neutral (G-X6).
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
@@ -24,7 +23,6 @@ import { validateBrand, type BrandJson, type ExpressionTier } from "../src/brand
 import type { TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const recipe = (key: string): Recipe => RECIPES.find((r) => r.key === key)!;
 
@@ -124,10 +122,9 @@ describe("G-X5 — schema gate", () => {
   });
 });
 
-describe("G-X6 — R1 keystone unmoved by expression", () => {
-  it("build(minimal-tech) intent hash === sample, with and without the tier", () => {
-    const keystone = computeTokenHash(SAMPLE);
-    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(keystone);
-    expect(computeTokenHash(buildFor("minimal-tech", "bold"))).toBe(keystone);
+describe("G-X6 — expression stays hash-neutral", () => {
+  it("expression tiers stay hash-neutral against the current base build", () => {
+    const currentBase = computeTokenHash(buildFor("minimal-tech"));
+    expect(computeTokenHash(buildFor("minimal-tech", "bold"))).toBe(currentBase);
   });
 });

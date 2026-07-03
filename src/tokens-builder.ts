@@ -1,7 +1,8 @@
 import type { BrandJson, BrandOverrides } from "./brand-schema.js";
 import { normalizeToneVector } from "./brand-schema.js";
+import { MOTION_EASING_PRESETS, type MotionEasingPreset, type MotionEasingTriple } from "./motion-easing.js";
 import type { Recipe } from "./recipe-selection.js";
-import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type LeafToken, type Philosophy, type TokensDocument } from "./tokens-schema.js";
+import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type CubicBezierValue, type LeafToken, type MotionOverrideMeta, type Philosophy, type TokenGroup, type TokensDocument } from "./tokens-schema.js";
 import { clampOklchChroma, contrastRatio, formatOklch, parseColor, parseOklch, relativeLuminance, type Oklch } from "./color.js";
 import { flatten } from "./validator.js";
 
@@ -31,7 +32,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
   const base = structuredClone(recipe.base) as MutableBase;
   const typeScale = computeTypeScale(base.primitive, recipe.typeScale?.ratio);
 
-  const colorOverride = applyOverrides(base, brand.overrides ?? {});
+  const overrideMeta = applyOverrides(base, brand.overrides ?? {});
   applyLocaleFonts(base, brand, recipe);
 
   return {
@@ -46,7 +47,8 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       typeScale,
       ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
       ...(brand.product.locales !== undefined && brand.product.locales.length > 0 ? { locales: [...brand.product.locales] } : {}),
-      ...(colorOverride !== undefined ? { colorOverride } : {}),
+      ...(overrideMeta.colorOverride !== undefined ? { colorOverride: overrideMeta.colorOverride } : {}),
+      ...(overrideMeta.motionOverride !== undefined ? { motionOverride: overrideMeta.motionOverride } : {}),
     },
     transformContract: base.transformContract,
     contrastPairs: base.contrastPairs,
@@ -82,11 +84,24 @@ function targetsFor(brand: BrandJson): string[] {
   return brand.product.medium === "web" ? ["web"] : [brand.product.medium];
 }
 
-function applyOverrides(base: MutableBase, overrides: BrandOverrides): ColorOverrideMeta | undefined {
+interface OverrideMeta {
+  readonly colorOverride?: ColorOverrideMeta;
+  readonly motionOverride?: MotionOverrideMeta;
+}
+
+function applyOverrides(base: MutableBase, overrides: BrandOverrides): OverrideMeta {
   if (overrides["visual.radius"] !== undefined) scaleDimensionGroup(base.primitive, "radius", RADIUS_FACTOR[overrides["visual.radius"]]);
   if (overrides["motion.speed"] !== undefined) scaleDimensionGroup(base.primitive, "duration", SPEED_FACTOR[overrides["motion.speed"]]);
-  if (overrides["visual.accent"] !== undefined) return applyAccentOverride(base, overrides["visual.accent"]);
-  return undefined;
+  const motionOverride = overrides["motion.easing"] === undefined
+    ? undefined
+    : applyMotionEasingOverride(base, overrides["motion.easing"]);
+  const colorOverride = overrides["visual.accent"] === undefined
+    ? undefined
+    : applyAccentOverride(base, overrides["visual.accent"]);
+  return {
+    ...(colorOverride !== undefined ? { colorOverride } : {}),
+    ...(motionOverride !== undefined ? { motionOverride } : {}),
+  };
 }
 
 type MutableBase = Pick<TokensDocument, "transformContract" | "contrastPairs" | "primitive" | "semantic" | "component">;
@@ -96,6 +111,39 @@ type ColorTarget = { readonly path: string; readonly leaf: LeafToken; readonly i
 type PairMeasurement = { readonly ratio: number; readonly min: number; readonly fg: string; readonly bgTargets: readonly ColorTarget[] };
 type RepairState = { readonly originals: Map<string, Oklch>; readonly chroma: Map<string, number>; readonly corrections: Map<string, ColorOverrideCorrection> };
 type RepairContext = { readonly base: MutableBase; readonly pair: ContrastPair; readonly state: RepairState };
+
+function applyMotionEasingOverride(base: MutableBase, preset: MotionEasingPreset): MotionOverrideMeta {
+  const primitiveMotion = tokenGroupAt(base.primitive, "motion");
+  primitiveMotion.easing = easingLeaves(MOTION_EASING_PRESETS[preset]);
+  return { preset };
+}
+
+function tokenGroupAt(root: TokenGroup, key: string): TokenGroup {
+  const node = root[key];
+  if (node === undefined || !isTokenGroup(node)) {
+    const group: TokenGroup = {};
+    root[key] = group;
+    return group;
+  }
+  return node;
+}
+
+function isTokenGroup(value: unknown): value is TokenGroup {
+  return isRecord(value) && !("$value" in value);
+}
+
+function easingLeaves(triple: MotionEasingTriple): TokenGroup {
+  return {
+    standard: { $type: "cubicBezier", $value: copyCubicBezier(triple.standard), $class: "portable" },
+    enter: { $type: "cubicBezier", $value: copyCubicBezier(triple.enter), $class: "portable" },
+    exit: { $type: "cubicBezier", $value: copyCubicBezier(triple.exit), $class: "portable" },
+  };
+}
+
+function copyCubicBezier(value: CubicBezierValue): CubicBezierValue {
+  const [x1, y1, x2, y2] = value;
+  return [x1, y1, x2, y2];
+}
 
 function applyAccentOverride(base: MutableBase, requestedHue: number): ColorOverrideMeta {
   const leaves = allLeaves(base);

@@ -95,10 +95,10 @@ feel, density, **corner radius feel** (tight ↔ rounded), **brand colour**.
 ### Phase 3 — Motion (→ override)
 Snappy ↔ smooth, reduce-motion respect.
 - Speed feel → at most one `overrides["motion.speed"]` = `snappier` | `calmer`.
-- **Deferred in this pilot** (do not emit; tell the user it is coming):
-  `overrides["motion.easing"]` — the easing token type arrives with the
-  motion-vocabulary increment. (`visual.accent` unlocked 2026-07-02;
-  `tone_vector.cold_warm` is subsumed by it.)
+- Motion feel → ask "동작 느낌은 어떤 쪽이 맞나요?" with recipe default 유지
+  (default, omit), subtle, standard, expressive, dramatic. Emit
+  `overrides["motion.easing"]` only when the user chooses one of the four
+  presets; the default keeps the recipe's own easing personality.
 
 ### Phase 4 — Constraints (→ hard constraints)
 Existing brand guidelines / locked hex? Consistency targets?
@@ -128,8 +128,8 @@ Build this object from the answers (see `src/brand-schema.ts` for the type):
 
 Rules: tone_vector all 5 axes, integers 1–7. `overrides` ≤ 3 axes, omit when
 empty. Emit `visual.radius` / `motion.speed` / `visual.accent` (integer hue
-0–359); `motion.easing` stays deferred. Add top-level `expression` only for
-safe/bold (balanced = default).
+0–359) / `motion.easing` (`subtle` | `standard` | `expressive` | `dramatic`).
+Add top-level `expression` only for safe/bold (balanced = default).
 
 ---
 
@@ -149,7 +149,7 @@ safe/bold (balanced = default).
    | `no-recipe-satisfies-hard-constraints` | constraints/medium exclude all recipes | relax a `constraints[]` tag or change medium; re-ask Phase 4 |
    | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
-   | `override-deferred` *and/or* a `BRAND [overrides.<axis>] unknown override axis` line | used a deferred axis (e.g. `motion.easing`); it is not in `OVERRIDE_RANGES`, so `validateBrand` flags it as unknown *and* `validateOverrides` flags it deferred — both can appear | remove it (see Phase 3). `tone_vector.cold_warm` → use `visual.accent` hue instead |
+   | `BRAND [overrides.<axis>] unknown override axis` line | used an unsupported axis | remove it. `tone_vector.cold_warm` → use `visual.accent` hue instead |
 4. **Build with confirmation** → writes the intent-token SSOT:
    ```
    node dist/cli.js build brand.json --out out/tokens.json --confirm

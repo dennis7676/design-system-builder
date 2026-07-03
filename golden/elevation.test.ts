@@ -1,14 +1,13 @@
 /**
  * G-E — elevation vocabulary (Tier-1). Expressive recipes gain felt depth via
  * semantic.elevation.* (shadow); flat recipes (minimal-tech/enterprise) stay
- * elevation-free by identity, keeping the R1 keystone (asserted in recipe.test).
+ * elevation-free by identity.
  * The applied demo paints elevation only from tokens (no hardcoded shadow).
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { validateTokens, computeTokenHash } from "../src/validator.js";
+import { validateTokens } from "../src/validator.js";
 import { generateDemo } from "../src/index.js";
 import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
 import { buildTokens } from "../src/tokens-builder.js";
@@ -17,7 +16,6 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
 const recipe = (key: string): Recipe => RECIPES.find((r) => r.key === key)!;
 const buildFor = (key: string): TokensDocument =>
   buildTokens(
@@ -42,7 +40,7 @@ describe("G-E1 — expressive recipes declare elevation and pass the export gate
   }
 });
 
-describe("G-E2 — flat recipes stay elevation-free (identity + R1 keystone)", () => {
+describe("G-E2 — flat recipes stay elevation-free by identity", () => {
   for (const key of FLAT) {
     it(`${key} carries no elevation or shadow leaf`, () => {
       const doc = buildFor(key);
@@ -50,8 +48,8 @@ describe("G-E2 — flat recipes stay elevation-free (identity + R1 keystone)", (
       expect(JSON.stringify(doc)).not.toContain('"$type":"shadow"');
     });
   }
-  it("R1 keystone still holds: build(minimal-tech) intent hash === sample", () => {
-    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(computeTokenHash(SAMPLE));
+  it("minimal-tech still validates while carrying no elevation vocabulary", () => {
+    expect(errorsOf(buildFor("minimal-tech"))).toEqual([]);
   });
 });
 

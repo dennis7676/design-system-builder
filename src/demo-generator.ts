@@ -176,6 +176,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
   const radius = "var(--semantic-shape-control, .5rem)";
   const inset = "var(--semantic-space-inset, 1.5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
+  const easing = "var(--semantic-motion-easing-standard)";
   // Elevation is opt-in per recipe: expressive recipes declare semantic.elevation.*,
   // flat recipes (minimal-tech/enterprise) declare none → no box-shadow is emitted,
   // so they render flat by identity. Values come only from var(--semantic-elevation-*).
@@ -193,11 +194,11 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     html { scroll-behavior: smooth; }
     body { margin: 0; background: ${surface}; color: ${fg}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     h1, h2, h3, p { margin: 0; }
-    a { color: inherit; }
+    a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
     .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
     .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 78%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
-    .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ease, transform ${transition} ease; }
+    .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: ${primary}; border: 1px solid ${hairline}; }
@@ -213,7 +214,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .features { padding: clamp(2rem, 5vw, 4rem) 0; display: grid; gap: 1.5rem; border-top: 1px solid ${hairline}; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
     .features h2 { font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
-    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ease, transform ${transition} ease; }
+    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ${easing}, transform ${transition} ${easing}; }
     .card:hover {${overlay} transform: translateY(-2px); }
     .card h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .link { color: ${primary}; text-decoration: none; font-weight: 600; }
@@ -222,7 +223,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .signup-card h2 { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .signup form { display: grid; gap: .85rem; }
     .signup label { display: grid; gap: .35rem; font-size: .9rem; }
-    .signup input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${surface}; color: ${fg}; font: inherit; }
+    .signup input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${surface}; color: ${fg}; font: inherit; transition: border-color ${transition} ${easing}, outline-color ${transition} ${easing}; }
     .signup input:focus-visible { outline: .16rem solid ${primary}; outline-offset: 1px; }
     .site-footer { border-top: 1px solid ${hairline}; margin-top: 2rem; padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem); display: grid; gap: 1.5rem; }
     .footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1.5rem; width: min(72rem, 100%); margin: 0 auto; }

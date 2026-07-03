@@ -36,9 +36,12 @@ const brandFor = (key: string): BrandJson =>
 
 const buildFor = (key: string): TokensDocument => buildTokens(brandFor(key), recipe(key));
 
-describe("G-V0 — video contract key is hash-neutral (R1 keystone)", () => {
-  it("build(minimal-tech) intent hash still equals the sample keystone", () => {
-    expect(computeTokenHash(buildFor("minimal-tech"))).toBe(computeTokenHash(SAMPLE));
+describe("G-V0 — video generation is hash-neutral", () => {
+  it("toTokensTs embeds but does not mutate the current build hash", () => {
+    const doc = buildFor("minimal-tech");
+    const hash = computeTokenHash(doc);
+    expect(toTokensTs(doc)).toContain(hash);
+    expect(computeTokenHash(doc)).toBe(hash);
   });
 });
 
@@ -115,6 +118,13 @@ describe("G-V3 — target filtering + explicit skip accounting (synthetic)", () 
       $value: { kind: "linear", angle: "135deg", stops: ["oklch(0.6 0.1 250) 0%", "oklch(0.8 0.05 250) 100%"] },
     },
   };
+  (doc.primitive as Record<string, unknown>).curve = {
+    ease: {
+      $type: "cubicBezier",
+      $class: "adapter-derived",
+      $value: [0.2, 0, 0, 1],
+    },
+  };
   const { values, skipped } = toRealizedVideo(doc);
 
   it("target-only:web is excluded, target-only:video is included", () => {
@@ -127,9 +137,15 @@ describe("G-V3 — target filtering + explicit skip accounting (synthetic)", () 
     expect(skipped).toContain("primitive.glow.hero");
   });
 
+  it("cubicBezier path lands in values, not skipped", () => {
+    expect(values.get("primitive.curve.ease")).toEqual([0.2, 0, 0, 1]);
+    expect(skipped).not.toContain("primitive.curve.ease");
+  });
+
   it("generated header echoes the skip accounting", () => {
     const ts = toTokensTs(doc);
     expect(ts).toContain("primitive.glow.hero");
+    expect(ts).not.toContain("primitive.curve.ease");
     expect(ts).toContain("skipped");
   });
 });

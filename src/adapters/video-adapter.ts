@@ -99,7 +99,8 @@ function emit(node: Tree | VideoRealizedValue, depth: number): string {
 function emitLeaf(value: VideoRealizedValue): string {
   if (typeof value === "number") return String(value);
   if (typeof value === "string") return JSON.stringify(value);
-  return `[${value.map((v) => JSON.stringify(v)).join(", ")}]`;
+  const items = value.map((v) => JSON.stringify(v)).join(", ");
+  return typeof value[0] === "number" ? `[${items}] as const` : `[${items}]`;
 }
 
 function emitKey(key: string): string {
@@ -119,6 +120,7 @@ function fontAssets(values: Map<string, VideoRealizedValue>): string[] {
   for (const value of values.values()) {
     if (!Array.isArray(value)) continue;
     for (const [index, family] of value.entries()) {
+      if (typeof family !== "string") continue;
       (index === 0 ? primary : fallback).push(family);
     }
   }

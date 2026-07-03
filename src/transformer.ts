@@ -3,6 +3,7 @@ import {
   type LeafToken,
   type LeafType,
   type TokensDocument,
+  isCubicBezierValue,
   isDimensionIntent,
   isGradientValue,
 } from "./tokens-schema.js";
@@ -26,7 +27,7 @@ function isWebExportable(leaf: LeafToken): boolean {
   return leaf.$class === "target-only:web";
 }
 
-export type VideoRealizedValue = string | number | readonly string[];
+export type VideoRealizedValue = string | number | readonly string[] | readonly number[];
 
 export interface RealizedVideo {
   /** path → Remotion-consumable value (hex string, px/ms number, family array). */
@@ -35,8 +36,8 @@ export interface RealizedVideo {
   skipped: string[];
 }
 
-/** $types the video spike deliberately does not realize (shadow/gradient/easing = full M4). */
-const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "cubicBezier"]);
+/** $types the video spike deliberately does not realize (shadow/gradient = full M4). */
+const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient"]);
 
 export function toRealizedVideo(doc: TokensDocument): RealizedVideo {
   const leaves = tokenMap(doc);
@@ -91,8 +92,9 @@ function realizeVideo(type: LeafType, value: LeafToken["$value"], base: number):
     case "number":
       if (typeof value !== "number") throw new TokenSurfaceError(`${type} number expected`);
       return value;
-    case "shadow":
     case "cubicBezier":
+      return requireCubicBezier(value);
+    case "shadow":
     case "gradient":
       throw new TokenSurfaceError(`${type} is not video-realizable in the spike`);
   }
@@ -114,9 +116,10 @@ function realize(type: LeafType, value: LeafToken["$value"], base: number): stri
     case "number":
       if (typeof value !== "number") throw new TokenSurfaceError(`${type} number expected`);
       return String(value);
-    case "shadow":
     case "cubicBezier":
-      if (typeof value !== "string") throw new TokenSurfaceError(`${type} string expected`);
+      return realizeCubicBezier(value);
+    case "shadow":
+      if (typeof value !== "string") throw new TokenSurfaceError("shadow string expected");
       return value;
     case "gradient":
       return realizeGradient(value);
@@ -129,6 +132,11 @@ function realizeGradient(value: LeafToken["$value"]): string {
   return value.kind === "radial"
     ? `radial-gradient(${stops})`
     : `linear-gradient(${value.angle ?? "180deg"}, ${stops})`;
+}
+
+function realizeCubicBezier(value: LeafToken["$value"]): string {
+  const [x1, y1, x2, y2] = requireCubicBezier(value);
+  return `cubic-bezier(${formatNumber(x1)}, ${formatNumber(y1)}, ${formatNumber(x2)}, ${formatNumber(y2)})`;
 }
 
 function realizeDimension(value: LeafToken["$value"], base: number): string {
@@ -151,6 +159,11 @@ function realizeDuration(value: LeafToken["$value"]): string {
 
 function requireDimension(value: LeafToken["$value"]): DimensionIntent {
   if (!isDimensionIntent(value)) throw new TokenSurfaceError("dimension intent expected");
+  return value;
+}
+
+function requireCubicBezier(value: LeafToken["$value"]): readonly [number, number, number, number] {
+  if (!isCubicBezierValue(value)) throw new TokenSurfaceError("cubicBezier array expected");
   return value;
 }
 

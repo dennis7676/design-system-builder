@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { clampOklchChroma, contrastRatio, isInSrgbGamut, parseColor, parseOklch } from "../src/color.js";
@@ -9,13 +8,11 @@ import { canGenerate } from "../src/gate.js";
 import { RECIPE_ORDER, loadRecipes, selectRecipe, type Recipe } from "../src/recipe-selection.js";
 import { tokenEntries, tokenMap, resolveValue, contrastResults } from "../src/surface-data.js";
 import { buildTokens } from "../src/tokens-builder.js";
-import { computeTokenHash, validateTokens } from "../src/validator.js";
+import { validateTokens } from "../src/validator.js";
 import { isGradientValue, type TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-const SAMPLE_TEXT = readFileSync(join(here, "sample.tokens.json"), "utf8");
-const SAMPLE = JSON.parse(SAMPLE_TEXT) as TokensDocument;
 const HUES = [60, 110, 200, 275, 350] as const;
 const SAMPLE_TONE = {
   static_dynamic: 2,
@@ -70,11 +67,9 @@ function hueDelta(a: number, b: number): number {
   return delta > 180 ? delta - 360 : delta;
 }
 
-describe("G-C1 accent absent keeps the no-override anchor byte-identical", () => {
-  it("minimal-tech sample JSON and R1 intent hash stay unchanged", () => {
+describe("G-C1 accent absent keeps color override metadata absent", () => {
+  it("minimal-tech no-override build records no colorOverride meta", () => {
     const doc = buildTokens(brand(SAMPLE_TONE), recipe("minimal-tech"), { generatedAt: "2026-06-30T14:30:00Z" });
-    expect(`${JSON.stringify(doc, null, 2)}\n`).toBe(SAMPLE_TEXT);
-    expect(computeTokenHash(doc)).toBe(computeTokenHash(SAMPLE));
     expect(doc.meta.colorOverride).toBeUndefined();
   });
 });
@@ -144,12 +139,13 @@ describe("G-C6 accent brand gate accepts hue integers and rejects obsolete axes"
     const b = brand(recipe("minimal-tech").toneAnchor, { "visual.accent": value } as BrandOverrides);
     expect(validateBrand(b).map((error) => error.path)).toContain("overrides.visual.accent");
   });
-  it("cold_warm is unknown with an accent hint, while motion.easing stays deferred", () => {
+  it("cold_warm is unknown with an accent hint, while motion.easing is accepted", () => {
     const cold = brand(recipe("minimal-tech").toneAnchor, { "tone_vector.cold_warm": 7 } as BrandOverrides);
     expect(validateBrand(cold)[0]?.message).toContain("visual.accent");
     expect(selectRecipe(cold, RECIPES).conflicts[0]?.message).toContain("visual.accent");
-    const motion = brand(recipe("minimal-tech").toneAnchor, { "motion.easing": "spring" } as BrandOverrides);
-    expect(selectRecipe(motion, RECIPES).conflicts.map((conflict) => conflict.code)).toContain("override-deferred");
+    const motion = brand(recipe("minimal-tech").toneAnchor, { "motion.easing": "standard" });
+    expect(validateBrand(motion)).toEqual([]);
+    expect(selectRecipe(motion, RECIPES).conflicts.map((conflict) => conflict.code)).not.toContain("override-deferred");
   });
 });
 

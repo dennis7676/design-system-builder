@@ -449,7 +449,7 @@ function baseCss(doc: TokensDocument): string {
     .application-sample { min-width: 0; display: grid; gap: .5rem; align-content: start; }
     .application-sample.app-wide { grid-column: span 2; }
     .application-label, .app-eyebrow, .app-marker, .app-slide-content footer, .app-lower-bar span { margin: 0; font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 58%, var(--semantic-color-surface-default, Canvas)); }
-    .application-frame { container-type: inline-size; position: relative; overflow: hidden; min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 94%, var(--semantic-color-primary-default, currentColor)); color: var(--semantic-color-surface-foreground, CanvasText); }
+    .application-frame { container-type: size; position: relative; overflow: hidden; min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 94%, var(--semantic-color-primary-default, currentColor)); color: var(--semantic-color-surface-foreground, CanvasText); }
     .app-ratio-16x9 { aspect-ratio: 16 / 9; }
     .app-ratio-4x5 { aspect-ratio: 4 / 5; }
     .app-ratio-9x16 { aspect-ratio: 9 / 16; }
@@ -458,11 +458,11 @@ function baseCss(doc: TokensDocument): string {
     .app-website-frame { background: var(--semantic-color-surface-default, Canvas); }
     .app-website-scale { width: 1280px; height: 720px; transform: scale(.25); transform-origin: top left; }
     .app-website-frame iframe { width: 1280px; height: 720px; border: 0; background: var(--semantic-color-surface-default, Canvas); }
-    .app-slide-frame, .app-video-card, .app-portrait-card, .app-carousel-frame { display: grid; gap: clamp(.4rem, 3cqw, 1.1rem); padding: clamp(.9rem, 6cqw, 2rem); align-content: safe center; }
-    .application-frame .app-eyebrow { font-size: clamp(.55rem, 3.2cqw, .72rem); }
+    .app-slide-frame, .app-video-card, .app-portrait-card, .app-carousel-frame { display: grid; gap: clamp(.35rem, 2.4cqw, 1rem); padding: clamp(.8rem, 5cqw, 1.8rem); align-content: safe center; }
+    .application-frame .app-eyebrow { font-size: clamp(.55rem, 3.2cqw, .72rem); line-height: 1.3; }
     .app-slide-frame[data-skeleton-align="left"], .app-video-card[data-skeleton-align="left"], .app-portrait-card[data-skeleton-align="left"] { justify-items: start; text-align: left; }
     .app-slide-frame[data-skeleton-align="center"], .app-video-card[data-skeleton-align="center"], .app-portrait-card[data-skeleton-align="center"] { justify-items: center; text-align: center; }
-    .app-slide-frame h3, .app-video-card h3, .app-portrait-card h3, .app-carousel-frame h3 { max-width: 22ch; margin: 0; text-wrap: balance; font: var(--semantic-typography-display-weight) clamp(1rem, 8cqw, var(--semantic-typography-display-size))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); overflow-wrap: anywhere; }
+    .app-slide-frame h3, .app-video-card h3, .app-portrait-card h3, .app-carousel-frame h3 { max-width: 22ch; margin: 0; text-wrap: balance; font: var(--semantic-typography-display-weight) clamp(1rem, 8cqw, var(--semantic-typography-display-size))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); font-size: clamp(1rem, min(7.5cqw, 11cqh), var(--semantic-typography-display-size)); line-height: min(var(--semantic-typography-display-lineHeight), 1.22); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); overflow-wrap: anywhere; }
     .app-slide-content { align-content: stretch; }
     .app-slide-content h3 { max-width: none; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); font-size: min(var(--semantic-typography-h2-size), 4.5cqw); }
     .app-slide-content ul { display: grid; gap: .25rem; margin: 0; padding: 0; list-style: none; }
@@ -471,7 +471,7 @@ function baseCss(doc: TokensDocument): string {
     .application-copy, .app-slide-content span { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 72%, var(--semantic-color-surface-default, Canvas)); }
     .app-slide-content footer { display: flex; justify-content: space-between; align-self: end; justify-self: stretch; border-top: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); padding-top: .45rem; }
     @container (max-width: 30rem) { .app-slide-content li { grid-template-columns: 1fr; gap: .1rem; } .app-slide-content li span { display: none; } }
-    .app-wordmark { align-self: end; font: var(--semantic-typography-h1-weight) min(var(--semantic-typography-h1-size), 4.2cqw)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
+    .app-wordmark { align-self: end; font: var(--semantic-typography-h1-weight) min(var(--semantic-typography-h1-size), 3.8cqw)/min(var(--semantic-typography-h1-lineHeight), 1.2) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .app-ornament { width: min(7rem, 42%); height: .25rem; border-radius: 999px; background: var(--semantic-color-primary-default, currentColor); }
     [data-skeleton-ornament="card"] .app-ornament { width: min(5rem, 38%); height: 2.5rem; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 84%, var(--semantic-color-primary-default, currentColor)); }
     [data-skeleton-ornament="index"] .app-ornament::before { content: "01"; font-family: var(--primitive-font-family-mono, ui-monospace, monospace); color: var(--semantic-color-primary-default, currentColor); }

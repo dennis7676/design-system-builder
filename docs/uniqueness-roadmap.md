@@ -76,10 +76,11 @@ deterministic).
   283 goldens green; EN+KO render QA with DOM overflow probe (all frames
   contained).
 - Ordering: R-A feeds R-B design; R-B implementation follows the codex-dispatch pattern with the usual gates (var-only, anti-hardcode, drift goldens, render QA). Orthogonal to the 8 skeleton grammars.
-- **Next: layout-probe smoke (2026-07-03 decision)** — permanentize the ad-hoc
-  browser DOM probe used during R-B QA as a standing smoke script (playwright,
-  EN+KO × representative recipes): assert zero frame overflow, no element
-  overlap / zero-gap adjacency in styleguide chrome. String goldens cannot see
-  layout (node env); this class of defect (playground spacing `89b18c0`, slide
-  clipping) is machine-detectable only in a browser. Separate script from
-  `npm test`; Essence-E2E precedent.
+- **layout-probe smoke** ✅ (2026-07-03, `62e990e`): `npm run probe:layout` —
+  8 recipes × en/ko rendered in a system browser (playwright-core channels,
+  graceful SKIP), asserting application-frame containment (≤2px) and
+  GAP_RULES adjacency (extensible table). First run caught 7 latent
+  title-slide overflows on large-display recipes → fixed with
+  container-type:size + cqh type budget + line-height caps. Fault
+  re-injection verified detection (16/16 FAIL on removed stage margin).
+  Kept separate from `npm test` by design.

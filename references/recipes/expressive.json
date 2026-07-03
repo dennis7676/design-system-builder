@@ -2,6 +2,7 @@
   "key": "expressive",
   "version": "1.0.0",
   "source": "F1 Expressive Consumer (Material 3-like; nominative reference). Vivid high-chroma accent, geometric/display type, pill radii, dramatic type-scale.",
+  "skeleton": "collage",
   "toneAnchor": {
     "static_dynamic": 6,
     "cold_warm": 5,

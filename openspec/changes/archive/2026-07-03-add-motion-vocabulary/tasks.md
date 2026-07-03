@@ -35,5 +35,5 @@
       in new build (additions only)
 - [x] 4.3 Full suite green EXCEPT the intentional R1 keystone mismatch;
       typecheck clean
-- [ ] 4.4 (operator, L3) user approval → keystone regeneration → suite fully
+- [x] 4.4 (operator, L3) user approval → keystone regeneration → suite fully
       green → commit + archive

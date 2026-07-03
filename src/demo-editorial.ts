@@ -85,7 +85,7 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
     .eyebrow, .spread-number { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: color-mix(in oklch, ${fg} 58%, ${surface}); }
-    .lead { max-width: 48ch; color: color-mix(in oklch, ${fg} 74%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .lead { max-width: 48ch; text-wrap: pretty; color: color-mix(in oklch, ${fg} 74%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
@@ -98,10 +98,10 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .masthead-links a:hover { color: ${primary}; }
     main { width: min(74rem, 100%); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
     .editorial-hero { min-height: min(44rem, 82vh); display: grid; place-items: center; align-content: center; justify-items: center; gap: 1.35rem; text-align: center; padding: clamp(4rem, 10vw, 8rem) 0; border-bottom: 1px solid ${hairline}; }
-    .editorial-hero h1 { max-width: 12ch; font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .78), 8vw, calc(var(--semantic-typography-display-size) * 1.2))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
+    .editorial-hero h1 { max-width: 24ch; text-wrap: balance; font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .78), 8vw, calc(var(--semantic-typography-display-size) * 1.2))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; }
     .editorial-spread { padding: clamp(3rem, 7vw, 6rem) 0; display: grid; gap: clamp(2rem, 5vw, 4rem); border-bottom: 1px solid ${hairline}; }
-    .editorial-spread h2 { max-width: 16ch; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
+    .editorial-spread h2 { max-width: 20ch; text-wrap: balance; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
     .spread-rows { display: grid; border-top: 1px solid ${hairline}; }
     .spread-row { display: grid; grid-template-columns: minmax(3rem, .35fr) minmax(12rem, .9fr) minmax(16rem, 1.2fr); gap: clamp(1rem, 4vw, 3rem); align-items: start; padding: clamp(1.5rem, 4vw, 3rem) 0; border-bottom: 1px solid ${hairline}; }
     .spread-row:nth-child(even) h3 { grid-column: 3; grid-row: 1; }
@@ -140,7 +140,7 @@ function editorialKoCss(ko: boolean): string {
   return `
     body { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
     .lead { max-width: min(48ch, 35em); line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
-    .editorial-hero h1 { max-width: min(12ch, 12em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
+    .editorial-hero h1 { max-width: min(24ch, 16em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
     .brand, .editorial-spread h2, .spread-row h3, .invitation h2 { letter-spacing: normal; }`;
 }
 

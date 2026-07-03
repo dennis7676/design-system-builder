@@ -68,5 +68,11 @@ deterministic).
   variant → SKILL.md top-3 recipe candidates; handoff-to-code → docs note;
   3+ reference-image intake → interview Phase 0 (skill layer, core untouched);
   animation component sourcing → M4 gate (normalize into motion tokens).
-- **R-B**: styleguide "Applications" section — same-token samples per medium: website (embedded demo), 16:9 slide deck (2 slides), Instagram carousel (4:5/1:1, 3 frames), plus static video layouts (16:9 title card + lower third, 9:16 shorts/reels cover; motion itself is M4 scope).
+- **R-B** ✅ (2026-07-03): styleguide "Applications" section shipped
+  (`1e0d31a`, archived `add-styleguide-applications`) — website embed, 16:9
+  slides ×2, 4:5 carousel ×3, 16:9 title card + lower third, 9:16 shorts
+  cover. Frame-relative type via container queries (cqw + @container
+  fallbacks), skeletonHint placement map, copy-deck reuse, var-only;
+  283 goldens green; EN+KO render QA with DOM overflow probe (all frames
+  contained).
 - Ordering: R-A feeds R-B design; R-B implementation follows the codex-dispatch pattern with the usual gates (var-only, anti-hardcode, drift goldens, render QA). Orthogonal to the 8 skeleton grammars.

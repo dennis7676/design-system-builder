@@ -12,6 +12,9 @@ import { contrastRatio } from "./color.js";
 import { flatten } from "./validator.js";
 import { MIN_RATIO } from "./tokens-schema.js";
 
+export { COPY } from "./demo-copy.js";
+export type { DemoCopy } from "./demo-copy.js";
+
 export class TokenSurfaceError extends Error {
   constructor(message: string) {
     super(message);

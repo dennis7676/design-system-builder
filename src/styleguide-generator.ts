@@ -4,8 +4,10 @@ import { computeTokenHash } from "./validator.js";
 import { toRealizedWeb } from "./transformer.js";
 import {
   aliasRows,
+  COPY,
   contrastKey,
   contrastResults,
+  type DemoCopy,
   entriesFrom,
   hasTokenPath,
   resolveToken,
@@ -28,6 +30,13 @@ import { webfontHeadTags } from "./font-sources.js";
 
 const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
 
+class StyleguideSurfaceError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "StyleguideSurfaceError";
+  }
+}
+
 export function generateStyleguide(doc: TokensDocument): string {
   const hash = computeTokenHash(doc);
   const ko = doc.meta.locales?.includes("ko") ?? false;
@@ -42,7 +51,7 @@ export function generateStyleguide(doc: TokensDocument): string {
   const elevation = elevationSection(doc, realized);
   if (elevation !== "") sections.push(elevation);
   if (hasMotion(doc)) sections.push(motionSection(doc, realized));
-  sections.push(components(doc), relationships(doc), accessibility(doc));
+  sections.push(components(doc), applications(doc, ko), relationships(doc), accessibility(doc));
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
   return [
     "<!doctype html>",
@@ -74,7 +83,7 @@ function nav(doc: TokensDocument): string {
   ];
   if (hasElevation(doc)) items.push(["elevation", "Elevation"]);
   if (hasMotion(doc)) items.push(["motion", "Motion"]);
-  items.push(["components", "Components"], ["relationships", "Relationships"], ["accessibility", "Accessibility"]);
+  items.push(["components", "Components"], ["applications", "Applications"], ["relationships", "Relationships"], ["accessibility", "Accessibility"]);
   return items.map(([id, label]) => `<a href="#${id}" data-nav-link="${id}">${label}</a>`).join("");
 }
 
@@ -175,6 +184,31 @@ function components(doc: TokensDocument): string {
   return section("components", "Components", `<p class="section-lead">Component tokens bind semantic decisions into reusable states. Use the control to simulate the primary button state without leaving this static file.</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="Preview button state"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">Primary button</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">Composed example</p><h3>Token-backed card</h3><p>Surface, foreground, spacing, radius, and button tokens combine into a real product pattern.</p><button class="demo-button" type="button">Continue</button></article></div></div><div class="table-card"><h3>Component token map</h3><table><tbody>${mappings}</tbody></table></div>`);
 }
 
+function applications(doc: TokensDocument, ko = false): string {
+  const copy: DemoCopy = ko ? COPY.ko : COPY.en;
+  const brand = htmlEscape(doc.meta.recipe);
+  const hint = skeletonHint(doc.meta.skeleton ?? "standard");
+  const cards = copy.cards;
+  const firstCard = cards[0];
+  const secondCard = cards[1];
+  if (firstCard === undefined || secondCard === undefined) {
+    throw new StyleguideSurfaceError("application copy deck requires at least two cards");
+  }
+  const slideRows = cards
+    .map(([title, body]) => `<li><strong data-copy-source="deck">${htmlEscape(title)}</strong><span data-copy-source="deck">${htmlEscape(body)}</span></li>`)
+    .join("");
+  const carousel = [
+    `<div data-app-carousel-frame class="application-frame app-ratio-4x5 app-carousel-frame"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span class="app-swipe" aria-hidden="true">&rarr;</span></div>`,
+    `<div data-app-carousel-frame class="application-frame app-ratio-4x5 app-carousel-frame"><span class="app-marker">2/3</span><h3 data-copy-source="deck">${htmlEscape(firstCard[0])}</h3><p data-copy-source="deck" class="application-copy">${htmlEscape(firstCard[1])}</p></div>`,
+    `<div data-app-carousel-frame class="application-frame app-ratio-4x5 app-carousel-frame"><span class="app-marker">3/3</span><h3 data-copy-source="deck">${htmlEscape(copy.featuresTitle)}</h3><span data-copy-source="deck" class="app-cta-chip">${htmlEscape(copy.ctaPrimary)}</span></div>`,
+  ].join("");
+  return section(
+    "applications",
+    "Applications",
+    `<p class="section-lead">Every sample below consumes the very tokens documented on this page &mdash; same CSS custom properties, no per-medium overrides &mdash; and the drift goldens verify that mechanically.</p><div class="applications-grid"><article data-application="app-website" class="application-sample"><p class="application-label">Website &middot; 16:9</p><div class="application-frame app-ratio-16x9 app-website-frame"><div class="app-website-scale"><iframe src="demo.html" loading="lazy" title="Website demo"></iframe></div></div></article><article data-application="app-slide" class="application-sample app-wide"><p class="application-label">Slide deck &middot; 16:9</p><div class="app-frame-row"><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span class="app-wordmark">${brand}</span><i class="app-ornament" aria-hidden="true"></i></div><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame app-slide-content" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><h3 data-copy-source="deck">${htmlEscape(copy.featuresTitle)}</h3><ul>${slideRows}</ul><footer><span>${brand}</span><span>02</span></footer></div></div></article><article data-application="app-carousel" class="application-sample app-wide"><p class="application-label">Carousel &middot; 4:5</p><div class="app-carousel-row">${carousel}</div></article><article data-application="app-video-land" class="application-sample app-wide"><p class="application-label">Video landscape &middot; 16:9</p><div class="app-frame-row"><div class="application-frame app-ratio-16x9 app-video-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><span class="app-wordmark">${brand}</span><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3></div><div class="application-frame app-ratio-16x9 app-lower-third"><div class="app-lower-bar"><strong data-copy-source="deck">${htmlEscape(secondCard[0])}</strong><span>${brand}</span></div></div></div></article><article data-application="app-video-port" class="application-sample"><p class="application-label">Shorts cover &middot; 9:16</p><div class="application-frame app-ratio-9x16 app-portrait-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span data-copy-source="deck" class="app-cta-chip">${htmlEscape(copy.ctaPrimary)}</span><span class="app-wordmark">${brand}</span></div></article></div>`,
+  );
+}
+
 function relationships(doc: TokensDocument): string {
   const rows = aliasRows(doc)
     .map((row) => `<tr data-alias-row><td>${htmlEscape(row.terminal)}</td><td>${htmlEscape(row.target)}</td><td>${htmlEscape(row.path)}</td></tr>`)
@@ -222,6 +256,29 @@ interface RoleStyle {
   readonly weight: string;
   readonly lineHeight: string;
   readonly tracking: string;
+}
+
+type SkeletonName = NonNullable<TokensDocument["meta"]["skeleton"]>;
+
+interface SkeletonHint {
+  readonly align: "left" | "center";
+  readonly ornament: "hairline" | "card" | "index";
+}
+
+const SKELETON_HINTS: Record<SkeletonName, SkeletonHint> = {
+  standard: { align: "left", ornament: "hairline" },
+  editorial: { align: "left", ornament: "hairline" },
+  "spec-sheet": { align: "left", ornament: "hairline" },
+  briefing: { align: "center", ornament: "index" },
+  collage: { align: "left", ornament: "card" },
+  mosaic: { align: "center", ornament: "card" },
+  poster: { align: "center", ornament: "hairline" },
+  journal: { align: "left", ornament: "index" },
+  story: { align: "center", ornament: "card" },
+};
+
+function skeletonHint(skeleton: SkeletonName): SkeletonHint {
+  return SKELETON_HINTS[skeleton];
 }
 
 function hasElevation(doc: TokensDocument): boolean {
@@ -290,6 +347,47 @@ function baseCss(doc: TokensDocument): string {
     .playground-toolbar button.is-selected { color: var(--component-button-foreground, ButtonText); background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); border-color: transparent; }
     .component-stage { align-items: stretch; }
     .sample-card { display: grid; gap: .4rem; align-content: start; }
+    .applications-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+    .application-sample { min-width: 0; display: grid; gap: .5rem; align-content: start; }
+    .application-sample.app-wide { grid-column: span 2; }
+    .application-label, .app-eyebrow, .app-marker, .app-slide-content footer, .app-lower-bar span { margin: 0; font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 58%, var(--semantic-color-surface-default, Canvas)); }
+    .application-frame { container-type: inline-size; position: relative; overflow: hidden; min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 94%, var(--semantic-color-primary-default, currentColor)); color: var(--semantic-color-surface-foreground, CanvasText); }
+    .app-ratio-16x9 { aspect-ratio: 16 / 9; }
+    .app-ratio-4x5 { aspect-ratio: 4 / 5; }
+    .app-ratio-9x16 { aspect-ratio: 9 / 16; }
+    .app-frame-row, .app-carousel-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+    .app-carousel-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .app-website-frame { background: var(--semantic-color-surface-default, Canvas); }
+    .app-website-scale { width: 1280px; height: 720px; transform: scale(.25); transform-origin: top left; }
+    .app-website-frame iframe { width: 1280px; height: 720px; border: 0; background: var(--semantic-color-surface-default, Canvas); }
+    .app-slide-frame, .app-video-card, .app-portrait-card, .app-carousel-frame { display: grid; gap: clamp(.4rem, 3cqw, 1.1rem); padding: clamp(.9rem, 6cqw, 2rem); align-content: safe center; }
+    .application-frame .app-eyebrow { font-size: clamp(.55rem, 3.2cqw, .72rem); }
+    .app-slide-frame[data-skeleton-align="left"], .app-video-card[data-skeleton-align="left"], .app-portrait-card[data-skeleton-align="left"] { justify-items: start; text-align: left; }
+    .app-slide-frame[data-skeleton-align="center"], .app-video-card[data-skeleton-align="center"], .app-portrait-card[data-skeleton-align="center"] { justify-items: center; text-align: center; }
+    .app-slide-frame h3, .app-video-card h3, .app-portrait-card h3, .app-carousel-frame h3 { max-width: 22ch; margin: 0; text-wrap: balance; font: var(--semantic-typography-display-weight) clamp(1rem, 8cqw, var(--semantic-typography-display-size))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); overflow-wrap: anywhere; }
+    .app-slide-content { align-content: stretch; }
+    .app-slide-content h3 { max-width: none; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); font-size: min(var(--semantic-typography-h2-size), 4.5cqw); }
+    .app-slide-content ul { display: grid; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+    .app-slide-content li { display: grid; grid-template-columns: minmax(5.5rem, .7fr) minmax(0, 1.3fr); gap: .6rem; padding-block: .3rem; border-top: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); font-size: min(var(--semantic-typography-body-size), 3cqw); line-height: 1.45; }
+    .app-slide-content strong { font: var(--semantic-typography-h3-weight) min(var(--semantic-typography-body-size), 3.2cqw)/1.45 var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
+    .application-copy, .app-slide-content span { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 72%, var(--semantic-color-surface-default, Canvas)); }
+    .app-slide-content footer { display: flex; justify-content: space-between; align-self: end; justify-self: stretch; border-top: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); padding-top: .45rem; }
+    @container (max-width: 30rem) { .app-slide-content li { grid-template-columns: 1fr; gap: .1rem; } .app-slide-content li span { display: none; } }
+    .app-wordmark { align-self: end; font: var(--semantic-typography-h1-weight) min(var(--semantic-typography-h1-size), 4.2cqw)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
+    .app-ornament { width: min(7rem, 42%); height: .25rem; border-radius: 999px; background: var(--semantic-color-primary-default, currentColor); }
+    [data-skeleton-ornament="card"] .app-ornament { width: min(5rem, 38%); height: 2.5rem; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 84%, var(--semantic-color-primary-default, currentColor)); }
+    [data-skeleton-ornament="index"] .app-ornament::before { content: "01"; font-family: var(--primitive-font-family-mono, ui-monospace, monospace); color: var(--semantic-color-primary-default, currentColor); }
+    .app-carousel-frame { align-content: space-between; min-height: 0; }
+    .app-carousel-frame h3 { font-size: clamp(.95rem, 11cqw, calc(var(--semantic-typography-display-size) * .9)); }
+    .app-swipe { justify-self: end; font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); color: var(--semantic-color-primary-default, currentColor); }
+    .app-cta-chip { display: inline-flex; align-items: center; justify-content: center; width: fit-content; border-radius: var(--component-button-radius, var(--semantic-shape-control, .5rem)); padding: .7rem var(--component-button-paddingX, 1.25rem); background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); color: var(--component-button-foreground, ButtonText); }
+    .app-video-card { min-height: 0; align-content: space-between; }
+    .app-video-card .app-wordmark { align-self: start; font-size: min(var(--semantic-typography-h1-size), 4.5cqw); }
+    .app-lower-third { background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 86%, var(--semantic-color-surface-foreground, CanvasText)); }
+    .app-lower-bar { position: absolute; left: clamp(1rem, 4vw, 2rem); bottom: clamp(1rem, 4vw, 2rem); min-width: min(24rem, 72%); display: grid; gap: .2rem; padding: .85rem 1rem; border-left: .32rem solid var(--semantic-color-primary-default, currentColor); background: var(--semantic-color-surface-default, Canvas); }
+    .app-lower-bar strong { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
+    .app-portrait-card { align-content: space-between; }
+    .app-portrait-card h3 { font-size: clamp(1rem, 9.5cqw, calc(var(--semantic-typography-display-size) * 1.08)); }
     @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: calc(var(--semantic-typography-display-size) * .72); } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
 ${reduce}`;
 }
@@ -300,5 +398,7 @@ function koCss(ko: boolean): string {
     body { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
     h1 { max-width: min(13ch, 15em); letter-spacing: normal; line-height: max(1.12, var(--semantic-typography-display-lineHeight)); }
     h2 { letter-spacing: normal; }
-    .lead, .section-lead { max-width: 35em; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }`;
+    .lead, .section-lead { max-width: 35em; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
+    .application-copy { word-break: keep-all; overflow-wrap: anywhere; line-height: max(1.7, var(--semantic-typography-body-lineHeight)); }
+    .app-slide-frame h3, .app-video-card h3, .app-portrait-card h3, .app-carousel-frame h3, .app-wordmark, .app-slide-content h3, .app-slide-content strong, .app-lower-bar strong { letter-spacing: normal; }`;
 }

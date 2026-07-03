@@ -14,6 +14,8 @@ import { computeTokenHash } from "./validator.js";
 import { hasTokenPath } from "./surface-data.js";
 import { htmlEscape } from "./render-utils.js";
 import { generateEditorialDemo } from "./demo-editorial.js";
+import { generateJournalDemo } from "./demo-journal.js";
+import { generateStoryDemo } from "./demo-story.js";
 import { COPY, type DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 
@@ -34,6 +36,12 @@ export function generateDemo(doc: TokensDocument): string {
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
   if (doc.meta.skeleton === "editorial") {
     return generateEditorialDemo(doc, tier, ko, copy, brand, snapshot);
+  }
+  if (doc.meta.skeleton === "journal") {
+    return generateJournalDemo(doc, tier, ko, copy, brand, snapshot);
+  }
+  if (doc.meta.skeleton === "story") {
+    return generateStoryDemo(doc, tier, ko, copy, brand, snapshot);
   }
   return [
     "<!doctype html>",

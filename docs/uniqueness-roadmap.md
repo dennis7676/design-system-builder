@@ -84,3 +84,8 @@ deterministic).
   container-type:size + cqh type budget + line-height caps. Fault
   re-injection verified detection (16/16 FAIL on removed stage margin).
   Kept separate from `npm test` by design.
+- **Interview affordances** ✅ (2026-07-03, `06543d1`): benchmarking verdicts
+  ④⑤⑥ landed — cli candidate table + `branding.recipe_override`
+  (reproducibility-preserving human choice, loud CONFLICTs), SKILL.md
+  mood-image priors + candidate-choice/comparison-builds steps, README
+  Handoff subsection. 288 tests; artifact bytes frozen.

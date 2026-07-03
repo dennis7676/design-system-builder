@@ -44,7 +44,7 @@ export interface Recipe {
   readonly version: string;
   readonly source: string;
   readonly status?: string;
-  readonly skeleton?: "standard" | "editorial";
+  readonly skeleton?: "standard" | "editorial" | "spec-sheet" | "briefing" | "collage" | "mosaic" | "poster" | "journal" | "story";
   readonly typeScale?: { readonly ratio?: number };
   readonly toneAnchor: ToneVector;
   readonly hardConstraintRules: HardConstraintRules;

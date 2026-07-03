@@ -211,7 +211,7 @@ export interface TokensMeta {
    * Recipe-declared layout skeleton. Meta is excluded from the intent hash;
    * absent resolves to the standard demo skeleton for backward compatibility.
    */
-  skeleton?: "standard" | "editorial";
+  skeleton?: "standard" | "editorial" | "spec-sheet" | "briefing" | "collage" | "mosaic" | "poster" | "journal" | "story";
   colorOverride?: ColorOverrideMeta;
   motionOverride?: MotionOverrideMeta;
 }

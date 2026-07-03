@@ -7,6 +7,7 @@ import {
   isGradientValue,
 } from "./tokens-schema.js";
 import { resolveToken, tokenEntries, tokenMap, TokenSurfaceError } from "./surface-data.js";
+import { toHexColor } from "./color.js";
 
 export function toRealizedWeb(doc: TokensDocument): Map<string, string> {
   const leaves = tokenMap(doc);
@@ -23,6 +24,78 @@ export function toRealizedWeb(doc: TokensDocument): Map<string, string> {
 function isWebExportable(leaf: LeafToken): boolean {
   if (!leaf.$class.startsWith("target-only:")) return true;
   return leaf.$class === "target-only:web";
+}
+
+export type VideoRealizedValue = string | number | readonly string[];
+
+export interface RealizedVideo {
+  /** path → Remotion-consumable value (hex string, px/ms number, family array). */
+  values: Map<string, VideoRealizedValue>;
+  /** paths whose $type the video target cannot realize yet (full-M4 scope). */
+  skipped: string[];
+}
+
+/** $types the video spike deliberately does not realize (shadow/gradient/easing = full M4). */
+const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "cubicBezier"]);
+
+export function toRealizedVideo(doc: TokensDocument): RealizedVideo {
+  const leaves = tokenMap(doc);
+  const base = doc.transformContract.dimension?.video?.base
+    ?? doc.transformContract.dimension?.web?.base
+    ?? 16;
+  const values = new Map<string, VideoRealizedValue>();
+  const skipped: string[] = [];
+  for (const entry of tokenEntries(doc)) {
+    if (!isVideoExportable(entry.leaf)) continue;
+    const resolved = resolveToken(entry.path, leaves);
+    if (VIDEO_SKIPPED_TYPES.has(resolved.$type)) {
+      skipped.push(entry.path);
+      continue;
+    }
+    values.set(entry.path, realizeVideo(resolved.$type, resolved.$value, base));
+  }
+  return { values, skipped };
+}
+
+function isVideoExportable(leaf: LeafToken): boolean {
+  if (!leaf.$class.startsWith("target-only:")) return true;
+  return leaf.$class === "target-only:video";
+}
+
+function realizeVideo(type: LeafType, value: LeafToken["$value"], base: number): VideoRealizedValue {
+  switch (type) {
+    case "color":
+      if (typeof value !== "string") throw new TokenSurfaceError("color string expected");
+      return toHexColor(value);
+    case "dimension": {
+      const dimension = requireDimension(value);
+      switch (dimension.unit) {
+        case "abstract":
+          return dimension.value * base;
+        case "px-base":
+          return dimension.value;
+        case "ms":
+          throw new TokenSurfaceError("dimension cannot use ms unit");
+      }
+      break;
+    }
+    case "duration": {
+      const duration = requireDimension(value);
+      if (duration.unit !== "ms") throw new TokenSurfaceError("duration must use ms unit");
+      return duration.value;
+    }
+    case "fontFamily":
+      if (!Array.isArray(value)) throw new TokenSurfaceError("fontFamily array expected");
+      return value;
+    case "fontWeight":
+    case "number":
+      if (typeof value !== "number") throw new TokenSurfaceError(`${type} number expected`);
+      return value;
+    case "shadow":
+    case "cubicBezier":
+    case "gradient":
+      throw new TokenSurfaceError(`${type} is not video-realizable in the spike`);
+  }
 }
 
 function realize(type: LeafType, value: LeafToken["$value"], base: number): string {

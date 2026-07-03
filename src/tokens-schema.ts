@@ -150,9 +150,12 @@ export interface Philosophy {
 }
 
 export interface TransformContract {
-  dimension?: { web?: { base: number; unit: "rem" | "px" } };
-  duration?: { web?: "ms" };
-  color?: { web?: "oklch" | "hex" };
+  dimension?: {
+    web?: { base: number; unit: "rem" | "px" };
+    video?: { base: number; unit: "px" };
+  };
+  duration?: { web?: "ms"; video?: "ms" };
+  color?: { web?: "oklch" | "hex"; video?: "hex" };
 }
 
 export interface ColorOverrideCorrection {

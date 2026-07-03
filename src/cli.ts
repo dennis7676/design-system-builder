@@ -7,6 +7,7 @@ import {
   generateStyleguide,
   loadTokens,
   toCssVars,
+  toTokensTs,
 } from "./index.js";
 import { validateTokens } from "./validator.js";
 import { validateBrand, type BrandJson } from "./brand-schema.js";
@@ -76,10 +77,11 @@ function generate(argv: string[]): number {
   }
   mkdirSync(outDir, { recursive: true });
   writeFileSync(`${outDir}/tokens.css`, `${css}\n`);
+  writeFileSync(`${outDir}/tokens.ts`, toTokensTs(doc));
   writeFileSync(`${outDir}/styleguide.html`, styleguideHtml);
   writeFileSync(`${outDir}/DESIGN.md`, designMd);
   writeFileSync(`${outDir}/demo.html`, demoHtml);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
   return 0;
 }
 

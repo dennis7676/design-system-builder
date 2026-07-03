@@ -103,6 +103,25 @@ export function clampOklchChroma(color: Oklch): Oklch {
   };
 }
 
+/** Linear sRGB → gamma-encoded #rrggbb (out-of-gamut channels clamped). */
+export function linearToHex(rgb: LinearRGB): string {
+  const encode = (c: number) => {
+    const lin = clamp01(c);
+    const srgb = lin <= 0.0031308 ? lin * 12.92 : 1.055 * Math.pow(lin, 1 / 2.4) - 0.055;
+    return Math.round(clamp01(srgb) * 255)
+      .toString(16)
+      .padStart(2, "0");
+  };
+  return `#${encode(rgb.r)}${encode(rgb.g)}${encode(rgb.b)}`;
+}
+
+/** oklch()/hex intent string → #rrggbb. Throws on unparseable input. */
+export function toHexColor(s: string): string {
+  const rgb = parseColor(s);
+  if (!rgb) throw new Error(`unparseable color: ${s}`);
+  return linearToHex(rgb);
+}
+
 /** Parse a color string into linear sRGB. Returns null if unparseable. */
 export function parseColor(s: string): LinearRGB | null {
   const ok = parseOklch(s);

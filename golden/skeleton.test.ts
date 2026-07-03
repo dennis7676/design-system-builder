@@ -35,32 +35,28 @@ const styleBody = (html: string): string => {
   return css.replace(/:root\s*\{[\s\S]*?\n\s*\}/, "");
 };
 
-const STANDARD_DEMO_HASHES = {
-  "minimal-tech": "5bc5a3e4d84d36147dfaf0ef65bedd96d128f5d8ef4d7d4587821e0850b4d383",
-  enterprise: "e2b3869e93bd80e4e7f2683e3ebdade93b6ff8d147df3d83e46b83d1d0d27387",
-  expressive: "c0d446ef6417d266cc7ca594ff67c71e34ef516bfcd1d961dd6190378e13cf83",
-  "pro-emotive": "642c9bd0e78ad64570726f68eca058e44f9bd8e703543160b67c01c6cc79d937",
-  "creative-multiscale": "557c3d837421f374a088dab475e2b1160d4995e5d564ad6d6abb6d4d4e35546d",
-  "warm-creator": "64da2f85e3b0cd9fb6a2a0da80c89c96aae2f18a5358bf49174272ad69dc6e1e",
-  retro: "be5eef79d6e9e918032869c8f493f669fa3c64e922f940b59e4eb29fe4be906d",
-} as const;
+/** Synthetic standard anchor: a skeleton-less recipe must keep taking the
+ * standard demo path byte-for-byte. Pinned on minimal-tech's token document
+ * with the skeleton declaration stripped, so grammar diffusion across the
+ * real recipes cannot silently drift the standard generator. */
+const STANDARD_SYNTHETIC_HASH = "5bc5a3e4d84d36147dfaf0ef65bedd96d128f5d8ef4d7d4587821e0850b4d383";
 
 const regions = ["nav", "hero", "features", "form", "footer"] as const;
 
-describe("G-K1 — non-luxury demos stay byte-identical", () => {
-  for (const [key, hash] of Object.entries(STANDARD_DEMO_HASHES)) {
-    it(`${key} keeps the pre-spike standard demo bytes`, () => {
-      const built = buildFor(key);
-      const html = generateDemo(built);
-      expect(recipe(key).skeleton).toBeUndefined();
-      expect(built.meta.skeleton).toBeUndefined();
-      expect(sha256(html)).toBe(hash);
-      expect(html).toContain("card-grid");
-      expect(html).toContain("btn btn-primary");
-      expect(html).not.toContain("masthead");
-      expect(html).not.toContain("colophon");
-    });
-  }
+describe("G-K1 — skeleton-less recipes take the standard demo path", () => {
+  it("synthetic skeleton-less recipe keeps the standard demo bytes", () => {
+    const base = recipe("minimal-tech");
+    const { skeleton: _drop, ...rest } = base;
+    const stripped = rest as Recipe;
+    const built = buildTokens(brandFor("minimal-tech"), stripped);
+    const html = generateDemo(built);
+    expect(built.meta.skeleton).toBeUndefined();
+    expect(sha256(html)).toBe(STANDARD_SYNTHETIC_HASH);
+    expect(html).toContain("card-grid");
+    expect(html).toContain("btn btn-primary");
+    expect(html).not.toContain("masthead");
+    expect(html).not.toContain("colophon");
+  });
 });
 
 describe("G-K2 — luxury renders the editorial skeleton", () => {

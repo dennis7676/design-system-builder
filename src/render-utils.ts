@@ -47,8 +47,16 @@ export function axisLabel(axis: string): string {
   return axis.replaceAll("_", " / ");
 }
 
-export function usageHint(role: string, description: string): string {
+export function usageHint(role: string, description: string, ko = false): string {
   if (description !== "") return description;
+  if (ko) {
+    if (role.includes("surface.foreground")) return "짝이 되는 surface 역할 위에서 기본 텍스트·아이콘 색으로 사용합니다.";
+    if (role.includes("surface")) return "차분한 읽기 대비가 필요한 페이지·카드 배경에 사용합니다.";
+    if (role.includes("primary.foreground")) return "primary 액션 배경 위에 올라가는 콘텐츠에만 사용합니다.";
+    if (role.includes("primary")) return "주요 액션, 선택 상태, 강한 강조에 사용합니다.";
+    if (role.includes("hover")) return "뚜렷한 톤 변화가 필요한 호버 상태에 사용합니다.";
+    return "컴포넌트·레이아웃 결정에서 이 시맨틱 역할이 필요한 곳에 사용합니다.";
+  }
   if (role.includes("surface.foreground")) return "Default text and icon color on the matching surface role.";
   if (role.includes("surface")) return "Use for page and card backgrounds that need calm reading contrast.";
   if (role.includes("primary.foreground")) return "Use only for content placed on primary action backgrounds.";
@@ -57,13 +65,27 @@ export function usageHint(role: string, description: string): string {
   return "Use where this semantic role appears in component and layout decisions.";
 }
 
-export function typeSentence(role: string): string {
+export function typeSentence(role: string, ko = false): string {
+  if (ko) {
+    if (role.includes("heading")) return "목적이 분명한 제목은 시스템을 쉽게 훑어보게 합니다.";
+    if (role.includes("caption")) return "캡션은 조용한 메타데이터를 또렷하게 전달합니다.";
+    return "다람쥐 헌 쳇바퀴에 타고파 — 의도를 읽기 좋은 인터페이스 글자로 옮깁니다.";
+  }
   if (role.includes("heading")) return "Purposeful headings make the system easy to scan.";
   if (role.includes("caption")) return "Caption text clarifies quiet metadata without stealing focus.";
   return "The quick brown fox maps intent to readable interface type.";
 }
 
-export function componentUsage(path: string): string {
+export function componentUsage(path: string, ko = false): string {
+  if (ko) {
+    if (path.includes("backgroundHover")) return "인터랙티브 호버 표면";
+    if (path.includes("background")) return "기본 액션 표면";
+    if (path.includes("foreground")) return "텍스트·아이콘 색";
+    if (path.includes("radius")) return "컨트롤 형태";
+    if (path.includes("padding")) return "컨트롤 리듬";
+    if (path.includes("transition")) return "상태 전환 타이밍";
+    return "컴포넌트 계약";
+  }
   if (path.includes("backgroundHover")) return "Interactive hover surface";
   if (path.includes("background")) return "Default action surface";
   if (path.includes("foreground")) return "Text and icon color";

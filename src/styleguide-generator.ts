@@ -30,6 +30,103 @@ import { webfontHeadTags } from "./font-sources.js";
 
 const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
 
+// Chrome copy (page furniture) is locale-aware; token data (paths, values,
+// CSS property names, state names, PASS/FAIL) stays in English by design.
+const CHROME = {
+  en: {
+    navAria: "Sections",
+    titleSuffix: "Design System",
+    sections: {
+      philosophy: "Philosophy",
+      colors: "Colors",
+      typography: "Typography",
+      spacing: "Spacing",
+      shapes: "Shapes",
+      elevation: "Elevation",
+      motion: "Motion",
+      components: "Components",
+      applications: "Applications",
+      relationships: "Token Relationships",
+      accessibility: "Accessibility",
+    },
+    navRelationships: "Relationships",
+    philosophyEyebrow: "Generated design system",
+    designPrinciples: "Design principles",
+    decisionTrace: "Decision trace",
+    colorsLead:
+      "Semantic roles describe where color is used, not only what value it resolves to. Pair surface roles with foreground roles, and reserve primary roles for clear action states.",
+    typographyLead:
+      "The ramp uses the realized typography tokens directly, so specimens show the same scale and weight that components consume.",
+    easingRoles: "Easing roles",
+    motionDemo: "Motion demo",
+    componentsLead:
+      "Component tokens bind semantic decisions into reusable states. Use the control to simulate the primary button state without leaving this static file.",
+    previewAria: "Preview button state",
+    primaryButton: "Primary button",
+    composedExample: "Composed example",
+    tokenCardTitle: "Token-backed card",
+    tokenCardBody: "Surface, foreground, spacing, radius, and button tokens combine into a real product pattern.",
+    continueLabel: "Continue",
+    componentTokenMap: "Component token map",
+    applicationsLead:
+      "Every sample below consumes the very tokens documented on this page &mdash; same CSS custom properties, no per-medium overrides &mdash; and the drift goldens verify that mechanically.",
+    appWebsite: "Website",
+    appSlideDeck: "Slide deck",
+    appCarousel: "Carousel",
+    appVideoLand: "Video landscape",
+    appShortsCover: "Shorts cover",
+    iframeTitle: "Website demo",
+    focusDemo: "Focus demo",
+  },
+  ko: {
+    navAria: "섹션",
+    titleSuffix: "디자인 시스템",
+    sections: {
+      philosophy: "철학",
+      colors: "색상",
+      typography: "타이포그래피",
+      spacing: "간격",
+      shapes: "형태",
+      elevation: "엘리베이션",
+      motion: "모션",
+      components: "컴포넌트",
+      applications: "적용 사례",
+      relationships: "토큰 관계",
+      accessibility: "접근성",
+    },
+    navRelationships: "토큰 관계",
+    philosophyEyebrow: "생성된 디자인 시스템",
+    designPrinciples: "디자인 원칙",
+    decisionTrace: "결정 근거",
+    colorsLead:
+      "시맨틱 역할은 색이 어떤 값인지보다 어디에 쓰이는지를 설명합니다. surface 역할은 foreground 역할과 짝지어 쓰고, primary 역할은 명확한 액션 상태에만 아껴 쓰세요.",
+    typographyLead:
+      "타입 램프는 실제 타이포그래피 토큰을 그대로 사용하므로, 여기 보이는 크기와 굵기가 컴포넌트가 소비하는 값과 동일합니다.",
+    easingRoles: "이징 역할",
+    motionDemo: "모션 데모",
+    componentsLead:
+      "컴포넌트 토큰은 시맨틱 결정을 재사용 가능한 상태로 묶습니다. 아래 컨트롤로 이 정적 파일 안에서 기본 버튼 상태를 미리 볼 수 있습니다.",
+    previewAria: "버튼 상태 미리보기",
+    primaryButton: "기본 버튼",
+    composedExample: "조합 예시",
+    tokenCardTitle: "토큰 기반 카드",
+    tokenCardBody: "surface, foreground, 간격, 곡률, 버튼 토큰이 모여 실제 제품 패턴이 됩니다.",
+    continueLabel: "계속하기",
+    componentTokenMap: "컴포넌트 토큰 맵",
+    applicationsLead:
+      "아래 모든 샘플은 이 페이지에 문서화된 토큰을 그대로 소비합니다 &mdash; 같은 CSS 커스텀 프로퍼티, 매체별 오버라이드 없음 &mdash; drift 골든이 이를 기계적으로 검증합니다.",
+    appWebsite: "웹사이트",
+    appSlideDeck: "슬라이드 덱",
+    appCarousel: "캐러셀",
+    appVideoLand: "가로 영상",
+    appShortsCover: "쇼츠 커버",
+    iframeTitle: "웹사이트 데모",
+    focusDemo: "포커스 데모",
+  },
+} as const;
+
+type ChromeCopy = (typeof CHROME)["en" | "ko"];
+
 class StyleguideSurfaceError extends Error {
   constructor(message: string) {
     super(message);
@@ -41,17 +138,18 @@ export function generateStyleguide(doc: TokensDocument): string {
   const hash = computeTokenHash(doc);
   const ko = doc.meta.locales?.includes("ko") ?? false;
   const realized = toRealizedWeb(doc);
+  const t: ChromeCopy = ko ? CHROME.ko : CHROME.en;
   const sections = [
-    philosophy(doc),
-    colors(doc, realized),
-    typography(doc, realized, ko),
-    spacing(doc, realized),
-    shapes(doc, realized),
+    philosophy(doc, t),
+    colors(doc, realized, ko, t),
+    typography(doc, realized, ko, t),
+    spacing(doc, realized, t),
+    shapes(doc, realized, t),
   ];
-  const elevation = elevationSection(doc, realized);
+  const elevation = elevationSection(doc, realized, t);
   if (elevation !== "") sections.push(elevation);
-  if (hasMotion(doc)) sections.push(motionSection(doc, realized));
-  sections.push(components(doc), applications(doc, ko), relationships(doc), accessibility(doc));
+  if (hasMotion(doc)) sections.push(motionSection(doc, realized, t));
+  sections.push(components(doc, ko, t), applications(doc, ko, t), relationships(doc, t), accessibility(doc, t));
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
   return [
     "<!doctype html>",
@@ -59,12 +157,12 @@ export function generateStyleguide(doc: TokensDocument): string {
     "<head>",
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    `<title>${htmlEscape(doc.meta.recipe)} Design System</title>`,
+    `<title>${htmlEscape(doc.meta.recipe)} ${t.titleSuffix}</title>`,
     ...webfontHeadTags(doc),
     `<style>${baseCss(doc)}${koCss(ko)}</style>`,
     "</head>",
     "<body>",
-    `<nav aria-label="Sections">${nav(doc)}</nav>`,
+    `<nav aria-label="${t.navAria}">${nav(doc, t)}</nav>`,
     `<main>${sections.join("\n")}</main>`,
     `<script id="token-snapshot" type="application/json">${snapshot}</script>`,
     `<script>${styleguideInlineJs()}</script>`,
@@ -73,21 +171,21 @@ export function generateStyleguide(doc: TokensDocument): string {
   ].join("\n");
 }
 
-function nav(doc: TokensDocument): string {
+function nav(doc: TokensDocument, t: ChromeCopy): string {
   const items = [
-    ["philosophy", "Philosophy"],
-    ["colors", "Colors"],
-    ["typography", "Typography"],
-    ["spacing", "Spacing"],
-    ["shapes", "Shapes"],
+    ["philosophy", t.sections.philosophy],
+    ["colors", t.sections.colors],
+    ["typography", t.sections.typography],
+    ["spacing", t.sections.spacing],
+    ["shapes", t.sections.shapes],
   ];
-  if (hasElevation(doc)) items.push(["elevation", "Elevation"]);
-  if (hasMotion(doc)) items.push(["motion", "Motion"]);
-  items.push(["components", "Components"], ["applications", "Applications"], ["relationships", "Relationships"], ["accessibility", "Accessibility"]);
+  if (hasElevation(doc)) items.push(["elevation", t.sections.elevation]);
+  if (hasMotion(doc)) items.push(["motion", t.sections.motion]);
+  items.push(["components", t.sections.components], ["applications", t.sections.applications], ["relationships", t.navRelationships], ["accessibility", t.sections.accessibility]);
   return items.map(([id, label]) => `<a href="#${id}" data-nav-link="${id}">${label}</a>`).join("");
 }
 
-function philosophy(doc: TokensDocument): string {
+function philosophy(doc: TokensDocument, t: ChromeCopy): string {
   const principles = doc.meta.philosophy.principles
     .map((principle) => `<li>${htmlEscape(principle)}</li>`)
     .join("");
@@ -102,10 +200,10 @@ function philosophy(doc: TokensDocument): string {
       `<tr data-trace-row><td>${htmlEscape(item.axis)}=${htmlEscape(String(item.value))}</td><td>${htmlEscape(item.rationale)}</td><td>${htmlEscape(item.coversTokenPath.join(", "))}</td></tr>`,
     )
     .join("");
-  return section("philosophy", "Philosophy", `<div class="hero-panel"><p class="eyebrow">Generated design system</p><h1>${htmlEscape(doc.meta.recipe)}</h1><p class="lead">${htmlEscape(doc.meta.philosophy.rationale)}</p><div class="tone-grid">${tone}</div></div><div class="brand-card"><strong>Design principles</strong><ul>${principles}</ul></div><div class="table-card"><h3>Decision trace</h3><table><tbody>${trace}</tbody></table></div>`);
+  return section("philosophy", t.sections.philosophy, `<div class="hero-panel"><p class="eyebrow">${t.philosophyEyebrow}</p><h1>${htmlEscape(doc.meta.recipe)}</h1><p class="lead">${htmlEscape(doc.meta.philosophy.rationale)}</p><div class="tone-grid">${tone}</div></div><div class="brand-card"><strong>${t.designPrinciples}</strong><ul>${principles}</ul></div><div class="table-card"><h3>${t.decisionTrace}</h3><table><tbody>${trace}</tbody></table></div>`);
 }
 
-function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>, ko: boolean, t: ChromeCopy): string {
   const contrast = contrastResults(doc);
   const swatches = tokenEntriesUnder(doc.semantic, "color", "semantic.color")
     .filter((entry) => entry.leaf.$type === "color")
@@ -116,52 +214,52 @@ function colors(doc: TokensDocument, realized: ReadonlyMap<string, string>): str
         .filter((result) => result.pair.bg === entry.path)
         .map((result) => `<span class="badge ${result.pass ? "pass" : "fail"}">${result.pair.state} ${result.ratio.toFixed(2)} ${result.pass ? "PASS" : "FAIL"}</span>`)
         .join("");
-      return `<article data-color-swatch class="color-card"><span class="swatch" style="background:${htmlEscape(value)}"></span><div><p class="meta-label">${htmlEscape(role)}</p><strong>${htmlEscape(value)}</strong><small>${htmlEscape(usageHint(role, descriptionFor(doc, entry)))}</small><div class="badge-row">${badges}</div></div></article>`;
+      return `<article data-color-swatch class="color-card"><span class="swatch" style="background:${htmlEscape(value)}"></span><div><p class="meta-label">${htmlEscape(role)}</p><strong>${htmlEscape(value)}</strong><small>${htmlEscape(usageHint(role, ko ? "" : descriptionFor(doc, entry), ko))}</small><div class="badge-row">${badges}</div></div></article>`;
     })
     .join("");
-  return section("colors", "Colors", `<p class="section-lead">Semantic roles describe where color is used, not only what value it resolves to. Pair surface roles with foreground roles, and reserve primary roles for clear action states.</p><div class="swatch-grid">${swatches}</div>`);
+  return section("colors", t.sections.colors, `<p class="section-lead">${t.colorsLead}</p><div class="swatch-grid">${swatches}</div>`);
 }
 
-function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>, ko = false): string {
+function typography(doc: TokensDocument, realized: ReadonlyMap<string, string>, ko: boolean, t: ChromeCopy): string {
   // ko neutralizes NEGATIVE tracking on rendered specimens (Hangul crowding);
   // positive caption tracking is kept. The dl still documents the token value.
   const renderTracking = (t: string): string => (ko && Number(t) < 0 ? "0" : t);
   const samples = typographyRoles(doc, realized)
-    .map((role) => `<article data-type-sample data-type-role="${role.name}" class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)};letter-spacing:${htmlEscape(renderTracking(role.tracking))}em">${htmlEscape(typeSentence(role.name))}</p><dl class="type-fields"><div><dt>family</dt><dd>${htmlEscape(role.family)}</dd></div><div><dt>size</dt><dd>${htmlEscape(role.size)}</dd></div><div><dt>weight</dt><dd>${htmlEscape(role.weight)}</dd></div><div><dt>line-height</dt><dd>${htmlEscape(role.lineHeight)}</dd></div><div><dt>tracking</dt><dd>${htmlEscape(role.tracking)}</dd></div></dl></article>`)
+    .map((role) => `<article data-type-sample data-type-role="${role.name}" class="type-card"><div class="type-meta">${htmlEscape(role.name)} &middot; ${htmlEscape(role.size)} &middot; ${htmlEscape(role.weight)}</div><p style="font:${role.weight} ${role.size}/${role.lineHeight} ${htmlEscape(role.family)};letter-spacing:${htmlEscape(renderTracking(role.tracking))}em">${htmlEscape(typeSentence(role.name, ko))}</p><dl class="type-fields"><div><dt>family</dt><dd>${htmlEscape(role.family)}</dd></div><div><dt>size</dt><dd>${htmlEscape(role.size)}</dd></div><div><dt>weight</dt><dd>${htmlEscape(role.weight)}</dd></div><div><dt>line-height</dt><dd>${htmlEscape(role.lineHeight)}</dd></div><div><dt>tracking</dt><dd>${htmlEscape(role.tracking)}</dd></div></dl></article>`)
     .join("");
-  return section("typography", "Typography", `<p class="section-lead">The ramp uses the realized typography tokens directly, so specimens show the same scale and weight that components consume.</p><div class="type-ramp">${samples}</div>`);
+  return section("typography", t.sections.typography, `<p class="section-lead">${t.typographyLead}</p><div class="type-ramp">${samples}</div>`);
 }
 
-function spacing(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function spacing(doc: TokensDocument, realized: ReadonlyMap<string, string>, t: ChromeCopy): string {
   const bars = tokenEntriesUnder(doc.primitive, "space", "primitive.space")
     .map((entry) => `<div data-spacing-bar><span>${entry.path}</span><i style="width:calc(${realized.get(entry.path) ?? "0rem"} * 4)"></i><code>${realized.get(entry.path) ?? ""}</code></div>`)
     .join("");
-  return section("spacing", "Spacing", `<div class="bars">${bars}</div>`);
+  return section("spacing", t.sections.spacing, `<div class="bars">${bars}</div>`);
 }
 
-function shapes(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function shapes(doc: TokensDocument, realized: ReadonlyMap<string, string>, t: ChromeCopy): string {
   const boxes = tokenEntriesUnder(doc.primitive, "radius", "primitive.radius")
     .map((entry) => `<div data-shape-box class="radius-box" style="border-radius:${realized.get(entry.path) ?? "0"}">${entry.path}<br><code>${realized.get(entry.path) ?? ""}</code></div>`)
     .join("");
-  return section("shapes", "Shapes", `<div class="shape-grid">${boxes}</div>`);
+  return section("shapes", t.sections.shapes, `<div class="shape-grid">${boxes}</div>`);
 }
 
-function elevationSection(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function elevationSection(doc: TokensDocument, realized: ReadonlyMap<string, string>, t: ChromeCopy): string {
   const cards = tokenEntries(doc)
     .filter((entry) => entry.leaf.$type === "shadow")
     .map((entry) => `<div data-elevation-card class="elevation-card" style="box-shadow:${realized.get(entry.path) ?? "none"}">${entry.path}</div>`)
     .join("");
-  return cards === "" ? "" : section("elevation", "Elevation", cards);
+  return cards === "" ? "" : section("elevation", t.sections.elevation, cards);
 }
 
-function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
+function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string>, t: ChromeCopy): string {
   const rows = tokenEntries(doc)
     .filter((entry) => /(^|\.)duration(\.|$)|(^|\.)motion(\.|$)/.test(entry.path))
     .map((entry) => `<tr data-motion-row><td>${entry.path}</td><td>${realized.get(entry.path) ?? ""}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td></tr>`)
     .join("");
   const easing = easingRows(doc);
-  const easingTable = easing === "" ? "" : `<h3>Easing roles</h3><table><tbody>${easing}</tbody></table>`;
-  return section("motion", "Motion", `${easingTable}<table><tbody>${rows}</tbody></table><button class="demo-button">Motion demo</button>`);
+  const easingTable = easing === "" ? "" : `<h3>${t.easingRoles}</h3><table><tbody>${easing}</tbody></table>`;
+  return section("motion", t.sections.motion, `${easingTable}<table><tbody>${rows}</tbody></table><button class="demo-button">${t.motionDemo}</button>`);
 }
 
 function easingRows(doc: TokensDocument): string {
@@ -177,14 +275,14 @@ function easingRows(doc: TokensDocument): string {
     .join("");
 }
 
-function components(doc: TokensDocument): string {
+function components(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
   const mappings = entriesFrom(doc.component, "component")
-    .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td><td>${htmlEscape(componentUsage(entry.path))}</td></tr>`)
+    .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td><td>${htmlEscape(componentUsage(entry.path, ko))}</td></tr>`)
     .join("");
-  return section("components", "Components", `<p class="section-lead">Component tokens bind semantic decisions into reusable states. Use the control to simulate the primary button state without leaving this static file.</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="Preview button state"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">Primary button</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">Composed example</p><h3>Token-backed card</h3><p>Surface, foreground, spacing, radius, and button tokens combine into a real product pattern.</p><button class="demo-button" type="button">Continue</button></article></div></div><div class="table-card"><h3>Component token map</h3><table><tbody>${mappings}</tbody></table></div>`);
+  return section("components", t.sections.components, `<p class="section-lead">${t.componentsLead}</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="${t.previewAria}"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">${t.primaryButton}</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">${t.composedExample}</p><h3>${t.tokenCardTitle}</h3><p>${t.tokenCardBody}</p><button class="demo-button" type="button">${t.continueLabel}</button></article></div></div><div class="table-card"><h3>${t.componentTokenMap}</h3><table><tbody>${mappings}</tbody></table></div>`);
 }
 
-function applications(doc: TokensDocument, ko = false): string {
+function applications(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
   const copy: DemoCopy = ko ? COPY.ko : COPY.en;
   const brand = htmlEscape(doc.meta.recipe);
   const hint = skeletonHint(doc.meta.skeleton ?? "standard");
@@ -204,23 +302,23 @@ function applications(doc: TokensDocument, ko = false): string {
   ].join("");
   return section(
     "applications",
-    "Applications",
-    `<p class="section-lead">Every sample below consumes the very tokens documented on this page &mdash; same CSS custom properties, no per-medium overrides &mdash; and the drift goldens verify that mechanically.</p><div class="applications-grid"><article data-application="app-website" class="application-sample"><p class="application-label">Website &middot; 16:9</p><div class="application-frame app-ratio-16x9 app-website-frame"><div class="app-website-scale"><iframe src="demo.html" loading="lazy" title="Website demo"></iframe></div></div></article><article data-application="app-slide" class="application-sample app-wide"><p class="application-label">Slide deck &middot; 16:9</p><div class="app-frame-row"><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span class="app-wordmark">${brand}</span><i class="app-ornament" aria-hidden="true"></i></div><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame app-slide-content" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><h3 data-copy-source="deck">${htmlEscape(copy.featuresTitle)}</h3><ul>${slideRows}</ul><footer><span>${brand}</span><span>02</span></footer></div></div></article><article data-application="app-carousel" class="application-sample app-wide"><p class="application-label">Carousel &middot; 4:5</p><div class="app-carousel-row">${carousel}</div></article><article data-application="app-video-land" class="application-sample app-wide"><p class="application-label">Video landscape &middot; 16:9</p><div class="app-frame-row"><div class="application-frame app-ratio-16x9 app-video-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><span class="app-wordmark">${brand}</span><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3></div><div class="application-frame app-ratio-16x9 app-lower-third"><div class="app-lower-bar"><strong data-copy-source="deck">${htmlEscape(secondCard[0])}</strong><span>${brand}</span></div></div></div></article><article data-application="app-video-port" class="application-sample"><p class="application-label">Shorts cover &middot; 9:16</p><div class="application-frame app-ratio-9x16 app-portrait-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span data-copy-source="deck" class="app-cta-chip">${htmlEscape(copy.ctaPrimary)}</span><span class="app-wordmark">${brand}</span></div></article></div>`,
+    t.sections.applications,
+    `<p class="section-lead">${t.applicationsLead}</p><div class="applications-grid"><article data-application="app-website" class="application-sample"><p class="application-label">${t.appWebsite} &middot; 16:9</p><div class="application-frame app-ratio-16x9 app-website-frame"><div class="app-website-scale"><iframe src="demo.html" loading="lazy" title="${t.iframeTitle}"></iframe></div></div></article><article data-application="app-slide" class="application-sample app-wide"><p class="application-label">${t.appSlideDeck} &middot; 16:9</p><div class="app-frame-row"><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span class="app-wordmark">${brand}</span><i class="app-ornament" aria-hidden="true"></i></div><div data-app-slide-frame class="application-frame app-ratio-16x9 app-slide-frame app-slide-content" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><h3 data-copy-source="deck">${htmlEscape(copy.featuresTitle)}</h3><ul>${slideRows}</ul><footer><span>${brand}</span><span>02</span></footer></div></div></article><article data-application="app-carousel" class="application-sample app-wide"><p class="application-label">${t.appCarousel} &middot; 4:5</p><div class="app-carousel-row">${carousel}</div></article><article data-application="app-video-land" class="application-sample app-wide"><p class="application-label">${t.appVideoLand} &middot; 16:9</p><div class="app-frame-row"><div class="application-frame app-ratio-16x9 app-video-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><span class="app-wordmark">${brand}</span><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3></div><div class="application-frame app-ratio-16x9 app-lower-third"><div class="app-lower-bar"><strong data-copy-source="deck">${htmlEscape(secondCard[0])}</strong><span>${brand}</span></div></div></div></article><article data-application="app-video-port" class="application-sample"><p class="application-label">${t.appShortsCover} &middot; 9:16</p><div class="application-frame app-ratio-9x16 app-portrait-card" data-skeleton-align="${hint.align}" data-skeleton-ornament="${hint.ornament}"><p class="app-eyebrow">${htmlEscape(copy.eyebrow(brand))}</p><h3 data-copy-source="deck">${htmlEscape(copy.headline)}</h3><span data-copy-source="deck" class="app-cta-chip">${htmlEscape(copy.ctaPrimary)}</span><span class="app-wordmark">${brand}</span></div></article></div>`,
   );
 }
 
-function relationships(doc: TokensDocument): string {
+function relationships(doc: TokensDocument, t: ChromeCopy): string {
   const rows = aliasRows(doc)
     .map((row) => `<tr data-alias-row><td>${htmlEscape(row.terminal)}</td><td>${htmlEscape(row.target)}</td><td>${htmlEscape(row.path)}</td></tr>`)
     .join("");
-  return section("relationships", "Token Relationships", `<table><thead><tr><th>Primitive</th><th>Semantic</th><th>Component</th></tr></thead><tbody>${rows}</tbody></table>`);
+  return section("relationships", t.sections.relationships, `<table><thead><tr><th>Primitive</th><th>Semantic</th><th>Component</th></tr></thead><tbody>${rows}</tbody></table>`);
 }
 
-function accessibility(doc: TokensDocument): string {
+function accessibility(doc: TokensDocument, t: ChromeCopy): string {
   const rows = contrastResults(doc)
     .map((result) => `<tr data-contrast-row="${htmlEscape(contrastKey(result.pair))}"><td>${result.pair.fg}</td><td>${result.pair.bg}</td><td>${result.pair.role}</td><td>${result.pair.state}</td><td>${result.ratio.toFixed(2)}</td><td>${result.minRatio}</td><td>${result.pass ? "PASS" : "FAIL"}</td></tr>`)
     .join("");
-  return section("accessibility", "Accessibility", `<table><tbody>${rows}</tbody></table><button data-focus-demo class="focus-demo">Focus demo</button>`);
+  return section("accessibility", t.sections.accessibility, `<table><tbody>${rows}</tbody></table><button data-focus-demo class="focus-demo">${t.focusDemo}</button>`);
 }
 
 function section(id: string, title: string, body: string): string {

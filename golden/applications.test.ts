@@ -98,6 +98,9 @@ describe("applications section", () => {
     const apps = section(html, "applications");
 
     expect(html).toContain('<html lang="ko">');
+    expect(html).toContain("<h2>적용 사례</h2>");
+    expect(html).toContain("<h2>색상</h2>");
+    expect(apps).toContain("아래 모든 샘플은 이 페이지에 문서화된 토큰을 그대로 소비합니다");
     expect(apps).toContain(COPY.ko.headline);
     expect(apps).toContain(COPY.ko.cards[0][1]);
     expect(apps).not.toContain(COPY.en.headline);

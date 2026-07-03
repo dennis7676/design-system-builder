@@ -443,7 +443,7 @@ function baseCss(doc: TokensDocument): string {
     .demo-button:disabled, .playground.is-disabled .playground-target { opacity: .45; cursor: not-allowed; transform: none; }
     .focus-demo:focus-visible, .demo-button:focus-visible, .state-focus, .playground.is-focus .playground-target { outline: .2rem solid var(--semantic-color-primary-default, Highlight); outline-offset: .2rem; }
     .playground-toolbar button.is-selected { color: var(--component-button-foreground, ButtonText); background: var(--component-button-background, var(--semantic-color-primary-default, ButtonFace)); border-color: transparent; }
-    .component-stage { align-items: stretch; }
+    .component-stage { align-items: stretch; margin-top: 1.25rem; }
     .sample-card { display: grid; gap: .4rem; align-content: start; }
     .applications-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
     .application-sample { min-width: 0; display: grid; gap: .5rem; align-content: start; }

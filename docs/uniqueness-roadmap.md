@@ -61,6 +61,12 @@ deterministic).
 
 ## Applications track (2026-07-03, vault PRD v2.5 M3.5)
 
-- **R-A**: Claude Design benchmarking — tab structure (prototype/deck/template), design-system save→reuse, Tweaks (token-free slider refinement), style-list→multi-variant generation, handoff-to-code command, 3+ reference-image intake, animation component library sourcing.
+- **R-A** ✅ (2026-07-03): Claude Design benchmarking done — see
+  `docs/claude-design-benchmarking.md`. Verdicts: tab structure → R-B section
+  skeleton; DS save→reuse → narrative copy only (already satisfied by
+  tokens.json); Tweaks → M5/M6 override-preview candidate; style-list→multi-
+  variant → SKILL.md top-3 recipe candidates; handoff-to-code → docs note;
+  3+ reference-image intake → interview Phase 0 (skill layer, core untouched);
+  animation component sourcing → M4 gate (normalize into motion tokens).
 - **R-B**: styleguide "Applications" section — same-token samples per medium: website (embedded demo), 16:9 slide deck (2 slides), Instagram carousel (4:5/1:1, 3 frames), plus static video layouts (16:9 title card + lower third, 9:16 shorts/reels cover; motion itself is M4 scope).
 - Ordering: R-A feeds R-B design; R-B implementation follows the codex-dispatch pattern with the usual gates (var-only, anti-hardcode, drift goldens, render QA). Orthogonal to the 8 skeleton grammars.

@@ -16,9 +16,11 @@ import { htmlEscape } from "./render-utils.js";
 import { generateBriefingDemo } from "./demo-briefing.js";
 import { generateCollageDemo } from "./demo-collage.js";
 import { generateEditorialDemo } from "./demo-editorial.js";
+import { generateJournalDemo } from "./demo-journal.js";
 import { generateMosaicDemo } from "./demo-mosaic.js";
 import { generatePosterDemo } from "./demo-poster.js";
 import { generateSpecSheetDemo } from "./demo-spec-sheet.js";
+import { generateStoryDemo } from "./demo-story.js";
 import { COPY, type DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 
@@ -54,6 +56,12 @@ export function generateDemo(doc: TokensDocument): string {
   }
   if (doc.meta.skeleton === "poster") {
     return generatePosterDemo(doc, tier, ko, copy, brand, snapshot);
+  }
+  if (doc.meta.skeleton === "journal") {
+    return generateJournalDemo(doc, tier, ko, copy, brand, snapshot);
+  }
+  if (doc.meta.skeleton === "story") {
+    return generateStoryDemo(doc, tier, ko, copy, brand, snapshot);
   }
   return [
     "<!doctype html>",

@@ -1,6 +1,7 @@
 {
   "key": "pro-emotive",
   "version": "1.0.0",
+  "skeleton": "story",
   "source": "F2 Premium Editorial (Notion/Stripe/Apple-like; nominative reference). Warm-neutral + single warm accent, humanist body + serif heading, soft generous shapes.",
   "toneAnchor": {
     "static_dynamic": 3,

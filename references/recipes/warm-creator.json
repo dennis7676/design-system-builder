@@ -1,6 +1,7 @@
 {
   "key": "warm-creator",
   "version": "1.0.0",
+  "skeleton": "journal",
   "source": "Mailchimp/Gumroad-like (nominative reference; no code/token values copied)",
   "toneAnchor": {
     "static_dynamic": 4,

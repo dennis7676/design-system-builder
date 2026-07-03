@@ -2,6 +2,7 @@
   "key": "retro",
   "version": "1.0.0",
   "source": "Retro-editorial-like (nominative reference; no code/token values copied)",
+  "skeleton": "poster",
   "toneAnchor": {
     "static_dynamic": 4,
     "cold_warm": 6,

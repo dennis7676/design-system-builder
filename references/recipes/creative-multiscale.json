@@ -2,6 +2,7 @@
   "key": "creative-multiscale",
   "version": "1.0.0",
   "source": "Adobe Spectrum 2-like (nominative reference; no code/token values copied)",
+  "skeleton": "mosaic",
   "toneAnchor": {
     "static_dynamic": 4,
     "cold_warm": 4,

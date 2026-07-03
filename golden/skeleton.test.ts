@@ -36,13 +36,13 @@ const styleBody = (html: string): string => {
 };
 
 const STANDARD_DEMO_HASHES = {
-  "minimal-tech": "f5e9a26b7d2e0fdf61d08c6f32b7e7ae46f33d3f9eda0b31294ba5746011f402",
-  enterprise: "f4ef755d885e580ade1548eddee57cf0dee9ca9da2231cc9d5fbc32c7f2543e1",
-  expressive: "0d02a413f4ec83c77327a86bee383596c43f7642c4dde65af4dbd78555fd1750",
-  "pro-emotive": "15389061e85676e71ef16acfb69cffd4925a14dbfd2c11957da943e35ac435e7",
-  "creative-multiscale": "518e106ef218c1e34062a5a02ea37967768642f915b7127703f2bc8030ec49b7",
-  "warm-creator": "584cfd05cca9ced6767a6efe16ea211dcd43b302cefac30c5a2d0d20d0f165b3",
-  retro: "a3537ec29dac77126b18b0a2eca7090321af331a7297c8cf40d111a31d73cd75",
+  "minimal-tech": "5bc5a3e4d84d36147dfaf0ef65bedd96d128f5d8ef4d7d4587821e0850b4d383",
+  enterprise: "e2b3869e93bd80e4e7f2683e3ebdade93b6ff8d147df3d83e46b83d1d0d27387",
+  expressive: "c0d446ef6417d266cc7ca594ff67c71e34ef516bfcd1d961dd6190378e13cf83",
+  "pro-emotive": "642c9bd0e78ad64570726f68eca058e44f9bd8e703543160b67c01c6cc79d937",
+  "creative-multiscale": "557c3d837421f374a088dab475e2b1160d4995e5d564ad6d6abb6d4d4e35546d",
+  "warm-creator": "64da2f85e3b0cd9fb6a2a0da80c89c96aae2f18a5358bf49174272ad69dc6e1e",
+  retro: "be5eef79d6e9e918032869c8f493f669fa3c64e922f940b59e4eb29fe4be906d",
 } as const;
 
 const regions = ["nav", "hero", "features", "form", "footer"] as const;

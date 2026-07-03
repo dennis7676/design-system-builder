@@ -1,5 +1,7 @@
 #!/usr/bin/env node
-import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   checkManifest,
   generateDemo,
@@ -8,12 +10,22 @@ import {
   loadTokens,
   toCssVars,
   toTokensTs,
+  webfontImportCss,
 } from "./index.js";
 import { validateTokens } from "./validator.js";
 import { validateBrand, type BrandJson } from "./brand-schema.js";
 import { loadRecipes, selectRecipe } from "./recipe-selection.js";
 import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
+import type { TokensDocument } from "./tokens-schema.js";
+
+interface GeneratedArtifacts {
+  readonly doc: TokensDocument;
+  readonly css: string;
+  readonly styleguideHtml: string;
+  readonly designMd: string;
+  readonly demoHtml: string;
+}
 
 function main(argv: string[]): number {
   const [cmd, ...rest] = argv;
@@ -75,14 +87,19 @@ function generate(argv: string[]): number {
     console.log(styleguideHtml);
     return 0;
   }
-  mkdirSync(outDir, { recursive: true });
-  writeFileSync(`${outDir}/tokens.css`, `${css}\n`);
-  writeFileSync(`${outDir}/tokens.ts`, toTokensTs(doc));
-  writeFileSync(`${outDir}/styleguide.html`, styleguideHtml);
-  writeFileSync(`${outDir}/DESIGN.md`, designMd);
-  writeFileSync(`${outDir}/demo.html`, demoHtml);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
+  writeGeneratedArtifacts(outDir, { doc, css, styleguideHtml, designMd, demoHtml });
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
   return 0;
+}
+
+export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArtifacts): void {
+  mkdirSync(outDir, { recursive: true });
+  writeFileSync(`${outDir}/tokens.css`, `${artifacts.css}\n`);
+  writeFileSync(`${outDir}/fonts.css`, withTrailingNewline(webfontImportCss(artifacts.doc)));
+  writeFileSync(`${outDir}/tokens.ts`, toTokensTs(artifacts.doc));
+  writeFileSync(`${outDir}/styleguide.html`, artifacts.styleguideHtml);
+  writeFileSync(`${outDir}/DESIGN.md`, artifacts.designMd);
+  writeFileSync(`${outDir}/demo.html`, artifacts.demoHtml);
 }
 
 function flagValue(argv: string[], flag: string): string | undefined {
@@ -153,4 +170,13 @@ function dirOf(p: string): string {
   return idx <= 0 ? "." : p.slice(0, idx);
 }
 
-process.exit(main(process.argv.slice(2)));
+function withTrailingNewline(value: string): string {
+  return value === "" ? "" : `${value}\n`;
+}
+
+function isDirectRun(): boolean {
+  const entry = process.argv[1];
+  return entry !== undefined && realpathSync(fileURLToPath(import.meta.url)) === realpathSync(resolve(entry));
+}
+
+if (isDirectRun()) process.exit(main(process.argv.slice(2)));

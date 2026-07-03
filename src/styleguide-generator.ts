@@ -24,6 +24,7 @@ import {
   typeSentence,
   usageHint,
 } from "./render-utils.js";
+import { webfontHeadTags } from "./font-sources.js";
 
 const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
 
@@ -50,6 +51,7 @@ export function generateStyleguide(doc: TokensDocument): string {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${htmlEscape(doc.meta.recipe)} Design System</title>`,
+    ...webfontHeadTags(doc),
     `<style>${baseCss(doc)}${koCss(ko)}</style>`,
     "</head>",
     "<body>",

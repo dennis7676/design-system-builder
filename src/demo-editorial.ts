@@ -3,6 +3,7 @@ import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import type { TokensDocument } from "./tokens-schema.js";
 import type { DemoCopy } from "./demo-copy.js";
+import { webfontHeadTags } from "./font-sources.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
 
@@ -14,6 +15,7 @@ export function generateEditorialDemo(doc: TokensDocument, tier: DemoTier, ko: b
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${brand} — product</title>`,
+    ...webfontHeadTags(doc),
     `<style>${editorialDemoCss(doc, tier, ko)}</style>`,
     "</head>",
     "<body>",

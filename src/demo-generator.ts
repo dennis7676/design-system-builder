@@ -15,6 +15,7 @@ import { hasTokenPath } from "./surface-data.js";
 import { htmlEscape } from "./render-utils.js";
 import { generateEditorialDemo } from "./demo-editorial.js";
 import { COPY, type DemoCopy } from "./demo-copy.js";
+import { webfontHeadTags } from "./font-sources.js";
 
 /** Regions the completeness contract (manifest.checkDemo) requires. */
 export const DEMO_REGIONS = ["nav", "hero", "features", "form", "footer"] as const;
@@ -41,6 +42,7 @@ export function generateDemo(doc: TokensDocument): string {
     '<meta charset="utf-8">',
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${brand} — product</title>`,
+    ...webfontHeadTags(doc),
     `<style>${demoCss(doc, tier, ko)}</style>`,
     "</head>",
     "<body>",

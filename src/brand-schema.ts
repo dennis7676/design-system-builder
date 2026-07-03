@@ -76,6 +76,7 @@ export interface BrandProduct {
 
 export interface BrandBranding {
   readonly tone_vector: ToneVector;
+  readonly recipe_override?: string;
   /** Override guide only — never the recipe decider. */
   readonly archetype?: string;
   /** Override guide only — never the recipe decider. */
@@ -152,6 +153,9 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
           errors.push({ path: `branding.tone_vector.${axis}`, message: "integer 1..7 required" });
         }
       }
+    }
+    if (b.branding.recipe_override !== undefined && typeof b.branding.recipe_override !== "string") {
+      errors.push({ path: "branding.recipe_override", message: "must be a string" });
     }
   }
   if (b.expression !== undefined && !EXPRESSION_TIERS.includes(b.expression as ExpressionTier)) {

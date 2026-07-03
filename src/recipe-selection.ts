@@ -58,12 +58,28 @@ export interface Conflict {
   readonly message: string;
 }
 
+export interface RecipeCandidateRow {
+  readonly key: string;
+  readonly distance: number;
+  readonly hardConstraintFailures: readonly string[];
+  readonly selected: boolean;
+  readonly selectedBy: "nearest" | "override" | null;
+}
+
 export interface RecipeSelection {
   readonly recipeKey: string | null;
   readonly recipe: Recipe | null;
   readonly candidates: readonly string[];
   readonly distances: ReadonlyArray<{ key: string; distance: number }>;
+  readonly candidateRows: readonly RecipeCandidateRow[];
   readonly conflicts: readonly Conflict[];
+}
+
+export class RecipeSelectionError extends Error {
+  constructor(readonly conflict: Conflict) {
+    super(conflict.message);
+    this.name = "RecipeSelectionError";
+  }
 }
 
 /** Load all recipes from a directory, ordered by RECIPE_ORDER (unknown keys appended, sorted). */
@@ -88,17 +104,18 @@ export function loadRecipes(dir: string): Recipe[] {
   return ordered;
 }
 
-function passesHardConstraints(recipe: Recipe, brand: BrandJson): boolean {
+function hardConstraintFailures(recipe: Recipe, brand: BrandJson): readonly string[] {
+  const failures: string[] = [];
   const rules = recipe.hardConstraintRules;
-  if (!rules.requires.mediums.includes(brand.product.medium)) return false;
+  if (!rules.requires.mediums.includes(brand.product.medium)) failures.push(`medium:${brand.product.medium}`);
   for (const aud of brand.audience ?? []) {
-    if (rules.excludesAudiences.includes(aud)) return false;
+    if (rules.excludesAudiences.includes(aud)) failures.push(`audience:${aud}`);
   }
-  if (brand.accessibility?.minContrast === "AAA" && !rules.minContrastCapable) return false;
+  if (brand.accessibility?.minContrast === "AAA" && !rules.minContrastCapable) failures.push("minContrast:AAA");
   for (const c of brand.constraints ?? []) {
-    if (!rules.tags.includes(c)) return false;
+    if (!rules.tags.includes(c)) failures.push(c);
   }
-  return true;
+  return failures;
 }
 
 export function toneDistance(a: ToneVector, b: ToneVector): number {
@@ -112,15 +129,43 @@ export function toneDistance(a: ToneVector, b: ToneVector): number {
 
 /**
  * Pure selection over a pre-loaded, pre-ordered recipe list.
- * `recipes` must already be in stable order (loadRecipes guarantees this) so
- * distance ties break deterministically by position.
+ * Distance ties break deterministically by recipe key.
  */
 export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): RecipeSelection {
-  const survivors = recipes.filter((r) => passesHardConstraints(r, brand));
-  const distances = survivors.map((r) => ({
-    key: r.key,
-    distance: toneDistance(brand.branding.tone_vector, r.toneAnchor),
+  const ranked = recipes
+    .map((recipe) => ({
+      recipe,
+      key: recipe.key,
+      distance: toneDistance(brand.branding.tone_vector, recipe.toneAnchor),
+      hardConstraintFailures: hardConstraintFailures(recipe, brand),
+    }))
+    .sort(compareCandidate);
+  const survivors = ranked.filter((candidate) => candidate.hardConstraintFailures.length === 0);
+  const overrideKey = brand.branding.recipe_override;
+  const selectedBy = overrideKey === undefined ? "nearest" : "override";
+
+  if (overrideKey !== undefined) {
+    const override = ranked.find((candidate) => candidate.key === overrideKey);
+    if (override === undefined) {
+      throw new RecipeSelectionError({
+        code: "recipe-override-unknown",
+        message: `recipe_override '${overrideKey}' is unknown (valid: ${recipes.map((recipe) => recipe.key).sort().join(", ")})`,
+      });
+    }
+    if (override.hardConstraintFailures.length > 0) {
+      throw new RecipeSelectionError({
+        code: "recipe-override-rejected",
+        message: `recipe_override '${overrideKey}' rejected by hard constraints: ${override.hardConstraintFailures.join(", ")}`,
+      });
+    }
+  }
+
+  const chosenCandidate = overrideKey === undefined ? survivors[0] : survivors.find((candidate) => candidate.key === overrideKey);
+  const distances = survivors.map((candidate) => ({
+    key: candidate.key,
+    distance: candidate.distance,
   }));
+  const candidateRows = rowsForCandidateTable(ranked, chosenCandidate?.key ?? null, selectedBy);
 
   if (survivors.length === 0) {
     return {
@@ -128,6 +173,7 @@ export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): Reci
       recipe: null,
       candidates: [],
       distances: [],
+      candidateRows,
       conflicts: [
         {
           code: "no-recipe-satisfies-hard-constraints",
@@ -137,12 +183,23 @@ export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): Reci
     };
   }
 
-  // min distance; first survivor wins ties (survivors keep recipes[] order)
-  let bestIdx = 0;
-  for (let i = 1; i < distances.length; i++) {
-    if (distances[i]!.distance < distances[bestIdx]!.distance) bestIdx = i;
+  if (chosenCandidate === undefined) {
+    return {
+      recipeKey: null,
+      recipe: null,
+      candidates: survivors.map((candidate) => candidate.key),
+      distances,
+      candidateRows,
+      conflicts: [
+        {
+          code: "recipe-override-unresolved",
+          message: `recipe_override '${String(overrideKey)}' did not resolve to a selectable recipe`,
+        },
+      ],
+    };
   }
-  const chosen = survivors[bestIdx]!;
+
+  const chosen = chosenCandidate.recipe;
   const conflicts: Conflict[] = [];
   if (chosen.base === null) {
     conflicts.push({
@@ -155,10 +212,77 @@ export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): Reci
   return {
     recipeKey: chosen.key,
     recipe: chosen,
-    candidates: survivors.map((r) => r.key),
+    candidates: survivors.map((candidate) => candidate.key),
     distances,
+    candidateRows,
     conflicts,
   };
+}
+
+function compareCandidate(
+  a: { readonly key: string; readonly distance: number },
+  b: { readonly key: string; readonly distance: number },
+): number {
+  if (a.distance !== b.distance) return a.distance - b.distance;
+  return a.key.localeCompare(b.key);
+}
+
+function rowsForCandidateTable(
+  ranked: ReadonlyArray<{
+    readonly key: string;
+    readonly distance: number;
+    readonly hardConstraintFailures: readonly string[];
+  }>,
+  selectedKey: string | null,
+  selectedBy: "nearest" | "override",
+): readonly RecipeCandidateRow[] {
+  const passing = ranked.filter((candidate) => candidate.hardConstraintFailures.length === 0);
+  const rows: RecipeCandidateRow[] = [];
+  for (const candidate of passing.slice(0, 3)) rows.push(rowFromCandidate(candidate, selectedKey, selectedBy));
+
+  if (selectedKey !== null && !rows.some((row) => row.key === selectedKey)) {
+    const selected = passing.find((candidate) => candidate.key === selectedKey);
+    if (selected !== undefined) rows.push(rowFromCandidate(selected, selectedKey, selectedBy));
+  }
+
+  const filtered = ranked.find((candidate) => candidate.hardConstraintFailures.length > 0);
+  if (filtered !== undefined) rows.push(rowFromCandidate(filtered, selectedKey, selectedBy));
+  return rows;
+}
+
+function rowFromCandidate(
+  candidate: {
+    readonly key: string;
+    readonly distance: number;
+    readonly hardConstraintFailures: readonly string[];
+  },
+  selectedKey: string | null,
+  selectedBy: "nearest" | "override",
+): RecipeCandidateRow {
+  const selected = candidate.key === selectedKey;
+  return {
+    key: candidate.key,
+    distance: candidate.distance,
+    hardConstraintFailures: candidate.hardConstraintFailures,
+    selected,
+    selectedBy: selected ? selectedBy : null,
+  };
+}
+
+export function formatRecipeCandidateTable(selection: RecipeSelection): string {
+  const lines = ["recipe candidates (tone distance, hard constraints):"];
+  for (let index = 0; index < selection.candidateRows.length; index++) {
+    const row = selection.candidateRows[index];
+    if (row === undefined) continue;
+    const status = row.hardConstraintFailures.length === 0
+      ? "OK"
+      : `filtered: ${row.hardConstraintFailures.join(", ")}`;
+    const marker = row.selected
+      ? `  ← selected${row.selectedBy === "override" ? " (override)" : ""}`
+      : "";
+    lines.push(`  ${index + 1}. ${row.key.padEnd(20)} d=${row.distance.toFixed(3)}  ${status}${marker}`);
+  }
+  return lines.join("\n");
 }
 
 /** Override-axis validation: ≤3 axes, none deferred. Range was checked in validateBrand. */

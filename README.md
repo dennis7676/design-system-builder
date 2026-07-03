@@ -50,6 +50,13 @@
 네 산출물 전부에 `builtFromTokenHash`가 박혀 있어, 토큰과 어긋난(드리프트된)
 산출물은 `validate --check-manifest`가 기계적으로 잡아낸다.
 
+### Handoff
+
+`tokens.css`와 `DESIGN.md`는 다른 도구로 넘기는 handoff 객체이기도 하다.
+`tokens.css`는 CSS custom properties를 소비하는 어디든 import할 수 있고,
+`DESIGN.md`는 Claude Design의 custom design system이나 다른 LLM/사람에게
+전달하는 시스템 스펙으로 그대로 쓸 수 있다.
+
 ## 무엇이 보장되는가
 
 - **재현성** — 같은 `brand.json` → 바이트 동일 산출물. LLM의 즉흥 생성은

@@ -14,7 +14,7 @@ import {
 } from "./index.js";
 import { validateTokens } from "./validator.js";
 import { validateBrand, type BrandJson } from "./brand-schema.js";
-import { loadRecipes, selectRecipe } from "./recipe-selection.js";
+import { RecipeSelectionError, formatRecipeCandidateTable, loadRecipes, selectRecipe } from "./recipe-selection.js";
 import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
 import type { TokensDocument } from "./tokens-schema.js";
@@ -122,8 +122,17 @@ function build(argv: string[]): number {
   for (const e of fieldErrors) console.error(`BRAND [${e.path}] ${e.message}`);
 
   const recipes = loadRecipes(recipesDir);
-  const selection = selectRecipe(brand, recipes);
-  console.error(`recipe: ${selection.recipeKey ?? "(none)"}  candidates: [${selection.candidates.join(", ")}]`);
+  let selection: ReturnType<typeof selectRecipe>;
+  try {
+    selection = selectRecipe(brand, recipes);
+  } catch (error) {
+    if (error instanceof RecipeSelectionError) {
+      console.error(`CONFLICT [${error.conflict.code}] ${error.conflict.message}`);
+      return 1;
+    }
+    throw error;
+  }
+  console.error(formatRecipeCandidateTable(selection));
   for (const d of selection.distances) console.error(`  tone_distance ${d.key}: ${d.distance.toFixed(3)}`);
   for (const c of selection.conflicts) console.error(`CONFLICT [${c.code}] ${c.message}`);
 

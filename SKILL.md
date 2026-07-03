@@ -56,6 +56,11 @@ inference — that is what keeps `brand.json` reproducible.
 Ask, conversationally: **medium?** (web / app / video — pilot supports `web`),
 **target audience & expertise?**, **one-word first impression?**
 - `medium` → `product.medium`. Expertise/audience → `audience[]` and density prior.
+- Optional mood-image intake: ask for 3+ references (Pinterest captures, logo,
+  current brand material). Read them into a 5-axis tone prior, each axis with a
+  one-line visual reason, plus a recipe prior. Use priors only to narrow later
+  questions; user answers win, and images never enter `brand.json`. If no
+  images are provided, state the generic-risk and continue.
 
 ### Phase 1 — Brand personality (→ tone_vector + archetype)
 1. "If the brand were a person, what's their job?" → Jung archetype (free text → `branding.archetype`, a **prior only**, never the decider).
@@ -129,7 +134,8 @@ Build this object from the answers (see `src/brand-schema.ts` for the type):
 Rules: tone_vector all 5 axes, integers 1–7. `overrides` ≤ 3 axes, omit when
 empty. Emit `visual.radius` / `motion.speed` / `visual.accent` (integer hue
 0–359) / `motion.easing` (`subtle` | `standard` | `expressive` | `dramatic`).
-Add top-level `expression` only for safe/bold (balanced = default).
+Add `branding.recipe_override` only after the candidate-choice step; otherwise
+omit it. Add top-level `expression` only for safe/bold (balanced = default).
 
 ---
 
@@ -138,15 +144,21 @@ Add top-level `expression` only for safe/bold (balanced = default).
 1. **Show the assembled `brand.json` to the user and get explicit confirmation.**
    This confirmation is the gate's `userConfirmed` condition and the
    reproducibility seal — do not skip it. Write it to e.g. `brand.json`.
-2. **Dry-run the gate** (no `--confirm`) to surface recipe choice + conflicts:
+2. **Dry-run the gate** (no `--confirm`) to surface recipe candidates + conflicts:
    ```
    node dist/cli.js build brand.json --recipes references/recipes
    ```
-   Read back: selected recipe, `tone_distance` per candidate, any `CONFLICT`.
+   Read back the candidate table. Show the top choices and let the user pick; if
+   they pick a non-nearest recipe, set `branding.recipe_override` in
+   `brand.json` and rerun. For comparison builds, use the same `brand.json` with
+   a temporary override per candidate into temp dirs so side-by-side surfaces are
+   cheap and reproducible.
 3. **Handle conflicts (HITL)** — do not force past them:
    | Conflict | Meaning | Action |
    |----------|---------|--------|
    | `no-recipe-satisfies-hard-constraints` | constraints/medium exclude all recipes | relax a `constraints[]` tag or change medium; re-ask Phase 4 |
+   | `recipe-override-rejected` | chosen recipe fails hard constraints | pick a shown OK recipe or relax the named constraint |
+   | `recipe-override-unknown` | chosen recipe key is not known | use one of the valid keys printed by the CLI |
    | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
    | `BRAND [overrides.<axis>] unknown override axis` line | used an unsupported axis | remove it. `tone_vector.cold_warm` → use `visual.accent` hue instead |
@@ -176,3 +188,5 @@ the three surface paths.
   stays intent-only.
 - Dark mode (M3), video/Remotion (M4), Tailwind/shadcn export (M2.5).
 - Bypass the confirmation gate or push past a conflict.
+- Treat handoff docs as secondary: `DESIGN.md` and `tokens.css` are first-class
+  handoff objects for Claude Design, other LLMs, humans, and CSS consumers.

@@ -58,3 +58,9 @@ deterministic).
   cross-surface/cross-tier consistency (static `:root` equality + rendered
   computed-style equality via browser probe), reproducibility — all PASS;
   cross-checked by an independent codex pipeline.
+
+## Applications track (2026-07-03, vault PRD v2.5 M3.5)
+
+- **R-A**: Claude Design benchmarking — tab structure (prototype/deck/template), design-system save→reuse, Tweaks (token-free slider refinement), style-list→multi-variant generation, handoff-to-code command, 3+ reference-image intake, animation component library sourcing.
+- **R-B**: styleguide "Applications" section — same-token samples per medium: website (embedded demo), 16:9 slide deck (2 slides), Instagram carousel (4:5/1:1, 3 frames), plus static video layouts (16:9 title card + lower third, 9:16 shorts/reels cover; motion itself is M4 scope).
+- Ordering: R-A feeds R-B design; R-B implementation follows the codex-dispatch pattern with the usual gates (var-only, anti-hardcode, drift goldens, render QA). Orthogonal to the 8 skeleton grammars.

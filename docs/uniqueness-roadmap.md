@@ -17,9 +17,9 @@ the byte-reproducibility seal that defines this tool.
 | # | Lever | What it unlocks | Risk / prerequisite |
 |---|-------|-----------------|---------------------|
 | 1 | ~~**B3 colour-override**~~ — **SHIPPED 2026-07-02** (`unlock-accent-override`): integer hue 0–359 → coherent chromatic rotation (L fixed, C gamut-clamped) → pair floors re-proven with bounded nearest-fix (±0.06 L). `cold_warm` subsumed. 2880-cell hue probe: zero unrepairable | done |
-| 2 | **Per-recipe skeletons** — each recipe gets a layout archetype of its own (luxury = editorial whitespace, enterprise = data density, retro = poster rhythm), orthogonal to tiers. **User green-lit exploration (2026-07-02: "조금 더 베리에이션·아이덴티티 구분 여지 판단 OK")** | Kills the residual "same skeleton, different clothes" reading; combination space gains a structural axis | High authoring cost — 8 skeletons × goldens; ship one recipe at a time |
+| 2 | ~~**Per-recipe skeletons**~~ — **SHIPPED 2026-07-03** (`add-recipe-skeleton-spike` + `skeleton-batch-a/b/c`): 8 recipes each carry their own layout grammar, hash-neutral | Kills the residual "same skeleton, different clothes" reading; combination space gains a structural axis | High authoring cost — 8 skeletons × goldens; ship one recipe at a time |
 | 3 | **Motif tokens** — extend the bold glyph into a small enum of brand motifs (`glyph | geometric | rule-lines | none`) rendered from tokens | Instant signature element per brand | Medium — new `$type` or component token + demo consumption |
-| 4 | **Edge-point HITL step** — **Round 1 SHIPPED 2026-07-04** (`add-edge-points`): finite edges enum + deterministic `suggestEdges()` concept-fit + texture-grain end-to-end (opacity cap 0.06, worst-case blended-background pair-floor gate) + SKILL edge-selection step; no-edge builds byte-identical (golden-proven). **glass stays DEFERRED** | Round 2: glass + contrast-floor mechanism | Medium — glass needs the Tier-2 contrast-floor mechanism first |
+| 4 | **Edge-point HITL step** — **Round 1 SHIPPED 2026-07-04** (`add-edge-points`): finite edges enum + deterministic `suggestEdges()` concept-fit + texture-grain end-to-end (opacity cap 0.06, worst-case blended-background pair-floor gate) + SKILL edge-selection step; no-edge builds byte-identical (golden-proven). ~~glass stays DEFERRED~~ **Round 2 SHIPPED 2026-07-04** (`add-glass-round2`, luminance-interval gate) | done | done |
 | 5 | **Interview exposure** — add expression/edge questions to the SKILL front door (today: zero amplitude questions) | The dials built in code become choosable in the actual flow | Low — docs-only |
 
 ## Edge-point decision structure (**confirmed 2026-07-02** — concept-fit proposal variant)
@@ -103,8 +103,10 @@ Adopted points and order:
 
 1. ~~**MCP spike (B2, early)**~~ — **SHIPPED 2026-07-04** (`add-mcp-spike`): dsb_build/dsb_validate stdio, hash parity with CLI proven over a live JSON-RPC roundtrip; full server ships with M6. Was: minimal `build`/`validate` tools exposed over
    MCP so in-house agents consume DSB natively; full server ships with M6.
-2. **Glass Round 2** — contrast-floor admission gate; lifts the last
-   DEFERRED edge (edge infra shipped 2026-07-04).
+2. ~~**Glass Round 2**~~ — **SHIPPED 2026-07-04** (`add-glass-round2`):
+   luminance-interval contrast-floor gate (interior collapse caught — the
+   case a two-extreme check passes; blur-independent by construction;
+   backing opacity floor 0.6, default 0.88). Last DEFERRED edge lifted.
 3. **Component expansion (B3, own components)** — grow demo vocabulary into
    a real component layer generated per recipe (var-only, goldens, a11y),
    phased: core primitives → composites → patterns. Heavy codex delegation

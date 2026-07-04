@@ -1,4 +1,4 @@
-# edge-points — delta (add-glass-round2)
+# edge-points
 
 ## MODIFIED Requirements
 

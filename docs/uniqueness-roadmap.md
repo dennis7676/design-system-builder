@@ -101,7 +101,7 @@ component box — but Astryx sets the commercial bar its outputs must meet.
 
 Adopted points and order:
 
-1. **MCP spike (B2, early)** — minimal `build`/`validate` tools exposed over
+1. ~~**MCP spike (B2, early)**~~ — **SHIPPED 2026-07-04** (`add-mcp-spike`): dsb_build/dsb_validate stdio, hash parity with CLI proven over a live JSON-RPC roundtrip; full server ships with M6. Was: minimal `build`/`validate` tools exposed over
    MCP so in-house agents consume DSB natively; full server ships with M6.
 2. **Glass Round 2** — contrast-floor admission gate; lifts the last
    DEFERRED edge (edge infra shipped 2026-07-04).

@@ -42,6 +42,7 @@ export type LeafType =
   | "fontFamily"
   | "fontWeight"
   | "number"
+  | "string"
   | "shadow"
   | "gradient"
   | "cubicBezier";
@@ -51,6 +52,7 @@ export type LeafType =
  *  - color   → oklch/hex string (intent color space)
  *  - dimension/duration → DimensionIntent
  *  - fontFamily → string[] (portable)
+ *  - string → portable keyword/asset strings for CSS-var consumers
  *  - alias   → "{semantic.color.primary.default}"
  */
 export interface LeafToken {

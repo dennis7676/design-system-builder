@@ -1,5 +1,6 @@
 import type { BrandJson, BrandOverrides } from "./brand-schema.js";
 import { normalizeToneVector } from "./brand-schema.js";
+import { TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
 import { MOTION_EASING_PRESETS, type MotionEasingPreset, type MotionEasingTriple } from "./motion-easing.js";
 import type { Recipe } from "./recipe-selection.js";
 import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type CubicBezierValue, type LeafToken, type MotionOverrideMeta, type Philosophy, type TokenGroup, type TokensDocument } from "./tokens-schema.js";
@@ -34,6 +35,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
 
   const overrideMeta = applyOverrides(base, brand.overrides ?? {});
   applyLocaleFonts(base, brand, recipe);
+  const philosophy = applyEdges(base, brand, recipe.philosophy as Philosophy);
 
   return {
     version: "1.0.0",
@@ -43,7 +45,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
       recipe: recipe.key,
       toneVector: normalizeToneVector(brand.branding.tone_vector),
       requiredTargets: targetsFor(brand),
-      philosophy: recipe.philosophy as Philosophy,
+      philosophy,
       typeScale,
       ...(brand.expression !== undefined ? { expression: brand.expression } : {}),
       ...(brand.product.locales !== undefined && brand.product.locales.length > 0 ? { locales: [...brand.product.locales] } : {}),
@@ -56,6 +58,46 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
     primitive: base.primitive,
     semantic: base.semantic,
     component: base.component,
+  };
+}
+
+function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy): Philosophy {
+  if (!(brand.edges ?? []).includes("texture-grain")) return philosophy;
+
+  const texture = tokenGroupAt(base.semantic, "texture");
+  texture.overlay = {
+    image: {
+      $type: "string",
+      $value: TEXTURE_GRAIN_OVERLAY.image,
+      $class: "portable",
+      $description: `${TEXTURE_GRAIN_OVERLAY.version} pinned feTurbulence overlay image`,
+    },
+    blendMode: {
+      $type: "string",
+      $value: TEXTURE_GRAIN_OVERLAY.blendMode,
+      $class: "portable",
+      $description: "Blend mode for the texture overlay on hero and surface panels.",
+    },
+    opacity: {
+      $type: "number",
+      $value: TEXTURE_GRAIN_OVERLAY.opacity,
+      $class: "portable",
+      $description: "Capped texture overlay opacity.",
+    },
+  };
+
+  return {
+    ...philosophy,
+    principles: [...philosophy.principles, "Tactile texture stays subtle and contrast-gated"],
+    decisionTrace: [
+      ...philosophy.decisionTrace,
+      {
+        axis: "edge.texture-grain",
+        value: TEXTURE_GRAIN_OVERLAY.version,
+        rationale: "A fine grain layer adds tactile depth only after concept-fit and contrast gates pass.",
+        coversTokenPath: ["semantic.texture.overlay.*"],
+      },
+    ],
   };
 }
 

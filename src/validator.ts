@@ -21,7 +21,8 @@ import {
   INTENT_SUBTREE_KEYS,
   MIN_RATIO,
 } from "./tokens-schema.js";
-import { contrastRatio } from "./color.js";
+import { contrastRatio, linearToHex, parseColor } from "./color.js";
+import { TEXTURE_GRAIN_OPACITY_CAP, TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
 
 export type Severity = "error" | "warn" | "info";
 
@@ -184,6 +185,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
 
   // 3. WCAG contrast over contrastPairs + foreground pairing
   checkContrast(doc, leaves, findings);
+  checkTextureOverlay(doc, leaves, findings);
 
   // 4. G-trace coverage
   checkTraceCoverage(doc, leaves, findings);
@@ -230,6 +232,132 @@ function colorValueOf(path: string, leaves: Map<string, LeafToken>): string | nu
   if (!res.resolved) return null;
   const v = res.resolved.$value;
   return typeof v === "string" ? v : null;
+}
+
+interface TextureOverlayGate {
+  readonly opacity: number;
+}
+
+interface TextureContrastCandidate {
+  readonly source: string;
+  readonly blended: string;
+  readonly ratio: number;
+  readonly extreme: "dark" | "light";
+}
+
+function checkTextureOverlay(
+  doc: TokensDocument,
+  leaves: Map<string, LeafToken>,
+  findings: Finding[],
+): void {
+  const overlay = textureOverlayGate(leaves, findings);
+  if (overlay === null) return;
+  checkTextureContrast(doc, leaves, overlay, findings);
+}
+
+function textureOverlayGate(
+  leaves: Map<string, LeafToken>,
+  findings: Finding[],
+): TextureOverlayGate | null {
+  const opacityLeaf = leaves.get("semantic.texture.overlay.opacity");
+  if (opacityLeaf === undefined) return null;
+  const opacity = opacityLeaf.$value;
+  if (opacityLeaf.$type !== "number" || typeof opacity !== "number") {
+    findings.push({
+      severity: "error",
+      code: "texture-opacity-invalid",
+      path: "semantic.texture.overlay.opacity",
+      message: "texture overlay opacity must be a number",
+    });
+    return null;
+  }
+  if (opacity > TEXTURE_GRAIN_OPACITY_CAP) {
+    findings.push({
+      severity: "error",
+      code: "texture-opacity-cap",
+      path: "semantic.texture.overlay.opacity",
+      message: `texture overlay opacity ${opacity} exceeds cap ${TEXTURE_GRAIN_OPACITY_CAP}`,
+      meta: { opacity, cap: TEXTURE_GRAIN_OPACITY_CAP },
+    });
+  }
+  return { opacity };
+}
+
+function checkTextureContrast(
+  doc: TokensDocument,
+  leaves: Map<string, LeafToken>,
+  overlay: TextureOverlayGate,
+  findings: Finding[],
+): void {
+  for (const pair of doc.contrastPairs) {
+    const min = pair.minRatio ?? MIN_RATIO[pair.role];
+    const fg = colorValueOf(pair.fg, leaves);
+    const bgLeaf = resolveAlias(pair.bg, leaves).resolved;
+    if (fg === null || !bgLeaf) continue;
+
+    const backgrounds = backgroundValues(bgLeaf);
+    if (backgrounds.length === 0) continue;
+
+    const candidates: TextureContrastCandidate[] = [];
+    for (const bg of backgrounds) {
+      const dark = blendedTextureBackground(bg, TEXTURE_GRAIN_OVERLAY.extremes.dark, overlay.opacity);
+      const light = blendedTextureBackground(bg, TEXTURE_GRAIN_OVERLAY.extremes.light, overlay.opacity);
+      if (dark === null || light === null) {
+        findings.push({
+          severity: "error",
+          code: "texture-contrast-unparseable",
+          message: `texture blended-background 색 파싱 실패: ${pair.bg}`,
+        });
+        continue;
+      }
+      const darkRatio = contrastRatio(fg, dark);
+      const lightRatio = contrastRatio(fg, light);
+      if (darkRatio === null || lightRatio === null) {
+        findings.push({
+          severity: "error",
+          code: "texture-contrast-unparseable",
+          message: `texture blended-background 대비 계산 실패: ${pair.fg} / ${pair.bg}`,
+        });
+        continue;
+      }
+      candidates.push({ source: bg, blended: dark, ratio: darkRatio, extreme: "dark" });
+      candidates.push({ source: bg, blended: light, ratio: lightRatio, extreme: "light" });
+    }
+
+    const worst = candidates.sort((a, b) => a.ratio - b.ratio)[0];
+    if (worst !== undefined && worst.ratio < min) {
+      findings.push({
+        severity: "error",
+        code: "texture-contrast-fail",
+        message: `texture worst-case blended-background 대비 미달 ${worst.ratio.toFixed(2)}:1 < ${min}:1 (${pair.fg} on ${pair.bg}, ${pair.role}/${pair.state})`,
+        meta: {
+          ratio: Number(worst.ratio.toFixed(2)),
+          required: min,
+          role: pair.role,
+          state: pair.state,
+          blendedBackground: worst.blended,
+          sourceBackground: worst.source,
+          textureExtreme: worst.extreme,
+        },
+      });
+    }
+  }
+}
+
+function backgroundValues(leaf: LeafToken): readonly string[] {
+  if (leaf.$type === "gradient" && isGradientValue(leaf.$value)) return leaf.$value.stops;
+  return typeof leaf.$value === "string" ? [leaf.$value] : [];
+}
+
+function blendedTextureBackground(bg: string, texture: string, opacity: number): string | null {
+  const bgRgb = parseColor(bg);
+  const textureRgb = parseColor(texture);
+  if (bgRgb === null || textureRgb === null) return null;
+  return linearToHex({
+    r: bgRgb.r * (1 - opacity) + textureRgb.r * opacity,
+    g: bgRgb.g * (1 - opacity) + textureRgb.g * opacity,
+    b: bgRgb.b * (1 - opacity) + textureRgb.b * opacity,
+  });
 }
 
 function checkContrast(

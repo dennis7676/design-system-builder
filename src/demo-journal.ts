@@ -1,7 +1,7 @@
 import { toCssVars } from "./adapters/css-adapter.js";
 import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
-import { htmlEscape } from "./render-utils.js";
+import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
@@ -77,7 +77,17 @@ function journalDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
   const surface = "var(--semantic-color-surface-default, Canvas)";
   const fg = "var(--semantic-color-surface-foreground, CanvasText)";
   const primary = "var(--semantic-color-primary-default, LinkText)";
-  const hairline = "var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent))";
+  const textMix = (pct: number, site: string) => mixedText({
+    doc,
+    fgPath: "semantic.color.surface.foreground",
+    surfacePath: "semantic.color.surface.default",
+    fgCss: fg,
+    surfaceCss: surface,
+    pct,
+    role: "text",
+    site,
+  });
+  const hairline = `var(--primitive-color-neutral-100, ${oklchMix("currentColor", 14, "transparent")})`;
   const radius = "var(--primitive-radius-md, var(--semantic-shape-control, .75rem))";
   const transition = "var(--semantic-motion-transition, 160ms)";
   const easing = "var(--semantic-motion-easing-standard)";
@@ -89,13 +99,13 @@ function journalDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
     a { color: inherit; transition: color ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
     .journal-nav { display: flex; align-items: center; gap: 1.5rem; padding: clamp(1.5rem, 5vw, 3rem) clamp(1rem, 5vw, 4rem); }
-    .journal-nav nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: clamp(.8rem, 2vw, 1.4rem); margin-left: auto; color: color-mix(in oklch, ${fg} 66%, ${surface}); }
+    .journal-nav nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: clamp(.8rem, 2vw, 1.4rem); margin-left: auto; color: ${textMix(66, "journal.nav")}; }
     .journal-nav nav a { text-decoration: none; }
     .journal-nav nav a:hover { color: ${primary}; }
     main { width: min(100%, 72rem); margin: 0 auto; padding: 0 clamp(1rem, 5vw, 4rem); }
     .journal-column { width: min(34rem, 100%); margin-inline: 0 auto; }
-    .eyebrow { font-family: var(--semantic-typography-body-family); font-style: italic; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    .lead { color: color-mix(in oklch, ${fg} 74%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); text-wrap: pretty; }
+    .eyebrow { font-family: var(--semantic-typography-body-family); font-style: italic; color: ${textMix(62, "journal.eyebrow")}; }
+    .lead { color: ${textMix(74, "journal.lead")}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); text-wrap: pretty; }
     .journal-hero { min-height: min(38rem, 76vh); display: grid; align-content: center; gap: 1.25rem; padding: clamp(3rem, 8vw, 6rem) 0; }
     .journal-hero h1 { max-width: 24ch; text-wrap: balance; font: var(--semantic-typography-h1-weight) clamp(var(--semantic-typography-h1-size), 6vw, calc(var(--semantic-typography-h1-size) * 1.18))/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
@@ -110,15 +120,15 @@ function journalDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
     .journal-list article { display: grid; gap: .5rem; }
     .journal-list h3 { display: inline; font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .journal-list h3 span { margin-right: .45rem; color: ${primary}; }
-    .journal-list p { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
+    .journal-list p { color: ${textMix(72, "journal.list")}; }
     .journal-form { padding: clamp(2.5rem, 7vw, 5rem) 0; display: grid; gap: 1rem; }
     .journal-form form { display: grid; gap: .9rem; margin-top: .5rem; }
-    .journal-form label { display: grid; gap: .35rem; font-size: .92rem; color: color-mix(in oklch, ${fg} 78%, ${surface}); }
-    .journal-form input { padding: .78rem .9rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: color-mix(in oklch, ${surface} 96%, ${primary}); color: ${fg}; font: inherit; transition: border-color ${transition} ${easing}, outline-color ${transition} ${easing}; }
+    .journal-form label { display: grid; gap: .35rem; font-size: .92rem; color: ${textMix(78, "journal.label")}; }
+    .journal-form input { padding: .78rem .9rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${oklchMix(surface, 96, primary)}; color: ${fg}; font: inherit; transition: border-color ${transition} ${easing}, outline-color ${transition} ${easing}; }
     .journal-form input:focus-visible { outline: .16rem solid ${primary}; outline-offset: .16rem; }
     .journal-signature { padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 5vw, 4rem); display: grid; justify-items: center; gap: .65rem; text-align: center; }
     .journal-signature .brand { font: italic var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
-    .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
+    .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "journal.fine")}; }
     @media (max-width: 640px) { .journal-nav { align-items: flex-start; flex-direction: column; } .journal-nav nav { margin-left: 0; justify-content: flex-start; } }${reduce}${journalTierCss(tier)}${textureOverlayCss(doc, [".journal-hero", ".journal-form"])}${glassPanelCss(doc, [".journal-hero", ".journal-form"])}${journalKoCss(ko)}`;
 }
 

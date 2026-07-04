@@ -9,6 +9,7 @@ import {
   componentFocusTargets,
   componentPrimitiveNames,
 } from "../src/component-registry.js";
+import { buildContractJson } from "../src/contract.js";
 import { generateDemo } from "../src/demo-generator.js";
 import { generateDesignMd } from "../src/design-md-generator.js";
 import { checkManifest } from "../src/manifest.js";
@@ -56,6 +57,7 @@ function surfacesFor(doc: TokensDocument) {
     styleguideHtml: generateStyleguide(doc),
     designMd: generateDesignMd(doc),
     demoHtml: generateDemo(doc),
+    contractJson: buildContractJson(doc),
   };
 }
 

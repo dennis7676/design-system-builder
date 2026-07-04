@@ -9,8 +9,12 @@
  *  - The drift `tokenHash` is computed over the INTENT subtree only (excludes `meta`).
  */
 
+export const TOKEN_CLASS_PATTERNS = ["portable", "adapter-derived", "target-only:<target>"] as const;
+
 /** Token classes — the portability seam the validator enforces (design §3.3). */
 export type TokenClass = "portable" | "adapter-derived" | `target-only:${string}`;
+
+export const DIMENSION_UNITS = ["abstract", "px-base", "ms"] as const;
 
 /** Dimension intent unit (design §3.3 — CSS unit strings are realized-only). */
 export type DimensionUnit = "abstract" | "px-base" | "ms";
@@ -35,17 +39,20 @@ export interface GradientValue {
 
 export type CubicBezierValue = readonly [number, number, number, number];
 
-export type LeafType =
-  | "color"
-  | "dimension"
-  | "duration"
-  | "fontFamily"
-  | "fontWeight"
-  | "number"
-  | "string"
-  | "shadow"
-  | "gradient"
-  | "cubicBezier";
+export const LEAF_TYPES = [
+  "color",
+  "dimension",
+  "duration",
+  "fontFamily",
+  "fontWeight",
+  "number",
+  "string",
+  "shadow",
+  "gradient",
+  "cubicBezier",
+] as const;
+
+export type LeafType = (typeof LEAF_TYPES)[number];
 
 /**
  * A leaf token. `$value` is either a concrete intent value or an alias "{...}".
@@ -114,13 +121,17 @@ export function aliasPath(v: AliasValue): string {
 
 // ── WCAG contrastPairs registry (design §3.3, codex Critical 4) ──────────────
 
-export type ContrastRole = "text" | "large-text" | "non-text";
-export type ContrastState =
-  | "default"
-  | "hover"
-  | "focus"
-  | "active"
-  | "disabled";
+export const CONTRAST_ROLES = ["text", "large-text", "non-text"] as const;
+export type ContrastRole = (typeof CONTRAST_ROLES)[number];
+
+export const CONTRAST_STATES = [
+  "default",
+  "hover",
+  "focus",
+  "active",
+  "disabled",
+] as const;
+export type ContrastState = (typeof CONTRAST_STATES)[number];
 
 export interface ContrastPair {
   /** alias path or token path of the foreground color */
@@ -217,6 +228,20 @@ export interface TokensMeta {
   colorOverride?: ColorOverrideMeta;
   motionOverride?: MotionOverrideMeta;
 }
+
+export const SKELETONS = [
+  "standard",
+  "editorial",
+  "spec-sheet",
+  "briefing",
+  "collage",
+  "mosaic",
+  "poster",
+  "journal",
+  "story",
+] as const;
+
+export type Skeleton = (typeof SKELETONS)[number];
 
 export interface TokensDocument {
   version: string;

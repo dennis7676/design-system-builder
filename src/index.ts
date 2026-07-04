@@ -15,6 +15,7 @@ export * from "./gate.js";
 export * from "./font-sources.js";
 export * from "./edge-point.js";
 export * from "./component-registry.js";
+export * from "./contract.js";
 
 import { readFileSync } from "node:fs";
 import type { TokensDocument } from "./tokens-schema.js";

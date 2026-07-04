@@ -15,6 +15,7 @@ export interface Surfaces {
   readonly styleguideHtml: string;
   readonly designMd: string;
   readonly demoHtml: string;
+  readonly contractJson: string;
 }
 
 const REQUIRED_ELEMENTS = [
@@ -33,11 +34,37 @@ type RequiredElement = (typeof REQUIRED_ELEMENTS)[number];
 export function checkManifest(doc: TokensDocument, surfaces: Surfaces): Finding[] {
   const findings: Finding[] = [];
   checkDrift(doc, surfaces, findings);
+  checkContract(doc, surfaces, findings);
   checkCompleteness(doc, surfaces, findings);
   checkA11yRecords(doc, surfaces, findings);
   checkMotionReduce(doc, surfaces, findings);
   checkDemo(doc, surfaces, findings);
   return findings;
+}
+
+function checkContract(doc: TokensDocument, surfaces: Surfaces, findings: Finding[]): void {
+  const expected = computeTokenHash(doc);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(surfaces.contractJson);
+  } catch (error) {
+    findings.push({
+      severity: "error",
+      code: "manifest-drift",
+      message: "contract.json missing or unparseable",
+      meta: { surface: "contract.json", expected, actual: null, parseError: error instanceof Error ? error.message : String(error) },
+    });
+    return;
+  }
+  const actual = contractBuiltHash(parsed);
+  if (actual !== expected) {
+    findings.push({
+      severity: "error",
+      code: "manifest-drift",
+      message: "contract.json builtFromTokenHash missing or stale",
+      meta: { surface: "contract.json", expected, actual },
+    });
+  }
 }
 
 /**
@@ -144,6 +171,12 @@ function snapshotBuiltHash(html: string): string | null {
 function designMdBuiltHash(markdown: string): string | null {
   const hash = markdown.match(/^---\s*\nbuiltFromTokenHash:\s*"([^"]+)"\s*\n---/);
   return hash?.[1] ?? null;
+}
+
+function contractBuiltHash(contract: unknown): string | null {
+  if (contract === null || typeof contract !== "object") return null;
+  const value = (contract as Record<string, unknown>).builtFromTokenHash;
+  return typeof value === "string" ? value : null;
 }
 
 function styleguideComplete(doc: TokensDocument, element: RequiredElement, html: string): boolean {

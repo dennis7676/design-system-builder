@@ -12,6 +12,7 @@ import {
   type TokenNode,
   type ContrastPair,
   type DimensionUnit,
+  DIMENSION_UNITS,
   isLeaf,
   isAlias,
   isCubicBezierValue,
@@ -41,7 +42,7 @@ export interface ValidationResult {
   findings: Finding[];
 }
 
-const VALID_UNITS: DimensionUnit[] = ["abstract", "px-base", "ms"];
+const VALID_UNITS: DimensionUnit[] = [...DIMENSION_UNITS];
 export const GLASS_BACKING_OPACITY_FLOOR = 0.6;
 const GLASS_BACKING_OPACITY_CEILING = 1;
 const LUMINANCE_EPSILON = 1e-12;

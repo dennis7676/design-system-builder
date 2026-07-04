@@ -1,5 +1,6 @@
-import { type LeafToken, type TokenGroup, isAlias, isLeaf } from "./tokens-schema.js";
-import { entriesFrom, resolveToken, tokenMap, type TokenEntry } from "./surface-data.js";
+import { contrastRatio, mixOklchColors } from "./color.js";
+import { MIN_RATIO, type ContrastRole, type LeafToken, type TokenGroup, isAlias, isLeaf } from "./tokens-schema.js";
+import { entriesFrom, resolveToken, resolveValue, tokenMap, type TokenEntry } from "./surface-data.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 export function htmlEscape(value: string): string {
@@ -41,6 +42,50 @@ export function descriptionFor(doc: TokensDocument, entry: TokenEntry): string {
 
 export function pathTail(path: string, prefix: string): string {
   return path.startsWith(`${prefix}.`) ? path.slice(prefix.length + 1) : path;
+}
+
+export function oklchMix(first: string, firstPct: number, second: string): string {
+  return `color-mix(in oklch, ${first} ${firstPct}%, ${second})`;
+}
+
+export interface MixedTextOptions {
+  readonly doc: TokensDocument;
+  readonly fgPath: string;
+  readonly surfacePath: string;
+  readonly pct: number;
+  readonly role: ContrastRole;
+  readonly site: string;
+  readonly fgCss?: string;
+  readonly surfaceCss?: string;
+}
+
+export function mixedText(options: MixedTextOptions): string {
+  const leaves = tokenMap(options.doc);
+  const fg = resolveValue(options.fgPath, leaves);
+  const surface = resolveValue(options.surfacePath, leaves);
+  if (typeof fg !== "string" || typeof surface !== "string") {
+    throw new Error(`demo derived text contrast failed at ${options.site}: color token unresolved`);
+  }
+  const mixed = mixOklchColors(fg, surface, options.pct);
+  const ratio = mixed === null ? null : contrastRatio(mixed, surface);
+  const floor = MIN_RATIO[options.role];
+  if (ratio === null) {
+    throw new Error(`demo derived text contrast failed at ${options.site}: color parse failed, pct=${options.pct}%, floor=${floor}`);
+  }
+  if (ratio < floor) {
+    throw new Error(
+      `demo derived text contrast failed at ${options.site}: pct=${options.pct}%, ratio=${ratio.toFixed(2)}, floor=${floor}`,
+    );
+  }
+  return oklchMix(
+    options.fgCss ?? cssVarForToken(options.fgPath),
+    options.pct,
+    options.surfaceCss ?? cssVarForToken(options.surfacePath),
+  );
+}
+
+export function cssVarForToken(path: string): string {
+  return `var(--${path.replaceAll(".", "-")})`;
 }
 
 export function axisLabel(axis: string): string {

@@ -12,7 +12,7 @@ import type { TokensDocument } from "./tokens-schema.js";
 import { toCssVars } from "./adapters/css-adapter.js";
 import { computeTokenHash } from "./validator.js";
 import { hasTokenPath } from "./surface-data.js";
-import { htmlEscape } from "./render-utils.js";
+import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
 import { generateBriefingDemo } from "./demo-briefing.js";
@@ -152,7 +152,17 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
   const surface = "var(--semantic-color-surface-default, Canvas)";
   const fg = "var(--semantic-color-surface-foreground, CanvasText)";
   const primary = "var(--semantic-color-primary-default, LinkText)";
-  const hairline = "var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent))";
+  const textMix = (pct: number, site: string) => mixedText({
+    doc,
+    fgPath: "semantic.color.surface.foreground",
+    surfacePath: "semantic.color.surface.default",
+    fgCss: fg,
+    surfaceCss: surface,
+    pct,
+    role: "text",
+    site,
+  });
+  const hairline = `var(--primitive-color-neutral-100, ${oklchMix("currentColor", 14, "transparent")})`;
   const radius = "var(--semantic-shape-control, .5rem)";
   const inset = "var(--semantic-space-inset, 1.5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
@@ -176,14 +186,14 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     h1, h2, h3, p { margin: 0; }
     a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
-    .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 78%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .04em; font-size: .8rem; color: ${textMix(62, "standard.eyebrow")}; }
+    .lead { max-width: 52ch; color: ${textMix(78, "standard.lead")}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
     .btn-ghost { background: transparent; color: ${primary}; border: 1px solid ${hairline}; }
     .btn:focus-visible { outline: .18rem solid ${primary}; outline-offset: .18rem; }
-    .topbar { display: flex; align-items: center; gap: 1.5rem; padding: 1rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid ${hairline}; position: sticky; top: 0; background: color-mix(in oklch, ${surface} 92%, transparent); backdrop-filter: blur(.6rem); }
+    .topbar { display: flex; align-items: center; gap: 1.5rem; padding: 1rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid ${hairline}; position: sticky; top: 0; background: ${oklchMix(surface, 92, "transparent")}; backdrop-filter: blur(.6rem); }
     .topbar nav { display: flex; gap: 1rem; margin-left: auto; }
     .topbar nav a { text-decoration: none; padding: .4rem .5rem; border-radius: ${radius}; }
     .topbar nav a:hover { color: ${primary}; }
@@ -194,12 +204,12 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .features { padding: clamp(2rem, 5vw, 4rem) 0; display: grid; gap: 1.5rem; border-top: 1px solid ${hairline}; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
     .features h2 { font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
-    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: color-mix(in oklch, ${surface} 96%, ${primary}); display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ${easing}, transform ${transition} ${easing}; }
+    .card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: ${inset}; background: ${oklchMix(surface, 96, primary)}; display: grid; gap: .6rem; align-content: start;${raised} transition: box-shadow ${transition} ${easing}, transform ${transition} ${easing}; }
     .card:hover {${overlay} transform: translateY(-2px); }
     .card h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .link { color: ${primary}; text-decoration: none; font-weight: 600; }
     .signup { padding: clamp(2rem, 5vw, 4rem) 0; }
-    .signup-card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: clamp(1.5rem, 4vw, 3rem); background: color-mix(in oklch, ${surface} 94%, ${primary}); display: grid; gap: 1rem; max-width: 34rem;${overlay} }
+    .signup-card { border: 1px solid ${hairline}; border-radius: ${radius}; padding: clamp(1.5rem, 4vw, 3rem); background: ${oklchMix(surface, 94, primary)}; display: grid; gap: 1rem; max-width: 34rem;${overlay} }
     .signup-card h2 { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .signup form { display: grid; gap: .85rem; }
     .signup label { display: grid; gap: .35rem; font-size: .9rem; }
@@ -208,9 +218,9 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .site-footer { border-top: 1px solid ${hairline}; margin-top: 2rem; padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem); display: grid; gap: 1.5rem; }
     .footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: 1.5rem; width: min(72rem, 100%); margin: 0 auto; }
     .footer-cols div { display: grid; gap: .4rem; align-content: start; }
-    .footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
+    .footer-cols a { text-decoration: none; color: ${textMix(72, "standard.footer-link")}; }
     .footer-cols a:hover { color: ${primary}; }
-    .fine { width: min(72rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
+    .fine { width: min(72rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "standard.fine")}; }
     @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${textureOverlayCss(doc, [".hero", ".hero-panel", ".card", ".signup-card"])}${glassPanelCss(doc, [".hero-panel", ".card", ".signup-card"])}${koCss(ko)}`;
 }
 
@@ -250,11 +260,11 @@ function tierCss(tier: Tier, doc: TokensDocument): string {
   // flat recipes get color-mix solids, no invented shadow/gradient.
   const panelBg = hasGradient(doc)
     ? "var(--semantic-gradient-hero)"
-    : `color-mix(in oklch, ${surface} 88%, ${primary})`;
+    : oklchMix(surface, 88, primary);
   const panelShadow = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
   const spotlightBg = hasGradient(doc)
     ? "var(--semantic-gradient-hero)"
-    : `color-mix(in oklch, ${surface} 90%, ${primary})`;
+    : oklchMix(surface, 90, primary);
   return `
     main { width: min(76rem, 100%); }
     .hero { grid-template-columns: 1.1fr .9fr; column-gap: 2.5rem; align-items: center; padding: clamp(3rem, 7vw, 5.5rem) 0; }

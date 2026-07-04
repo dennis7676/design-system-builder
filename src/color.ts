@@ -32,6 +32,19 @@ export function formatOklch(color: Oklch): string {
   return `oklch(${color.L.toFixed(3)} ${color.C.toFixed(3)} ${normalizeHue(color.H).toFixed(1)})`;
 }
 
+export function mixOklchColors(fg: string, bg: string, fgPct: number): string | null {
+  const foreground = parseOklch(fg);
+  const background = parseOklch(bg);
+  if (foreground === null || background === null) return null;
+  const t = fgPct / 100;
+  const hueDelta = shorterHueDelta(background.H, foreground.H);
+  return formatOklch({
+    L: foreground.L * t + background.L * (1 - t),
+    C: foreground.C * t + background.C * (1 - t),
+    H: background.H + hueDelta * t,
+  });
+}
+
 /** Parse "#rgb" / "#rrggbb" into linear sRGB. */
 function parseHex(s: string): LinearRGB | null {
   let hex = s.trim().replace(/^#/, "");
@@ -151,4 +164,8 @@ export function contrastRatio(fg: string, bg: string): number | null {
 
 function normalizeHue(h: number): number {
   return ((h % 360) + 360) % 360;
+}
+
+function shorterHueDelta(from: number, to: number): number {
+  return ((to - from + 540) % 360) - 180;
 }

@@ -11,6 +11,7 @@ import { describe, it, expect } from "vitest";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
+  buildContractJson,
   checkManifest,
   computeTokenHash,
   generateDemo,
@@ -47,6 +48,7 @@ const demoErrors = (doc: TokensDocument) =>
     styleguideHtml: generateStyleguide(doc),
     designMd: generateDesignMd(doc),
     demoHtml: generateDemo(doc),
+    contractJson: buildContractJson(doc),
   }).filter((f) => f.severity === "error" && f.meta?.surface === "demo");
 
 describe("G-L1 — no-locale anchor (byte identity)", () => {

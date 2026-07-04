@@ -13,6 +13,7 @@ import { RecipeSelectionError, loadRecipes, selectRecipe, type Conflict } from "
 import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
 import type { TokensDocument } from "./tokens-schema.js";
+import { GENERATED_ARTIFACTS } from "./contract.js";
 
 const RECIPES_DIR = "references/recipes";
 
@@ -34,6 +35,7 @@ interface BuildResult {
   readonly conflicts?: readonly Conflict[];
   readonly findings?: readonly Finding[];
   readonly tokens?: TokensDocument;
+  readonly artifacts?: readonly string[];
   readonly error?: string;
 }
 
@@ -146,6 +148,7 @@ function dsbBuild(args: z.infer<typeof buildInputSchema>): BuildResult {
     conflicts: selection.conflicts,
     findings: validation.findings,
     tokens: doc,
+    artifacts: ["tokens.json", ...GENERATED_ARTIFACTS],
   };
 }
 

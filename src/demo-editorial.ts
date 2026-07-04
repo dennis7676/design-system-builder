@@ -1,5 +1,5 @@
 import { toCssVars } from "./adapters/css-adapter.js";
-import { htmlEscape } from "./render-utils.js";
+import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
@@ -77,7 +77,17 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
   const surface = "var(--semantic-color-surface-default, Canvas)";
   const fg = "var(--semantic-color-surface-foreground, CanvasText)";
   const primary = "var(--semantic-color-primary-default, LinkText)";
-  const hairline = "var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent))";
+  const textMix = (pct: number, site: string) => mixedText({
+    doc,
+    fgPath: "semantic.color.surface.foreground",
+    surfacePath: "semantic.color.surface.default",
+    fgCss: fg,
+    surfaceCss: surface,
+    pct,
+    role: "text",
+    site,
+  });
+  const hairline = `var(--primitive-color-neutral-100, ${oklchMix("currentColor", 14, "transparent")})`;
   const radius = "var(--semantic-shape-control, .5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
   const easing = "var(--semantic-motion-easing-standard)";
@@ -88,8 +98,8 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     h1, h2, h3, p { margin: 0; }
     a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
-    .eyebrow, .spread-number { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: color-mix(in oklch, ${fg} 58%, ${surface}); }
-    .lead { max-width: 48ch; text-wrap: pretty; color: color-mix(in oklch, ${fg} 74%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .eyebrow, .spread-number { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: ${textMix(60, "editorial.eyebrow")}; }
+    .lead { max-width: 48ch; text-wrap: pretty; color: ${textMix(74, "editorial.lead")}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
@@ -111,7 +121,7 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .spread-row:nth-child(even) h3 { grid-column: 3; grid-row: 1; }
     .spread-row:nth-child(even) p { grid-column: 2; grid-row: 1; }
     .spread-row h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
-    .spread-row p { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
+    .spread-row p { color: ${textMix(72, "editorial.spread-row")}; }
     .invitation { width: min(34rem, 100%); margin: 0 auto; padding: clamp(3rem, 7vw, 6rem) 0; display: grid; gap: 1rem; text-align: center; }
     .invitation h2 { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .invitation form { display: grid; gap: 1rem; margin-top: 1rem; text-align: left; }
@@ -119,8 +129,8 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .invitation input { padding: .75rem 0; border: 0; border-bottom: 1px solid ${hairline}; border-radius: 0; background: transparent; color: ${fg}; font: inherit; transition: border-color ${transition} ${easing}, outline-color ${transition} ${easing}; }
     .invitation input:focus-visible { outline: .16rem solid ${primary}; outline-offset: .2rem; }
     .colophon { border-top: 1px solid ${hairline}; padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem); display: grid; justify-items: center; gap: .65rem; text-align: center; }
-    .colophon > p:not(.fine) { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
-    .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
+    .colophon > p:not(.fine) { color: ${textMix(72, "editorial.colophon")}; }
+    .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "editorial.fine")}; }
     @media (max-width: 760px) { .spread-row, .spread-row:nth-child(even) h3, .spread-row:nth-child(even) p { grid-template-columns: 1fr; grid-column: auto; grid-row: auto; } .spread-row { gap: .75rem; } }${reduce}${editorialTierCss(tier)}${textureOverlayCss(doc, [".editorial-hero", ".invitation"])}${glassPanelCss(doc, [".editorial-hero", ".invitation"])}${editorialKoCss(ko)}`;
 }
 

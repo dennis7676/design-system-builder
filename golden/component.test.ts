@@ -24,6 +24,7 @@ import { buildTokens } from "../src/tokens-builder.js";
 import type { TokensDocument } from "../src/tokens-schema.js";
 import { computeTokenHash, flatten, validateTokens } from "../src/validator.js";
 import { parseOklch } from "../src/color.js";
+import { buildContractJson } from "../src/contract.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
@@ -72,6 +73,7 @@ function surfacesFor(doc: TokensDocument) {
     styleguideHtml: generateStyleguide(doc),
     designMd: generateDesignMd(doc),
     demoHtml: generateDemo(doc),
+    contractJson: buildContractJson(doc),
   };
 }
 

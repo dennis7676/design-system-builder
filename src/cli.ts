@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-import { writeFileSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, writeFileSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  buildContractJson,
   checkManifest,
   generateDemo,
   generateDesignMd,
@@ -18,6 +19,7 @@ import { RecipeSelectionError, formatRecipeCandidateTable, loadRecipes, selectRe
 import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
 import type { TokensDocument } from "./tokens-schema.js";
+import type { Surfaces } from "./manifest.js";
 
 interface GeneratedArtifacts {
   readonly doc: TokensDocument;
@@ -25,6 +27,7 @@ interface GeneratedArtifacts {
   readonly styleguideHtml: string;
   readonly designMd: string;
   readonly demoHtml: string;
+  readonly contractJson: string;
 }
 
 function main(argv: string[]): number {
@@ -48,11 +51,7 @@ function main(argv: string[]): number {
 
   if (rest.includes("--check-manifest")) {
     findings.push(
-      ...checkManifest(doc, {
-        styleguideHtml: generateStyleguide(doc),
-        designMd: generateDesignMd(doc),
-        demoHtml: generateDemo(doc),
-      }),
+      ...checkManifest(doc, manifestSurfacesFor(doc, file)),
     );
   }
 
@@ -83,12 +82,13 @@ function generate(argv: string[]): number {
   const styleguideHtml = generateStyleguide(doc);
   const designMd = generateDesignMd(doc);
   const demoHtml = generateDemo(doc);
+  const contractJson = buildContractJson(doc);
   if (outDir === undefined) {
     console.log(styleguideHtml);
     return 0;
   }
-  writeGeneratedArtifacts(outDir, { doc, css, styleguideHtml, designMd, demoHtml });
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html`);
+  writeGeneratedArtifacts(outDir, { doc, css, styleguideHtml, designMd, demoHtml, contractJson });
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json`);
   return 0;
 }
 
@@ -100,6 +100,38 @@ export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArti
   writeFileSync(`${outDir}/styleguide.html`, artifacts.styleguideHtml);
   writeFileSync(`${outDir}/DESIGN.md`, artifacts.designMd);
   writeFileSync(`${outDir}/demo.html`, artifacts.demoHtml);
+  writeFileSync(`${outDir}/contract.json`, artifacts.contractJson);
+}
+
+function generatedManifestSurfaces(doc: TokensDocument): Surfaces {
+  return {
+    styleguideHtml: generateStyleguide(doc),
+    designMd: generateDesignMd(doc),
+    demoHtml: generateDemo(doc),
+    contractJson: buildContractJson(doc),
+  };
+}
+
+function manifestSurfacesFor(doc: TokensDocument, tokensPath: string): Surfaces {
+  const dir = dirname(tokensPath);
+  const paths = {
+    styleguideHtml: `${dir}/styleguide.html`,
+    designMd: `${dir}/DESIGN.md`,
+    demoHtml: `${dir}/demo.html`,
+    contractJson: `${dir}/contract.json`,
+  } as const;
+  const hasGeneratedSurface = Object.values(paths).some((path) => existsSync(path));
+  if (!hasGeneratedSurface) return generatedManifestSurfaces(doc);
+  return {
+    styleguideHtml: readIfExists(paths.styleguideHtml),
+    designMd: readIfExists(paths.designMd),
+    demoHtml: readIfExists(paths.demoHtml),
+    contractJson: readIfExists(paths.contractJson),
+  };
+}
+
+function readIfExists(path: string): string {
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
 }
 
 function flagValue(argv: string[], flag: string): string | undefined {

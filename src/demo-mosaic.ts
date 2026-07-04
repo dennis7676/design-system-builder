@@ -1,7 +1,7 @@
 import { toCssVars } from "./adapters/css-adapter.js";
 import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
-import { htmlEscape } from "./render-utils.js";
+import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
@@ -77,7 +77,17 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
   const fg = "var(--semantic-color-surface-foreground, CanvasText)";
   const primary = "var(--semantic-color-primary-default, LinkText)";
   const onPrimary = "var(--semantic-color-primary-foreground, ButtonText)";
-  const hairline = "var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent))";
+  const textMix = (pct: number, site: string) => mixedText({
+    doc,
+    fgPath: "semantic.color.surface.foreground",
+    surfacePath: "semantic.color.surface.default",
+    fgCss: fg,
+    surfaceCss: surface,
+    pct,
+    role: "text",
+    site,
+  });
+  const hairline = `var(--primitive-color-neutral-100, ${oklchMix("currentColor", 14, "transparent")})`;
   const radius = "var(--semantic-shape-control, .5rem)";
   const inset = "var(--semantic-space-inset, 1.5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
@@ -90,8 +100,8 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     h1, h2, h3, p { margin: 0; }
     a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
-    .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 76%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .eyebrow { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; color: ${textMix(62, "mosaic.eyebrow")}; }
+    .lead { max-width: 52ch; color: ${textMix(76, "mosaic.lead")}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { width: 100%; height: 100%; min-height: 5rem; background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ${onPrimary}); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
@@ -114,7 +124,7 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     .mosaic-card { min-height: 16rem; align-content: start; border-radius: 0; }
     .mosaic-card h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .mosaic-card-large h3 { max-width: 16ch; font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
-    .mosaic-card p { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
+    .mosaic-card p { color: ${textMix(72, "mosaic.card")}; }
     .link { color: ${primary}; text-decoration: none; font-weight: 600; }
     .mosaic-form { padding: 0 clamp(1rem, 4vw, 3rem) clamp(2rem, 5vw, 4rem); display: grid; justify-items: start; }
     .mosaic-form-card { width: min(26rem, 100%); border: 1px solid ${hairline}; border-radius: ${radius}; }
@@ -124,7 +134,7 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     .mosaic-form-card input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: ${radius}; background: ${surface}; color: ${fg}; font: inherit; }
     .mosaic-footer { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: ${hairline}; }
     .mosaic-footer-brand .brand { font: var(--semantic-typography-display-weight) clamp(var(--semantic-typography-display-size), 8vw, calc(var(--semantic-typography-display-size) * 1.45))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
-    .fine { margin: 0; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 62%, ${surface}); }
+    .fine { margin: 0; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(62, "mosaic.fine")}; }
     @media (max-width: 760px) { .mosaic-nav nav { display: none; } .mosaic-grid, .mosaic-feature-row, .mosaic-footer { grid-template-columns: 1fr; } .mosaic-headline, .mosaic-lead { grid-column: auto; grid-row: auto; } }${reduce}${mosaicTierCss(tier)}${textureOverlayCss(doc, [".mosaic-tile"])}${glassPanelCss(doc, [".mosaic-tile"])}${mosaicKoCss(ko)}`;
 }
 

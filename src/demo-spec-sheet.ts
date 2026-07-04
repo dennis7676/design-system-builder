@@ -1,7 +1,7 @@
 import { toCssVars } from "./adapters/css-adapter.js";
 import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
-import { htmlEscape } from "./render-utils.js";
+import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
@@ -75,7 +75,17 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
   const surface = "var(--semantic-color-surface-default, Canvas)";
   const fg = "var(--semantic-color-surface-foreground, CanvasText)";
   const primary = "var(--semantic-color-primary-default, LinkText)";
-  const hairline = "var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent))";
+  const textMix = (pct: number, site: string) => mixedText({
+    doc,
+    fgPath: "semantic.color.surface.foreground",
+    surfacePath: "semantic.color.surface.default",
+    fgCss: fg,
+    surfaceCss: surface,
+    pct,
+    role: "text",
+    site,
+  });
+  const hairline = `var(--primitive-color-neutral-100, ${oklchMix("currentColor", 14, "transparent")})`;
   const radius = "var(--semantic-shape-control, .5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
   const easing = "var(--semantic-motion-easing-standard)";
@@ -87,8 +97,8 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     a { color: inherit; transition: color ${transition} ${easing}, background ${transition} ${easing}; }
     .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
     .spec-index, .spec-links, .spec-form label, .fine { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .06em; }
-    .spec-index, .spec-links, .spec-form label { font-size: .78rem; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    .lead { max-width: 52ch; color: color-mix(in oklch, ${fg} 76%, ${surface}); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .spec-index, .spec-links, .spec-form label { font-size: .78rem; color: ${textMix(62, "spec.meta")}; }
+    .lead { max-width: 52ch; color: ${textMix(76, "spec.lead")}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
     .btn { border: 0; border-radius: ${radius}; padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background ${transition} ${easing}, transform ${transition} ${easing}; }
     .btn-primary { background: var(--component-button-background, ${primary}); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, ${radius}); padding: .7rem var(--component-button-paddingX, 1.25rem); }
     .btn-primary:hover { background: var(--component-button-backgroundHover, ${primary}); transform: translateY(-1px); }
@@ -104,18 +114,18 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .hero-panel .glyph { font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * 2.2), 12vw, calc(var(--semantic-typography-display-size) * 4))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); }
     .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-start; }
     .spec-features { padding: clamp(3rem, 7vw, 5.5rem) 0; display: grid; gap: 1.25rem; border-bottom: 1px solid ${hairline}; }
-    .spec-features h2 { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: color-mix(in oklch, ${fg} 62%, ${surface}); }
+    .spec-features h2 { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: ${textMix(62, "spec.h2")}; }
     .spec-table { width: 100%; border-collapse: collapse; border: 1px solid ${hairline}; }
     .spec-table td { border: 1px solid ${hairline}; padding: clamp(1rem, 3vw, 2rem); vertical-align: top; }
     .spec-table h3, .card h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
-    .spec-table p { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
+    .spec-table p { color: ${textMix(72, "spec.table")}; }
     .spec-form { padding: clamp(3rem, 7vw, 5.5rem) 0; display: grid; gap: .9rem; text-align: left; }
     .spec-form h2 { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); }
     .spec-form form { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; gap: 1rem; align-items: end; margin-top: 1rem; }
     .spec-form label { display: grid; gap: .35rem; }
     .spec-form input { padding: .75rem 0; border: 0; border-bottom: 1px solid ${hairline}; border-radius: 0; background: transparent; color: ${fg}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); }
     .spec-footer { border-top: 1px solid ${hairline}; border-bottom: 1px solid ${hairline}; padding: 1.25rem clamp(1rem, 4vw, 3rem); display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
-    .fine { max-width: 52ch; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
+    .fine { max-width: 52ch; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: ${textMix(60, "spec.fine")}; }
     @media (max-width: 760px) { .spec-nav, .spec-footer { align-items: flex-start; flex-direction: column; } .spec-links { margin-left: 0; flex-wrap: wrap; } .spec-table tr, .spec-table td { display: block; } .spec-form form { grid-template-columns: 1fr; } }${reduce}${specTierCss(tier)}${textureOverlayCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${glassPanelCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${specKoCss(ko)}`;
 }
 

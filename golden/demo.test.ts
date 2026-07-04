@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import {
   checkManifest,
+  buildContractJson,
   computeTokenHash,
   generateDemo,
   generateDesignMd,
@@ -17,7 +18,8 @@ import {
 import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
 import { buildTokens } from "../src/tokens-builder.js";
 import type { BrandJson } from "../src/brand-schema.js";
-import type { TokensDocument } from "../src/tokens-schema.js";
+import { SKELETONS, type TokensDocument } from "../src/tokens-schema.js";
+import { mixedText } from "../src/render-utils.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
@@ -28,6 +30,7 @@ const surfacesFor = (doc: TokensDocument) => ({
   styleguideHtml: generateStyleguide(doc),
   designMd: generateDesignMd(doc),
   demoHtml: generateDemo(doc),
+  contractJson: buildContractJson(doc),
 });
 const errors = (doc: TokensDocument, surfaces = surfacesFor(doc)) =>
   checkManifest(doc, surfaces).filter((f) => f.severity === "error");
@@ -105,5 +108,38 @@ describe("G-D5 — anti-hardcode (brand values only via var(--…))", () => {
 describe("baseline — generated demo satisfies all manifest gates", () => {
   it("checkManifest(SAMPLE) yields no demo error", () => {
     expect(errors(SAMPLE).filter((f) => f.meta?.surface === "demo")).toEqual([]);
+  });
+});
+
+describe("demo derived foreground contrast", () => {
+  it("sweeps all recipes across all skeletons without derived mix failures", () => {
+    for (const recipeEntry of RECIPES) {
+      const base = buildTokens(
+        {
+          schemaVersion: "2026-06-30",
+          product: { name: "Demo", medium: "web" },
+          branding: { tone_vector: recipeEntry.toneAnchor },
+        } as BrandJson,
+        recipeEntry,
+      );
+      for (const skeleton of SKELETONS) {
+        const doc = structuredClone(base);
+        doc.meta.skeleton = skeleton;
+        expect(generateDemo(doc), `${recipeEntry.key}/${skeleton}`).toContain("<!doctype html>");
+      }
+    }
+  });
+
+  it("throws with site, percentage, ratio, and floor when a mix fails", () => {
+    expect(() =>
+      mixedText({
+        doc: SAMPLE,
+        fgPath: "semantic.color.surface.foreground",
+        surfacePath: "semantic.color.surface.default",
+        pct: 20,
+        role: "text",
+        site: "negative.demo",
+      }),
+    ).toThrow(/negative\.demo.*pct=20%.*ratio=1\.63.*floor=4\.5/);
   });
 });

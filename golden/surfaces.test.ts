@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   checkManifest,
+  buildContractJson,
   computeTokenHash,
   generateDemo,
   generateDesignMd,
@@ -22,6 +23,7 @@ const surfacesFor = (doc: TokensDocument) => ({
   styleguideHtml: generateStyleguide(doc),
   designMd: generateDesignMd(doc),
   demoHtml: generateDemo(doc),
+  contractJson: buildContractJson(doc),
 });
 const errors = (doc: TokensDocument, surfaces = surfacesFor(doc)) =>
   checkManifest(doc, surfaces).filter((f) => f.severity === "error");
@@ -126,8 +128,8 @@ describe("P4 — surface generators and manifest", () => {
       ]),
     );
 
-    (doc.primitive.color.neutral as Record<string, { $value: string }>)["50"] = {
-      ...doc.primitive.color.neutral["50"],
+    (doc.primitive.color.blue as Record<string, { $value: string }>)["700"] = {
+      ...doc.primitive.color.blue["700"],
       $value: "oklch(0.55 0 0)",
     };
     expect(errors(doc)).not.toEqual(

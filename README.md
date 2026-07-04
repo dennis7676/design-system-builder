@@ -12,9 +12,9 @@
 ## 어떻게 동작하는가 (파이프라인)
 
 ```
-인터뷰(스킬)  →  brand.json  →  tokens.json  →  4개 산출물
+인터뷰(스킬)  →  brand.json  →  tokens.json  →  5개 산출물
  컨셉 질문        컨셉 확정       디자인 시스템      DESIGN.md / styleguide.html
- (5축 톤 등)      (재현성 봉인)    (intent SSOT)     / demo.html / tokens.css
+ (5축 톤 등)      (재현성 봉인)    (intent SSOT)     / demo.html / tokens.css / contract.json
 ```
 
 1. **인터뷰** — 대화형 질문(감정→색, Semantic Differential 5축)으로 브랜드의
@@ -23,7 +23,7 @@
    매칭한다. 하드 제약 필터 → 유클리드 거리 → 최근접 선택.
 3. **빌드** — 레시피의 토큰 트리를 복제하고 사용자의 다이얼(아래)을 적용해
    `tokens.json`(intent 전용 SSOT)을 만든다.
-4. **생성** — 토큰 하나에서 산출물 4종이 나온다. 전부 같은 토큰값을 소비하므로
+4. **생성** — 토큰 하나에서 산출물 5종이 나온다. 전부 같은 토큰값을 소비하므로
    서로 어긋날 수 없다.
 
 ## 무엇을 고를 수 있는가 (조합 공간)
@@ -38,7 +38,7 @@
 8 recipe × 3 tier만으로 24가지 뚜렷한 룩. 어떤 조합이든 같은 brand.json이면
 같은 바이트가 나온다.
 
-## 무엇이 나오는가 (산출물 4종)
+## 무엇이 나오는가 (산출물 5종)
 
 | 산출물 | 용도 |
 |---|---|
@@ -46,8 +46,10 @@
 | `styleguide.html` | 토큰 카탈로그 + 컴포넌트 플레이그라운드 — 시스템의 레퍼런스 |
 | `demo.html` | 실제 제품 레이아웃(nav·hero·features·form·footer)에 시스템을 적용한 실물 — expression tier가 여기서 드러난다 |
 | `tokens.css` | CSS 변수(`--semantic-*`) — 실제 프로젝트가 소비하는 어댑터 산출물 |
+| `contract.json` | AI·도구가 읽는 사용 계약 — 소비 규칙, 공개 토큰 API, 컴포넌트 레지스트리, 게이트 증명 |
 
-네 산출물 전부에 `builtFromTokenHash`가 박혀 있어, 토큰과 어긋난(드리프트된)
+드리프트를 판정하는 표면(`styleguide.html` · `DESIGN.md` · `demo.html` ·
+`contract.json`)에는 `builtFromTokenHash`가 박혀 있어, 토큰과 어긋난
 산출물은 `validate --check-manifest`가 기계적으로 잡아낸다.
 
 ### Handoff
@@ -59,15 +61,20 @@
 
 ## 무엇이 보장되는가
 
-- **재현성** — 같은 `brand.json` → 바이트 동일 산출물. LLM의 즉흥 생성은
-  파이프라인 어디에도 없다(인터뷰까지만 LLM, 이후 전부 결정적 코드).
-- **접근성** — 모든 텍스트/배경 쌍은 WCAG 대비(텍스트 4.5 / 큰글씨 3 / 비텍스트
-  3)를 게이트에서 검사받고, 그라데이션 배경은 **최악 stop 기준**으로 판정된다.
-  통과 못 하면 빌드가 안 된다.
-- **일관성** — 산출물 간·tier 간 브랜드 값(:root 변수)은 항상 동일. 베리에이션은
-  레이아웃과 스케일에만 실린다. (E2E로 브라우저 computed style까지 검증)
-- **회귀 안전** — golden 테스트 108개 + R1 키스톤(기준 레시피 해시 불변)이
-  모든 변경마다 돈다.
+- **재현성** — 같은 `brand.json` → 바이트 동일 산출물. 증명:
+  `computeTokenHash`와 `golden/contract.test.ts`의 contract byte-golden.
+- **접근성** — `contrastPairs` 전체, 그라데이션 최악 stop, texture/glass 엣지,
+  demo 파생 전경색까지 WCAG 대비를 통과해야 한다. 증명: `contrast-fail` ·
+  `texture-contrast-fail` · `glass-contrast-fail` 게이트와 `mixedText` helper,
+  `golden/demo.test.ts`의 8 recipe × 9 skeleton sweep.
+- **일관성** — manifest 표면은 같은 `builtFromTokenHash`를 품고, 어긋나면
+  `manifest-drift`가 막는다. 증명: `src/manifest.ts`와
+  `validate --check-manifest`.
+- **회귀 안전** — golden 테스트 372개와 R1 키스톤(기준 레시피 해시 불변)이
+  모든 변경마다 돈다. 증명: `npm test`.
+- **기계 판독 계약** — `contract.json`은 공개/내부 토큰 경계, 컴포넌트 레지스트리,
+  게이트 카탈로그, 보장과 proof pointer를 담는다. 증명:
+  `src/contract.ts`와 `golden/contract.test.ts`.
 
 ## 사용법 (CLI)
 
@@ -125,7 +132,7 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 - **intent-only SSOT**: `tokens.json`은 의도값만 담는다(`space.comfortable` →
   어댑터가 `web: 1rem`으로 실현). 실현값(rem/ms/oklch)은 SSOT가 아니다.
 - **`$class`**: 모든 leaf는 `portable` / `adapter-derived` / `target-only:<target>`.
-- **tokenHash / 드리프트 계약**: intent 서브트리(meta 제외)의 해시. 각 표면이
+- **tokenHash / 드리프트 계약**: intent 서브트리(meta 제외)의 해시. manifest 표면이
   `builtFromTokenHash`를 임베드 → `validate --check-manifest`가 재계산 비교.
   meta(expression/locales 에코)는 해시에 안 들어간다.
 - **contrastPairs**: fg/bg 쌍 레지스트리(role · state · minRatio) — WCAG 게이트의 입력.

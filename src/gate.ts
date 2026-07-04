@@ -10,6 +10,14 @@
 import { validateBrand, type BrandJson } from "./brand-schema.js";
 import type { RecipeSelection } from "./recipe-selection.js";
 
+export const EXPORT_GATE_CODES = [
+  "export-brand-fields",
+  "export-conflict-free",
+  "export-recipe-selected",
+  "export-override-limit",
+  "export-user-confirmed",
+] as const;
+
 export interface GateInput {
   readonly brand: BrandJson;
   readonly selection: RecipeSelection;

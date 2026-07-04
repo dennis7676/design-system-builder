@@ -7,6 +7,7 @@ import type { BrandJson } from "../src/brand-schema.js";
 import { generateDemo } from "../src/demo-generator.js";
 import { generateStyleguide } from "../src/styleguide-generator.js";
 import {
+  buildContractJson,
   collectWebfonts,
   fontSourceKinds,
   loadRecipes,
@@ -102,6 +103,7 @@ describe("G-W4 — CLI fonts.css sidecar", () => {
       styleguideHtml: "",
       designMd: "",
       demoHtml: "",
+      contractJson: buildContractJson(doc),
     });
 
     expect(readFileSync(join(dir, "fonts.css"), "utf8")).toBe(`${webfontImportCss(doc)}\n`);

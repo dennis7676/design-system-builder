@@ -89,3 +89,32 @@ deterministic).
   (reproducibility-preserving human choice, loud CONFLICTs), SKILL.md
   mood-image priors + candidate-choice/comparison-builds steps, README
   Handoff subsection. 288 tests; artifact bytes frozen.
+
+## Commercial track (2026-07-04, Astryx benchmarking interview)
+
+Positioning (user-confirmed): between **public OSS portfolio** and
+**client-deliverable tooling** — external consumers exist, so consumability
+(docs, DX, showcase quality) ranks with expressiveness. Benchmark: Meta
+Astryx (150+ components, 7 themes, AI-readable docs, embedded MCP server).
+DSB is a different layer — a deterministic *system generator*, not a
+component box — but Astryx sets the commercial bar its outputs must meet.
+
+Adopted points and order:
+
+1. **MCP spike (B2, early)** — minimal `build`/`validate` tools exposed over
+   MCP so in-house agents consume DSB natively; full server ships with M6.
+2. **Glass Round 2** — contrast-floor admission gate; lifts the last
+   DEFERRED edge (edge infra shipped 2026-07-04).
+3. **Component expansion (B3, own components)** — grow demo vocabulary into
+   a real component layer generated per recipe (var-only, goldens, a11y),
+   phased: core primitives → composites → patterns. Heavy codex delegation
+   (worktree parallel batches); visual assets may come via higgsfield MCP.
+   The shadcn/Tailwind adapter (old M2.5) is **demoted** below this.
+4. **AI-consumable contract (B1) + Guarantees (B5)** — machine-readable
+   usage contract shipped with every build; README guarantees section
+   (byte-reproducibility, WCAG gates, golden count, finite enums).
+5. **Motif enum** — rides the edge infra; after the component layer starts.
+6. **Playground hosting (B4) + M6 publish** — L5, user HITL.
+
+M4 video extension and M5 hardening keep their places after the above;
+hygiene items ride along in any session.

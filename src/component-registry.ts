@@ -1,6 +1,6 @@
 import type { ContrastRole, ContrastState } from "./tokens-schema.js";
 
-export const COMPONENT_P1_ROLLOUT = ["minimal-tech"] as const;
+export const COMPONENT_P1_ROLLOUT = ["minimal-tech", "luxury", "retro", "warm-creator"] as const;
 
 export const COMPONENT_STATES = [
   "default",

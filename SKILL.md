@@ -136,6 +136,28 @@ empty. Emit `visual.radius` / `motion.speed` / `visual.accent` (integer hue
 0–359) / `motion.easing` (`subtle` | `standard` | `expressive` | `dramatic`).
 Add `branding.recipe_override` only after the candidate-choice step; otherwise
 omit it. Add top-level `expression` only for safe/bold (balanced = default).
+Add top-level `edges` only after the Edge selection step below. If the user
+chooses no edge, write `edges: []` explicitly before the final dry-run so the
+choice is sealed in `brand.json`.
+
+### Edge selection — before Confirm
+
+Run this step after recipe candidates are known and immediately before final
+confirmation. Use `suggestEdges(brand, selectedRecipe)` from the deterministic
+engine; do not invent edge names or free-form effects.
+
+Show each fitting edge with its one-line rationale. Deferred edges must stay
+visible but locked:
+
+- `texture-grain` — selectable only when the concept-fit predicate accepts the
+  selected recipe, tone vector, and expression tier.
+- `glass` — show as locked with "DEFERRED until its contrast-floor gate ships
+  (Round 2)"; never write it to `brand.json`.
+
+Ask the user to choose zero or more selectable edges. Write the result to
+`brand.json` as `edges: []` or `edges: ["texture-grain"]`, then rerun the
+dry-run gate before asking for final confirmation. If the dry-run returns an
+edge conflict, resolve it with the user instead of forcing the build.
 
 ---
 

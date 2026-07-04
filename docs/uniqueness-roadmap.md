@@ -107,11 +107,12 @@ Adopted points and order:
    luminance-interval contrast-floor gate (interior collapse caught — the
    case a two-extreme check passes; blur-independent by construction;
    backing opacity floor 0.6, default 0.88). Last DEFERRED edge lifted.
-3. **Component expansion (B3, own components)** — grow demo vocabulary into
-   a real component layer generated per recipe (var-only, goldens, a11y),
-   phased: core primitives → composites → patterns. Heavy codex delegation
-   (worktree parallel batches); visual assets may come via higgsfield MCP.
-   The shadcn/Tailwind adapter (old M2.5) is **demoted** below this.
+3. **Component expansion (B3, own components)** — **P1 SHIPPED 2026-07-04**
+   (`add-component-foundation` + `component-batch-a/b/c`): 10-primitive
+   registry, component-parity gate, generic state contrastPairs (disabled
+   exempt, focus 3:1), specimen gallery; all 8 recipes rolled out with
+   full catalog parity (365 tests). Next: P2 composites → P3 patterns.
+   The shadcn/Tailwind adapter (old M2.5) stays **demoted** below this.
 4. **AI-consumable contract (B1) + Guarantees (B5)** — machine-readable
    usage contract shipped with every build; README guarantees section
    (byte-reproducibility, WCAG gates, golden count, finite enums).

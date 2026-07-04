@@ -313,7 +313,7 @@ function components(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
     .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td><td>${htmlEscape(componentUsage(entry.path, ko))}</td></tr>`)
     .join("");
   const specimens = isComponentRollout(doc) ? componentSpecimens() : "";
-  return section("components", t.sections.components, `<p class="section-lead">${t.componentsLead}</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="${t.previewAria}"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">${t.primaryButton}</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">${t.composedExample}</p><h3>${t.tokenCardTitle}</h3><p>${t.tokenCardBody}</p><button class="demo-button" type="button">${t.continueLabel}</button></article></div></div>${specimens}<div class="table-card"><h3>${t.componentTokenMap}</h3><table><tbody>${mappings}</tbody></table></div>`);
+  return section("components", t.sections.components, `<p class="section-lead">${t.componentsLead}</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="${t.previewAria}"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">${t.primaryButton}</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">${t.composedExample}</p><h3>${t.tokenCardTitle}</h3><p>${t.tokenCardBody}</p><button class="demo-button" type="button">${t.continueLabel}</button></article></div></div>${specimens}<div class="table-card">${collapsible(t.componentTokenMap, `<table><tbody>${mappings}</tbody></table>`)}</div>`);
 }
 
 function componentSpecimens(): string {
@@ -479,14 +479,19 @@ function relationships(doc: TokensDocument, t: ChromeCopy): string {
   const rows = aliasRows(doc)
     .map((row) => `<tr data-alias-row><td>${htmlEscape(row.terminal)}</td><td>${htmlEscape(row.target)}</td><td>${htmlEscape(row.path)}</td></tr>`)
     .join("");
-  return section("relationships", t.sections.relationships, `<table><thead><tr><th>Primitive</th><th>Semantic</th><th>Component</th></tr></thead><tbody>${rows}</tbody></table>`);
+  return section("relationships", t.sections.relationships, collapsible(`${t.sections.relationships} · ${aliasRows(doc).length}`, `<table><thead><tr><th>Primitive</th><th>Semantic</th><th>Component</th></tr></thead><tbody>${rows}</tbody></table>`));
 }
 
 function accessibility(doc: TokensDocument, t: ChromeCopy): string {
   const rows = contrastResults(doc)
     .map((result) => `<tr data-contrast-row="${htmlEscape(contrastKey(result.pair))}"><td>${result.pair.fg}</td><td>${result.pair.bg}</td><td>${result.pair.role}</td><td>${result.pair.state}</td><td>${result.ratio.toFixed(2)}</td><td>${result.minRatio}</td><td>${result.pass ? "PASS" : "FAIL"}</td></tr>`)
     .join("");
-  return section("accessibility", t.sections.accessibility, `<table><tbody>${rows}</tbody></table><button data-focus-demo class="focus-demo">${t.focusDemo}</button>`);
+  return section("accessibility", t.sections.accessibility, `${collapsible(`${t.sections.accessibility} · ${contrastResults(doc).length}`, `<table><tbody>${rows}</tbody></table>`)}<button data-focus-demo class="focus-demo">${t.focusDemo}</button>`);
+}
+
+
+function collapsible(summary: string, body: string): string {
+  return `<details class="table-fold"><summary>${summary}</summary>${body}</details>`;
 }
 
 function section(id: string, title: string, body: string): string {
@@ -618,6 +623,8 @@ function baseCss(doc: TokensDocument): string {
     .tone-grid, .swatch-grid, .shape-grid, .type-ramp, .component-stage { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
     .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { min-width: 0; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 96%, var(--semantic-color-primary-default, currentColor)); padding: var(--semantic-space-inset, 1.5rem); }
     .table-card { overflow-x: auto; }
+    .table-fold > summary { cursor: pointer; font-weight: 600; padding: .35rem 0; list-style-position: inside; }
+    .table-fold[open] > summary { margin-bottom: .5rem; }
     .tone-chip { display: grid; gap: .45rem; }
     .tone-chip b { color: var(--semantic-color-primary-default, currentColor); }
     .tone-chip i, .bars i { display: block; overflow: hidden; border-radius: 999px; background: var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }

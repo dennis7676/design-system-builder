@@ -4,6 +4,7 @@ import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
+import { glassPanelCss } from "./glass-surface.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -115,7 +116,7 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .spec-form input { padding: .75rem 0; border: 0; border-bottom: 1px solid ${hairline}; border-radius: 0; background: transparent; color: ${fg}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); }
     .spec-footer { border-top: 1px solid ${hairline}; border-bottom: 1px solid ${hairline}; padding: 1.25rem clamp(1rem, 4vw, 3rem); display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
     .fine { max-width: 52ch; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 760px) { .spec-nav, .spec-footer { align-items: flex-start; flex-direction: column; } .spec-links { margin-left: 0; flex-wrap: wrap; } .spec-table tr, .spec-table td { display: block; } .spec-form form { grid-template-columns: 1fr; } }${reduce}${specTierCss(tier)}${textureOverlayCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${specKoCss(ko)}`;
+    @media (max-width: 760px) { .spec-nav, .spec-footer { align-items: flex-start; flex-direction: column; } .spec-links { margin-left: 0; flex-wrap: wrap; } .spec-table tr, .spec-table td { display: block; } .spec-form form { grid-template-columns: 1fr; } }${reduce}${specTierCss(tier)}${textureOverlayCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${glassPanelCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${specKoCss(ko)}`;
 }
 
 function specTierCss(tier: DemoTier): string {

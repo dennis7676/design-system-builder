@@ -4,6 +4,7 @@ import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
+import { glassPanelCss } from "./glass-surface.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -130,7 +131,7 @@ function collageDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
     .collage-footer .brand { max-width: 20ch; font: var(--semantic-typography-display-weight) clamp(var(--semantic-typography-display-size), 8vw, calc(var(--semantic-typography-display-size) * 1.4))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .collage-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
     .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 760px) { .collage-nav nav { display: none; } .collage-hero { grid-template-columns: 1fr; gap: 1rem; } .collage-copy { margin-right: 0; } .collage-panel { min-height: 14rem; } .collage-stagger { grid-template-columns: 1fr; } .collage-card:nth-child(2), .collage-card:nth-child(3) { transform: none; } }${reduce}${collageTierCss(tier)}${textureOverlayCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${collageKoCss(ko)}`;
+    @media (max-width: 760px) { .collage-nav nav { display: none; } .collage-hero { grid-template-columns: 1fr; gap: 1rem; } .collage-copy { margin-right: 0; } .collage-panel { min-height: 14rem; } .collage-stagger { grid-template-columns: 1fr; } .collage-card:nth-child(2), .collage-card:nth-child(3) { transform: none; } }${reduce}${collageTierCss(tier)}${textureOverlayCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${glassPanelCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${collageKoCss(ko)}`;
 }
 
 function collageTierCss(tier: DemoTier): string {

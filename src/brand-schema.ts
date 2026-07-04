@@ -177,9 +177,6 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
           errors.push({ path: "edges", message: `CONFLICT [edge-unknown] edge '${String(edge)}' is unknown (valid: ${EDGE_NAMES.join(", ")})` });
           continue;
         }
-        if (edge === "glass") {
-          errors.push({ path: "edges", message: "CONFLICT [edge-deferred] glass is DEFERRED until its contrast-floor gate ships (Round 2)" });
-        }
       }
     }
   }

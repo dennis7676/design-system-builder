@@ -19,6 +19,8 @@ const CHROMA_THRESHOLD = 0.03;
 const CONTRAST_REPAIR_STEP = 0.005;
 const CONTRAST_REPAIR_BOUND = 0.06;
 const PRIMARY_PATH = "semantic.color.primary.default";
+const GLASS_SURFACE_OPACITY = 0.88;
+const GLASS_SURFACE_BLUR_PX = 18;
 
 export interface BuildOptions { readonly generatedAt?: string; }
 
@@ -62,8 +64,16 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
 }
 
 function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy): Philosophy {
-  if (!(brand.edges ?? []).includes("texture-grain")) return philosophy;
+  const edges = brand.edges ?? [];
+  if (edges.length === 0) return philosophy;
 
+  let next = philosophy;
+  if (edges.includes("texture-grain")) next = applyTextureGrainEdge(base, next);
+  if (edges.includes("glass")) next = applyGlassEdge(base, next);
+  return next;
+}
+
+function applyTextureGrainEdge(base: MutableBase, philosophy: Philosophy): Philosophy {
   const texture = tokenGroupAt(base.semantic, "texture");
   texture.overlay = {
     image: {
@@ -96,6 +106,56 @@ function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy)
         value: TEXTURE_GRAIN_OVERLAY.version,
         rationale: "A fine grain layer adds tactile depth only after concept-fit and contrast gates pass.",
         coversTokenPath: ["semantic.texture.overlay.*"],
+      },
+    ],
+  };
+}
+
+function applyGlassEdge(base: MutableBase, philosophy: Philosophy): Philosophy {
+  const glass = tokenGroupAt(base.semantic, "glass");
+  const surface = tokenGroupAt(glass, "surface");
+  surface.fill = {
+    $type: "color",
+    $value: "{semantic.color.surface.foreground}",
+    $class: "portable",
+    $description: "Glass backing fill derived from the recipe surface palette.",
+  };
+  surface.opacity = {
+    $type: "number",
+    $value: GLASS_SURFACE_OPACITY,
+    $class: "portable",
+    $description: "Backing opacity for the glass surface contrast gate.",
+  };
+  surface.blur = {
+    $type: "dimension",
+    $value: { value: GLASS_SURFACE_BLUR_PX, unit: "px-base" },
+    $class: "adapter-derived",
+    $description: "Backdrop blur radius for glass panels.",
+  };
+  surface.border = {
+    $type: "color",
+    $value: "{semantic.color.primary.foreground}",
+    $class: "portable",
+    $description: "Glass panel border color.",
+  };
+
+  base.contrastPairs.push({
+    fg: "semantic.color.primary.foreground",
+    bg: "semantic.glass.surface.fill",
+    role: "text",
+    state: "default",
+  });
+
+  return {
+    ...philosophy,
+    principles: [...philosophy.principles, "High-opacity glass stays legible over unknown backdrops"],
+    decisionTrace: [
+      ...philosophy.decisionTrace,
+      {
+        axis: "edge.glass",
+        value: "glass.v1",
+        rationale: "A translucent panel is admitted only after concept-fit and the luminance-interval contrast gate pass.",
+        coversTokenPath: ["semantic.glass.surface.*"],
       },
     ],
   };

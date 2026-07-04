@@ -59,14 +59,9 @@ describe("edge enum validation", () => {
     ]);
   });
 
-  it("rejects deferred glass loudly", () => {
+  it("admits glass so the build can proceed to the admission gate", () => {
     const errors = validateBrand(brandFor("minimal-tech", { edges: ["glass"] }));
-    expect(errors).toEqual([
-      expect.objectContaining({
-        path: "edges",
-        message: expect.stringContaining("DEFERRED until its contrast-floor gate ships (Round 2)"),
-      }),
-    ]);
+    expect(errors).toEqual([]);
   });
 });
 
@@ -88,10 +83,10 @@ describe("deterministic concept-fit suggestions", () => {
     expect(edges).not.toContain("texture-grain");
   });
 
-  it("cool cutting-edge concepts list glass as deferred", () => {
+  it("cool cutting-edge concepts list glass as selectable", () => {
     const b = brandFor("minimal-tech", { branding: { tone_vector: minimalTone } });
     expect(suggestEdges(b, recipe("minimal-tech"))).toContainEqual(
-      expect.objectContaining({ edge: "glass", deferred: true }),
+      expect.objectContaining({ edge: "glass", deferred: false }),
     );
   });
 });
@@ -136,6 +131,18 @@ describe("edge fitness and no-edge identity", () => {
       expect.objectContaining({
         code: "edge-fit-rejected",
         message: expect.stringContaining("Texture grain is withheld"),
+      }),
+    );
+  });
+
+  it("hand-added unfit glass produces a concept-fit conflict", () => {
+    const b = brandFor("warm-creator", { edges: ["glass"] });
+    const selection = selectRecipe(b, RECIPES);
+    expect(selection.recipeKey).toBe("warm-creator");
+    expect(selection.conflicts).toContainEqual(
+      expect.objectContaining({
+        code: "edge-fit-rejected",
+        message: expect.stringContaining("Glass needs a cool, cutting-edge concept"),
       }),
     );
   });

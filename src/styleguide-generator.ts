@@ -28,6 +28,7 @@ import {
 } from "./render-utils.js";
 import { webfontHeadTags } from "./font-sources.js";
 import { textureOverlayCss } from "./texture-overlay.js";
+import { glassPanelCss, hasGlassSurface } from "./glass-surface.js";
 
 const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
 
@@ -45,6 +46,7 @@ const CHROME = {
       shapes: "Shapes",
       elevation: "Elevation",
       motion: "Motion",
+      edges: "Edges",
       components: "Components",
       applications: "Applications",
       relationships: "Token Relationships",
@@ -78,6 +80,12 @@ const CHROME = {
     appShortsCover: "Shorts cover",
     iframeTitle: "Website demo",
     focusDemo: "Focus demo",
+    glassLead:
+      "Glass uses a high-opacity backing token so text stays readable over unknown backdrops.",
+    glassPanelLabel: "Glass surface",
+    glassPanelTitle: "Readable over a busy backdrop",
+    glassPanelBody:
+      "This panel uses only glass surface variables for fill, opacity, blur, and border.",
   },
   ko: {
     navAria: "섹션",
@@ -90,6 +98,7 @@ const CHROME = {
       shapes: "형태",
       elevation: "엘리베이션",
       motion: "모션",
+      edges: "엣지",
       components: "컴포넌트",
       applications: "적용 사례",
       relationships: "토큰 관계",
@@ -123,6 +132,12 @@ const CHROME = {
     appShortsCover: "쇼츠 커버",
     iframeTitle: "웹사이트 데모",
     focusDemo: "포커스 데모",
+    glassLead:
+      "글래스는 높은 불투명도 토큰을 써서 알 수 없는 배경 위에서도 글자가 읽히게 해요.",
+    glassPanelLabel: "글래스 표면",
+    glassPanelTitle: "복잡한 배경 위에서도 읽을 수 있어요",
+    glassPanelBody:
+      "이 패널은 fill, opacity, blur, border 글래스 표면 변수만 사용해요.",
   },
 } as const;
 
@@ -150,6 +165,7 @@ export function generateStyleguide(doc: TokensDocument): string {
   const elevation = elevationSection(doc, realized, t);
   if (elevation !== "") sections.push(elevation);
   if (hasMotion(doc)) sections.push(motionSection(doc, realized, t));
+  if (hasGlassSurface(doc)) sections.push(edgesSection(t));
   sections.push(components(doc, ko, t), applications(doc, ko, t), relationships(doc, t), accessibility(doc, t));
   const snapshot = JSON.stringify({ builtFromTokenHash: hash, generatedAt: doc.meta.generatedAt });
   return [
@@ -182,6 +198,7 @@ function nav(doc: TokensDocument, t: ChromeCopy): string {
   ];
   if (hasElevation(doc)) items.push(["elevation", t.sections.elevation]);
   if (hasMotion(doc)) items.push(["motion", t.sections.motion]);
+  if (hasGlassSurface(doc)) items.push(["edges", t.sections.edges]);
   items.push(["components", t.sections.components], ["applications", t.sections.applications], ["relationships", t.navRelationships], ["accessibility", t.sections.accessibility]);
   return items.map(([id, label]) => `<a href="#${id}" data-nav-link="${id}">${label}</a>`).join("");
 }
@@ -261,6 +278,14 @@ function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string
   const easing = easingRows(doc);
   const easingTable = easing === "" ? "" : `<h3>${t.easingRoles}</h3><table><tbody>${easing}</tbody></table>`;
   return section("motion", t.sections.motion, `${easingTable}<table><tbody>${rows}</tbody></table><button class="demo-button">${t.motionDemo}</button>`);
+}
+
+function edgesSection(t: ChromeCopy): string {
+  return section(
+    "edges",
+    t.sections.edges,
+    `<p class="section-lead">${t.glassLead}</p><div class="glass-edge-backdrop"><article class="glass-edge-panel"><p class="meta-label">${t.glassPanelLabel}</p><h3>${t.glassPanelTitle}</h3><p>${t.glassPanelBody}</p></article></div>`,
+  );
 }
 
 function easingRows(doc: TokensDocument): string {
@@ -395,6 +420,12 @@ function baseCss(doc: TokensDocument): string {
       *, *::before, *::after { transition: none !important; animation: none !important; }
     }`
     : "";
+  const glassBackdrop = hasGlassSurface(doc)
+    ? `
+    .glass-edge-backdrop { min-height: 20rem; display: grid; place-items: center; padding: clamp(1.5rem, 5vw, 4rem); border-radius: var(--semantic-shape-control, .5rem); overflow: hidden; background: radial-gradient(circle at 18% 22%, var(--semantic-color-primary-default, currentColor) 0 8%, transparent 24%), radial-gradient(circle at 78% 72%, var(--semantic-color-surface-foreground, CanvasText) 0 6%, transparent 22%), repeating-linear-gradient(135deg, color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 36%, transparent) 0 .75rem, color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 70%, transparent) .75rem 1.5rem), linear-gradient(120deg, var(--semantic-color-surface-default, Canvas), color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 22%, var(--semantic-color-surface-default, Canvas))); }
+    .glass-edge-panel { width: min(34rem, 100%); display: grid; gap: .75rem; padding: clamp(1.25rem, 4vw, 2.5rem); border-radius: var(--semantic-shape-control, .5rem); }
+    .glass-edge-panel h3, .glass-edge-panel p { margin: 0; }`
+    : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -488,7 +519,7 @@ function baseCss(doc: TokensDocument): string {
     .app-portrait-card { align-content: space-between; }
     .app-portrait-card h3 { font-size: clamp(1rem, 9.5cqw, calc(var(--semantic-typography-display-size) * 1.08)); }
     @media (max-width: 760px) { body { display: block; } nav { position: static; max-height: none; overflow-y: visible; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: calc(var(--semantic-typography-display-size) * .72); } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
-${reduce}${textureOverlayCss(doc, [".hero-panel", ".brand-card", ".table-card", ".color-card", ".type-card", ".radius-box", ".elevation-card", ".sample-card", ".playground", ".application-frame", ".app-lower-bar"])}`;
+${reduce}${textureOverlayCss(doc, [".hero-panel", ".brand-card", ".table-card", ".color-card", ".type-card", ".radius-box", ".elevation-card", ".sample-card", ".playground", ".application-frame", ".app-lower-bar"])}${glassBackdrop}${glassPanelCss(doc, [".glass-edge-panel"])}`;
 }
 
 function koCss(ko: boolean): string {

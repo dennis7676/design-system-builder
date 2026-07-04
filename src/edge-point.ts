@@ -49,9 +49,9 @@ export const EDGE_MENU = [
   {
     edge: "glass",
     version: "v1",
-    deferred: true,
+    deferred: false,
     fits: glassFits,
-    rationale: () => "Glass fits cool, cutting-edge concepts, but stays locked until the Round 2 contrast-floor gate ships.",
+    rationale: glassRationale,
   },
 ] as const satisfies readonly EdgeMenuEntry[];
 
@@ -114,6 +114,13 @@ function textureRationale(context: EdgeContext): string {
 
 function glassFits(context: EdgeContext): boolean {
   return context.tone.classic_cutting_edge >= 5 && context.tone.cold_warm <= 3;
+}
+
+function glassRationale(context: EdgeContext): string {
+  if (glassFits(context)) {
+    return "Glass fits because the tone vector is cool and cutting-edge; the contrast gate keeps the backing opacity high enough for unknown backdrops.";
+  }
+  return "Glass needs a cool, cutting-edge concept (classic_cutting_edge >= 5 and cold_warm <= 3).";
 }
 
 function isWarmOrganic(tone: ToneVector): boolean {

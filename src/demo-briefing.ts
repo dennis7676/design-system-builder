@@ -4,6 +4,7 @@ import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
+import { glassPanelCss } from "./glass-surface.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -122,7 +123,7 @@ function briefingDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): stri
     .footer-cols div { display: grid; gap: .4rem; align-content: start; }
     .footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .fine { width: min(78rem, 100%); margin: 0 auto; text-align: right; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 780px) { .briefing-main { align-items: flex-start; flex-direction: column; } .briefing-main nav { margin-left: 0; flex-wrap: wrap; } .briefing-hero, .briefing-rows article, .briefing-form, .footer-cols { grid-template-columns: 1fr; } .briefing-copy { padding-right: 0; } .briefing-metrics { border-left: 0; border-top: 1px solid ${hairline}; } .fine { text-align: left; } }${reduce}${briefingTierCss(tier)}${textureOverlayCss(doc, [".briefing-copy", ".briefing-metric", ".briefing-form form"])}${briefingKoCss(ko)}`;
+    @media (max-width: 780px) { .briefing-main { align-items: flex-start; flex-direction: column; } .briefing-main nav { margin-left: 0; flex-wrap: wrap; } .briefing-hero, .briefing-rows article, .briefing-form, .footer-cols { grid-template-columns: 1fr; } .briefing-copy { padding-right: 0; } .briefing-metrics { border-left: 0; border-top: 1px solid ${hairline}; } .fine { text-align: left; } }${reduce}${briefingTierCss(tier)}${textureOverlayCss(doc, [".briefing-copy", ".briefing-metric", ".briefing-form form"])}${glassPanelCss(doc, [".briefing-copy", ".briefing-metric", ".briefing-form form"])}${briefingKoCss(ko)}`;
 }
 
 function briefingTierCss(tier: DemoTier): string {

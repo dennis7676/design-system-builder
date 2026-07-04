@@ -146,18 +146,19 @@ Run this step after recipe candidates are known and immediately before final
 confirmation. Use `suggestEdges(brand, selectedRecipe)` from the deterministic
 engine; do not invent edge names or free-form effects.
 
-Show each fitting edge with its one-line rationale. Deferred edges must stay
-visible but locked:
+Show each fitting edge with its one-line rationale and whether it is selectable:
 
 - `texture-grain` — selectable only when the concept-fit predicate accepts the
   selected recipe, tone vector, and expression tier.
-- `glass` — show as locked with "DEFERRED until its contrast-floor gate ships
-  (Round 2)"; never write it to `brand.json`.
+- `glass` — selectable when the concept-fit predicate accepts cool,
+  cutting-edge concepts. Say that the contrast gate keeps backing opacity high
+  so text stays readable over unknown backdrops.
 
 Ask the user to choose zero or more selectable edges. Write the result to
-`brand.json` as `edges: []` or `edges: ["texture-grain"]`, then rerun the
-dry-run gate before asking for final confirmation. If the dry-run returns an
-edge conflict, resolve it with the user instead of forcing the build.
+`brand.json` as `edges: []`, `edges: ["texture-grain"]`, `edges: ["glass"]`,
+or both selected edges, then rerun the dry-run gate before asking for final
+confirmation. If the dry-run returns an edge conflict, resolve it with the user
+instead of forcing the build.
 
 ---
 

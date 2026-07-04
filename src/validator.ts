@@ -21,7 +21,7 @@ import {
   INTENT_SUBTREE_KEYS,
   MIN_RATIO,
 } from "./tokens-schema.js";
-import { contrastRatio, linearToHex, parseColor } from "./color.js";
+import { contrastRatio, linearToHex, parseColor, relativeLuminance, type LinearRGB } from "./color.js";
 import { TEXTURE_GRAIN_OPACITY_CAP, TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
 
 export type Severity = "error" | "warn" | "info";
@@ -41,6 +41,11 @@ export interface ValidationResult {
 }
 
 const VALID_UNITS: DimensionUnit[] = ["abstract", "px-base", "ms"];
+export const GLASS_BACKING_OPACITY_FLOOR = 0.6;
+const GLASS_BACKING_OPACITY_CEILING = 1;
+const LUMINANCE_EPSILON = 1e-12;
+const BLACK_RGB: LinearRGB = { r: 0, g: 0, b: 0 };
+const WHITE_RGB: LinearRGB = { r: 1, g: 1, b: 1 };
 /** Core categories whose tokens must each be covered by a decisionTrace (G-trace). */
 const CORE_CATEGORIES: Record<string, RegExp> = {
   color: /(^|\.)color(\.|$)/,
@@ -186,6 +191,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
   // 3. WCAG contrast over contrastPairs + foreground pairing
   checkContrast(doc, leaves, findings);
   checkTextureOverlay(doc, leaves, findings);
+  checkGlassSurface(doc, leaves, findings);
 
   // 4. G-trace coverage
   checkTraceCoverage(doc, leaves, findings);
@@ -238,6 +244,10 @@ interface TextureOverlayGate {
   readonly opacity: number;
 }
 
+interface GlassSurfaceGate {
+  readonly opacity: number;
+}
+
 interface TextureContrastCandidate {
   readonly source: string;
   readonly blended: string;
@@ -253,6 +263,16 @@ function checkTextureOverlay(
   const overlay = textureOverlayGate(leaves, findings);
   if (overlay === null) return;
   checkTextureContrast(doc, leaves, overlay, findings);
+}
+
+function checkGlassSurface(
+  doc: TokensDocument,
+  leaves: Map<string, LeafToken>,
+  findings: Finding[],
+): void {
+  const gate = glassSurfaceGate(leaves, findings);
+  if (gate === null) return;
+  checkGlassContrast(doc, leaves, gate, findings);
 }
 
 function textureOverlayGate(
@@ -279,6 +299,36 @@ function textureOverlayGate(
       message: `texture overlay opacity ${opacity} exceeds cap ${TEXTURE_GRAIN_OPACITY_CAP}`,
       meta: { opacity, cap: TEXTURE_GRAIN_OPACITY_CAP },
     });
+  }
+  return { opacity };
+}
+
+function glassSurfaceGate(
+  leaves: Map<string, LeafToken>,
+  findings: Finding[],
+): GlassSurfaceGate | null {
+  if (![...leaves.keys()].some((path) => path.startsWith("semantic.glass.surface."))) return null;
+  const opacityLeaf = leaves.get("semantic.glass.surface.opacity");
+  const opacity = opacityLeaf?.$value;
+  if (opacityLeaf?.$type !== "number" || typeof opacity !== "number") {
+    findings.push({
+      severity: "error",
+      code: "glass-opacity-floor",
+      path: "semantic.glass.surface.opacity",
+      message: `glass surface opacity must be a number within [${GLASS_BACKING_OPACITY_FLOOR}, ${GLASS_BACKING_OPACITY_CEILING}]`,
+      meta: { floor: GLASS_BACKING_OPACITY_FLOOR, ceiling: GLASS_BACKING_OPACITY_CEILING },
+    });
+    return null;
+  }
+  if (opacity < GLASS_BACKING_OPACITY_FLOOR || opacity > GLASS_BACKING_OPACITY_CEILING) {
+    findings.push({
+      severity: "error",
+      code: "glass-opacity-floor",
+      path: "semantic.glass.surface.opacity",
+      message: `glass surface opacity ${opacity} is outside [${GLASS_BACKING_OPACITY_FLOOR}, ${GLASS_BACKING_OPACITY_CEILING}]`,
+      meta: { opacity, floor: GLASS_BACKING_OPACITY_FLOOR, ceiling: GLASS_BACKING_OPACITY_CEILING },
+    });
+    return null;
   }
   return { opacity };
 }
@@ -344,20 +394,114 @@ function checkTextureContrast(
   }
 }
 
+function checkGlassContrast(
+  doc: TokensDocument,
+  leaves: Map<string, LeafToken>,
+  gate: GlassSurfaceGate,
+  findings: Finding[],
+): void {
+  for (const pair of doc.contrastPairs) {
+    if (!pair.bg.startsWith("semantic.glass.")) continue;
+    const min = pair.minRatio ?? MIN_RATIO[pair.role];
+    const fg = colorValueOf(pair.fg, leaves);
+    const fill = colorValueOf(pair.bg, leaves);
+    if (fg === null || fill === null) continue;
+
+    const fgRgb = parseColor(fg);
+    const fillRgb = parseColor(fill);
+    if (fgRgb === null || fillRgb === null) {
+      findings.push({
+        severity: "error",
+        code: "glass-contrast-unparseable",
+        message: `glass contrast color parsing failed: ${pair.fg} / ${pair.bg}`,
+      });
+      continue;
+    }
+
+    const interval = glassLuminanceInterval(fillRgb, gate.opacity);
+    const fgLuminance = relativeLuminance(fgRgb);
+    if (isInsideClosedInterval(fgLuminance, interval.min, interval.max)) {
+      findings.push({
+        severity: "error",
+        code: "glass-contrast-collapse",
+        message: `glass contrast can collapse to 1:1 because foreground luminance sits inside the reachable background interval (${pair.fg} on ${pair.bg}, ${pair.role}/${pair.state})`,
+        meta: glassContrastMeta(1, min, interval, fgLuminance, pair),
+      });
+      continue;
+    }
+
+    const nearest = fgLuminance < interval.min ? interval.min : interval.max;
+    const ratio = contrastRatioFromLuminance(fgLuminance, nearest);
+    if (ratio < min) {
+      findings.push({
+        severity: "error",
+        code: "glass-contrast-fail",
+        message: `glass worst-case interval contrast below floor ${ratio.toFixed(2)}:1 < ${min}:1 (${pair.fg} on ${pair.bg}, ${pair.role}/${pair.state})`,
+        meta: glassContrastMeta(ratio, min, interval, fgLuminance, pair),
+      });
+    }
+  }
+}
+
 function backgroundValues(leaf: LeafToken): readonly string[] {
   if (leaf.$type === "gradient" && isGradientValue(leaf.$value)) return leaf.$value.stops;
   return typeof leaf.$value === "string" ? [leaf.$value] : [];
 }
 
 function blendedTextureBackground(bg: string, texture: string, opacity: number): string | null {
-  const bgRgb = parseColor(bg);
-  const textureRgb = parseColor(texture);
-  if (bgRgb === null || textureRgb === null) return null;
-  return linearToHex({
-    r: bgRgb.r * (1 - opacity) + textureRgb.r * opacity,
-    g: bgRgb.g * (1 - opacity) + textureRgb.g * opacity,
-    b: bgRgb.b * (1 - opacity) + textureRgb.b * opacity,
-  });
+  const blended = blendLinearColors(bg, texture, opacity);
+  return blended === null ? null : linearToHex(blended);
+}
+
+function blendLinearColors(base: string, overlay: string, opacity: number): LinearRGB | null {
+  const baseRgb = parseColor(base);
+  const overlayRgb = parseColor(overlay);
+  if (baseRgb === null || overlayRgb === null) return null;
+  return blendLinearRgb(baseRgb, overlayRgb, opacity);
+}
+
+function blendLinearRgb(base: LinearRGB, overlay: LinearRGB, opacity: number): LinearRGB {
+  return {
+    r: base.r * (1 - opacity) + overlay.r * opacity,
+    g: base.g * (1 - opacity) + overlay.g * opacity,
+    b: base.b * (1 - opacity) + overlay.b * opacity,
+  };
+}
+
+function glassLuminanceInterval(fill: LinearRGB, opacity: number): { readonly min: number; readonly max: number } {
+  const dark = relativeLuminance(blendLinearRgb(BLACK_RGB, fill, opacity));
+  const light = relativeLuminance(blendLinearRgb(WHITE_RGB, fill, opacity));
+  return { min: Math.min(dark, light), max: Math.max(dark, light) };
+}
+
+function isInsideClosedInterval(value: number, min: number, max: number): boolean {
+  return value >= min - LUMINANCE_EPSILON && value <= max + LUMINANCE_EPSILON;
+}
+
+function contrastRatioFromLuminance(a: number, b: number): number {
+  const lighter = Math.max(a, b);
+  const darker = Math.min(a, b);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function glassContrastMeta(
+  ratio: number,
+  required: number,
+  interval: { readonly min: number; readonly max: number },
+  fgLuminance: number,
+  pair: ContrastPair,
+): Record<string, unknown> {
+  return {
+    ratio: Number(ratio.toFixed(2)),
+    required,
+    interval: {
+      min: Number(interval.min.toFixed(6)),
+      max: Number(interval.max.toFixed(6)),
+    },
+    fgLuminance: Number(fgLuminance.toFixed(6)),
+    role: pair.role,
+    state: pair.state,
+  };
 }
 
 function checkContrast(

@@ -7,6 +7,7 @@ import type { BrandJson } from "../src/brand-schema.js";
 import {
   COMPONENT_P1_PATHS,
   COMPONENT_P1_REGISTRY,
+  COMPONENT_P1_ROLLOUT,
   componentContrastTargets,
   componentFocusTargets,
   componentPaths,
@@ -142,7 +143,10 @@ describe("component parity gate", () => {
   });
 
   it("keeps every non-rollout recipe byte-identical to the pre-change token build", () => {
+    // Pins self-retire as batches land: once a recipe joins COMPONENT_P1_ROLLOUT
+    // its byte-identity guarantee is deliberately released (its component tree grows).
     for (const [key, expected] of Object.entries(NON_ROLLOUT_BUILD_SHA256)) {
+      if (COMPONENT_P1_ROLLOUT.includes(key)) continue;
       const doc = buildFor(key);
       expect(sha256(JSON.stringify(doc, null, 2)), key).toBe(expected);
     }

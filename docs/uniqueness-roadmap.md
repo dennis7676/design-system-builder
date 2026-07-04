@@ -113,9 +113,13 @@ Adopted points and order:
    exempt, focus 3:1), specimen gallery; all 8 recipes rolled out with
    full catalog parity (365 tests). Next: P2 composites → P3 patterns.
    The shadcn/Tailwind adapter (old M2.5) stays **demoted** below this.
-4. **AI-consumable contract (B1) + Guarantees (B5)** — machine-readable
-   usage contract shipped with every build; README guarantees section
-   (byte-reproducibility, WCAG gates, golden count, finite enums).
+4. **AI-consumable contract (B1) + Guarantees (B5)** — **SHIPPED 2026-07-05**
+   (`add-usage-contract`): contract.json emitted with every build (consume
+   do/dont, public token API, registry snapshot, GATE_CATALOG with
+   validator-parity test, guarantees with proof pointers), hash-embedded
+   and manifest-drift-checked; README guarantees rewritten with per-claim
+   proofs (372 tests). Bonus: demo color-mix foregrounds now build-time
+   contrast-gated via mixedText (M5 a11y hole closed).
 5. **Motif enum** — rides the edge infra; after the component layer starts.
 6. **Playground hosting (B4) + M6 publish** — L5, user HITL.
 

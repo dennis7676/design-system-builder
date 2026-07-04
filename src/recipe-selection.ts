@@ -10,6 +10,7 @@
 
 import { readFileSync, readdirSync } from "node:fs";
 import { TONE_AXES, type BrandJson, type ToneVector } from "./brand-schema.js";
+import { validateEdgeFitness } from "./edge-point.js";
 
 /** Stable load + tie-break order. B1 (d8): +4 structural recipes (7-family ceiling). */
 export const RECIPE_ORDER = [
@@ -208,6 +209,7 @@ export function selectRecipe(brand: BrandJson, recipes: readonly Recipe[]): Reci
     });
   }
   conflicts.push(...validateOverrides(brand));
+  conflicts.push(...validateEdgeFitness(brand, chosen));
 
   return {
     recipeKey: chosen.key,

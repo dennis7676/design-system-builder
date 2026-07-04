@@ -13,6 +13,7 @@ export * from "./recipe-selection.js";
 export * from "./tokens-builder.js";
 export * from "./gate.js";
 export * from "./font-sources.js";
+export * from "./edge-point.js";
 
 import { readFileSync } from "node:fs";
 import type { TokensDocument } from "./tokens-schema.js";

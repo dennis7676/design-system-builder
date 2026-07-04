@@ -35,6 +35,11 @@ export const EXPRESSION_TIERS = ["safe", "balanced", "bold"] as const;
 
 export type ExpressionTier = (typeof EXPRESSION_TIERS)[number];
 
+/** Finite edge enum v1. Free-form edge names are never accepted. */
+export const EDGE_NAMES = ["texture-grain", "glass"] as const;
+
+export type EdgeName = (typeof EDGE_NAMES)[number];
+
 /**
  * Bounded overrides. Scalar axes mutate dimensions/durations; visual.accent is
  * an integer OKLCH hue that triggers contrast re-derivation in the builder.
@@ -96,6 +101,8 @@ export interface BrandJson {
   readonly overrides?: BrandOverrides;
   /** Expression dial for applied-surface layout amplitude. Absent ⇒ "balanced". */
   readonly expression?: ExpressionTier;
+  /** Opt-in high-personality edges. Absent/[] keeps the build byte-identical. */
+  readonly edges?: readonly string[];
 }
 
 export interface BrandFieldError {
@@ -160,6 +167,21 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
   }
   if (b.expression !== undefined && !EXPRESSION_TIERS.includes(b.expression as ExpressionTier)) {
     errors.push({ path: "expression", message: `must be one of ${EXPRESSION_TIERS.join("|")}` });
+  }
+  if (b.edges !== undefined) {
+    if (!Array.isArray(b.edges)) {
+      errors.push({ path: "edges", message: `must be an array of ${EDGE_NAMES.join("|")}` });
+    } else {
+      for (const edge of b.edges) {
+        if (!(EDGE_NAMES as readonly string[]).includes(edge as string)) {
+          errors.push({ path: "edges", message: `CONFLICT [edge-unknown] edge '${String(edge)}' is unknown (valid: ${EDGE_NAMES.join(", ")})` });
+          continue;
+        }
+        if (edge === "glass") {
+          errors.push({ path: "edges", message: "CONFLICT [edge-deferred] glass is DEFERRED until its contrast-floor gate ships (Round 2)" });
+        }
+      }
+    }
   }
   if (b.overrides !== undefined) {
     const ov = b.overrides as Record<string, unknown>;

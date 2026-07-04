@@ -21,6 +21,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "cli": "tsx src/cli.ts",
+    "mcp": "tsx src/mcp-server.ts",
     "probe:layout": "tsx scripts/layout-probe.ts"
   },
   "engines": {
@@ -41,6 +42,7 @@
     "styleguide"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
   }
 }

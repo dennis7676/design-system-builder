@@ -81,6 +81,22 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 인터뷰 프런트도어는 Claude Code 스킬(SKILL.md)로 제공된다 — 대화로 brand.json을
 만들고 위 CLI를 자동 실행한다.
 
+## MCP
+
+로컬 MCP 클라이언트에서는 stdio 서버로 등록한다. 현재 스파이크는 `dsb_build`와
+`dsb_validate` 두 도구만 제공한다.
+
+```json
+{
+  "mcpServers": {
+    "design-system-builder": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp-server.ts"]
+    }
+  }
+}
+```
+
 ## 타이포그래피 시스템
 
 - **타입 스케일**: recipe의 4단 앵커(caption/body/heading/display)에서 특성

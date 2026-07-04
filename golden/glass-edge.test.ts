@@ -99,6 +99,14 @@ describe("glass edge tokens", () => {
     expect(html).toContain("glass-edge-backdrop");
     expect(html).toContain("backdrop-filter: blur(var(--semantic-glass-surface-blur))");
   });
+
+  it("glass panels carry token-driven inset so content never sits on the panel edge", () => {
+    const doc = glassDoc();
+    const html = [generateDemo(doc), generateStyleguide(doc)].join("\n");
+    const panelRule = html.match(/isolation: isolate;[^}]*backdrop-filter/)?.[0] ?? "";
+    expect(panelRule).toContain("padding: var(--semantic-space-inset)");
+    expect(panelRule).toContain("border-radius: var(--semantic-shape-control)");
+  });
 });
 
 describe("glass contrast-floor gate", () => {

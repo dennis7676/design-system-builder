@@ -23,6 +23,7 @@ import {
 } from "./tokens-schema.js";
 import { contrastRatio, linearToHex, parseColor, relativeLuminance, type LinearRGB } from "./color.js";
 import { TEXTURE_GRAIN_OPACITY_CAP, TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
+import { COMPONENT_P1_PATHS, COMPONENT_P1_ROLLOUT } from "./component-registry.js";
 
 export type Severity = "error" | "warn" | "info";
 
@@ -189,6 +190,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
   }
 
   // 3. WCAG contrast over contrastPairs + foreground pairing
+  checkComponentParity(doc, findings);
   checkContrast(doc, leaves, findings);
   checkTextureOverlay(doc, leaves, findings);
   checkGlassSurface(doc, leaves, findings);
@@ -238,6 +240,28 @@ function colorValueOf(path: string, leaves: Map<string, LeafToken>): string | nu
   if (!res.resolved) return null;
   const v = res.resolved.$value;
   return typeof v === "string" ? v : null;
+}
+
+function checkComponentParity(doc: TokensDocument, findings: Finding[]): void {
+  if (!(COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe)) return;
+
+  const expected = new Set(COMPONENT_P1_PATHS);
+  const actual = new Set(flatten(doc.component, "component").keys());
+  const missing = [...expected].filter((path) => !actual.has(path)).sort();
+  const extra = [...actual].filter((path) => !expected.has(path)).sort();
+  if (missing.length === 0 && extra.length === 0) return;
+
+  const diff = [
+    missing.length === 0 ? "" : `missing: ${missing.join(", ")}`,
+    extra.length === 0 ? "" : `extra: ${extra.join(", ")}`,
+  ].filter(Boolean).join("; ");
+  findings.push({
+    severity: "error",
+    code: "component-parity",
+    path: "component",
+    message: `component path parity mismatch for '${doc.meta.recipe}' (${diff})`,
+    meta: { recipe: doc.meta.recipe, missing, extra },
+  });
 }
 
 interface TextureOverlayGate {
@@ -340,7 +364,7 @@ function checkTextureContrast(
   findings: Finding[],
 ): void {
   for (const pair of doc.contrastPairs) {
-    const min = pair.minRatio ?? MIN_RATIO[pair.role];
+    const min = contrastMinimum(pair);
     const fg = colorValueOf(pair.fg, leaves);
     const bgLeaf = resolveAlias(pair.bg, leaves).resolved;
     if (fg === null || !bgLeaf) continue;
@@ -402,7 +426,7 @@ function checkGlassContrast(
 ): void {
   for (const pair of doc.contrastPairs) {
     if (!pair.bg.startsWith("semantic.glass.")) continue;
-    const min = pair.minRatio ?? MIN_RATIO[pair.role];
+    const min = contrastMinimum(pair);
     const fg = colorValueOf(pair.fg, leaves);
     const fill = colorValueOf(pair.bg, leaves);
     if (fg === null || fill === null) continue;
@@ -510,7 +534,7 @@ function checkContrast(
   findings: Finding[],
 ): void {
   for (const pair of doc.contrastPairs) {
-    const min = pair.minRatio ?? MIN_RATIO[pair.role];
+    const min = contrastMinimum(pair);
     const fg = colorValueOf(pair.fg, leaves);
     const bgLeaf = resolveAlias(pair.bg, leaves).resolved;
     if (fg === null || !bgLeaf) {
@@ -527,6 +551,10 @@ function checkContrast(
         continue;
       }
       const worst = Math.min(...(ratios as number[]));
+      if (pair.state === "disabled") {
+        recordDisabledContrastExemption(pair, worst, findings);
+        continue;
+      }
       if (worst < min) {
         findings.push({
           severity: "error",
@@ -546,6 +574,10 @@ function checkContrast(
     const ratio = contrastRatio(fg, bg);
     if (ratio === null) {
       findings.push({ severity: "error", code: "contrast-unparseable", message: `색 파싱 실패: ${fg} / ${bg}` });
+      continue;
+    }
+    if (pair.state === "disabled") {
+      recordDisabledContrastExemption(pair, ratio, findings);
       continue;
     }
     if (ratio < min) {
@@ -570,6 +602,29 @@ function checkContrast(
       findings.push({ severity: "error", code: "foreground-missing", path: bg, message: `${group}에 foreground 대응 없음` });
     }
   }
+}
+
+function contrastMinimum(pair: ContrastPair): number {
+  return pair.state === "disabled" ? 0 : pair.minRatio ?? MIN_RATIO[pair.role];
+}
+
+function recordDisabledContrastExemption(
+  pair: ContrastPair,
+  ratio: number,
+  findings: Finding[],
+): void {
+  findings.push({
+    severity: "info",
+    code: "contrast-exempt",
+    message: `disabled-state contrast is exempt from WCAG 1.4.3 text floors (${pair.fg} on ${pair.bg}, ${pair.role}/${pair.state})`,
+    meta: {
+      ratio: Number(ratio.toFixed(2)),
+      requiredWithoutExemption: MIN_RATIO[pair.role],
+      exemption: "WCAG 1.4.3 incidental disabled control",
+      role: pair.role,
+      state: pair.state,
+    },
+  });
 }
 
 function matchesGlob(glob: string, path: string): boolean {

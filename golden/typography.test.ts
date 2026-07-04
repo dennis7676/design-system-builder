@@ -81,6 +81,7 @@ describe("G-T0 — pre-typography keystone is a value-identical subset", () => {
       generatedAt: "2026-06-30T14:30:00Z",
     });
     const missingOrChanged = scalarLeaves(PRE_TYPOGRAPHY_SAMPLE)
+      .filter(([path]) => !isLegacyFlatButtonPath(path))
       .map(([path, value]) => {
         const next = valueAt(built, path);
         return next.exists && deepEqual(next.value, value) ? null : { path, expected: value, actual: next.value };
@@ -90,6 +91,10 @@ describe("G-T0 — pre-typography keystone is a value-identical subset", () => {
     expect(missingOrChanged).toEqual([]);
   });
 });
+
+function isLegacyFlatButtonPath(path: readonly string[]): boolean {
+  return path[0] === "component" && path[1] === "button";
+}
 
 describe("G-T2 — semantic typography roles resolve to terminal web values", () => {
   for (const r of RECIPES) {

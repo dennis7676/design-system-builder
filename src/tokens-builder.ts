@@ -2,6 +2,7 @@ import type { BrandJson, BrandOverrides } from "./brand-schema.js";
 import { normalizeToneVector } from "./brand-schema.js";
 import { TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
 import { MOTION_EASING_PRESETS, type MotionEasingPreset, type MotionEasingTriple } from "./motion-easing.js";
+import { COMPONENT_P1_ROLLOUT, componentContrastTargets, componentFocusTargets } from "./component-registry.js";
 import type { Recipe } from "./recipe-selection.js";
 import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type CubicBezierValue, type LeafToken, type MotionOverrideMeta, type Philosophy, type TokenGroup, type TokensDocument } from "./tokens-schema.js";
 import { clampOklchChroma, contrastRatio, formatOklch, parseColor, parseOklch, relativeLuminance, type Oklch } from "./color.js";
@@ -35,6 +36,7 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
   const base = structuredClone(recipe.base) as MutableBase;
   const typeScale = computeTypeScale(base.primitive, recipe.typeScale?.ratio);
 
+  applyComponentContrastPairs(base, recipe.key);
   const overrideMeta = applyOverrides(base, brand.overrides ?? {});
   applyLocaleFonts(base, brand, recipe);
   const philosophy = applyEdges(base, brand, recipe.philosophy as Philosophy);
@@ -71,6 +73,32 @@ function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy)
   if (edges.includes("texture-grain")) next = applyTextureGrainEdge(base, next);
   if (edges.includes("glass")) next = applyGlassEdge(base, next);
   return next;
+}
+
+function applyComponentContrastPairs(base: MutableBase, recipeKey: string): void {
+  if (!(COMPONENT_P1_ROLLOUT as readonly string[]).includes(recipeKey)) return;
+  const derived: ContrastPair[] = [
+    ...componentContrastTargets().map((target) => ({
+      fg: target.fg,
+      bg: target.bg,
+      role: target.role,
+      state: target.state,
+      ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
+    })),
+    ...componentFocusTargets().map((target) => ({
+      fg: target.fg,
+      bg: target.bg,
+      role: target.role,
+      state: target.state,
+    })),
+  ];
+  const existing = new Set(base.contrastPairs.map(pairKey));
+  for (const pair of derived) {
+    const key = pairKey(pair);
+    if (existing.has(key)) continue;
+    base.contrastPairs.push(pair);
+    existing.add(key);
+  }
 }
 
 function applyTextureGrainEdge(base: MutableBase, philosophy: Philosophy): Philosophy {
@@ -415,6 +443,7 @@ function unrepairable(pair: ContrastPair, measurement: PairMeasurement): BuildEr
 }
 
 function pairLabel(pair: ContrastPair): string { return `${pair.fg} on ${pair.bg} (${pair.role}/${pair.state})`; }
+function pairKey(pair: ContrastPair): string { return `${pair.fg}|${pair.bg}|${pair.role}|${pair.state}|${pair.minRatio ?? ""}`; }
 
 function normalizeDelta(delta: number): number {
   const normalized = ((delta % 360) + 360) % 360; return normalized > 180 ? normalized - 360 : normalized;

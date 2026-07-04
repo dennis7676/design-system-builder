@@ -64,7 +64,8 @@
         "heading": 1.5,
         "display": 2.25
       }
-    }
+    },
+    "skeleton": "spec-sheet"
   },
   "transformContract": {
     "dimension": {
@@ -98,6 +99,339 @@
       "bg": "semantic.color.primary.hover",
       "role": "text",
       "state": "hover"
+    },
+    {
+      "fg": "component.button.primary.foreground.default",
+      "bg": "component.button.primary.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.button.primary.foreground.hover",
+      "bg": "component.button.primary.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.button.primary.foreground.focus",
+      "bg": "component.button.primary.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.button.primary.foreground.active",
+      "bg": "component.button.primary.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.button.primary.foreground.disabled",
+      "bg": "component.button.primary.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.button.secondary.foreground.default",
+      "bg": "component.button.secondary.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.button.secondary.foreground.hover",
+      "bg": "component.button.secondary.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.button.secondary.foreground.focus",
+      "bg": "component.button.secondary.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.button.secondary.foreground.active",
+      "bg": "component.button.secondary.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.button.secondary.foreground.disabled",
+      "bg": "component.button.secondary.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.button.ghost.foreground.default",
+      "bg": "component.button.ghost.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.button.ghost.foreground.hover",
+      "bg": "component.button.ghost.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.button.ghost.foreground.focus",
+      "bg": "component.button.ghost.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.button.ghost.foreground.active",
+      "bg": "component.button.ghost.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.button.ghost.foreground.disabled",
+      "bg": "component.button.ghost.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.link.foreground.default",
+      "bg": "component.link.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.link.foreground.hover",
+      "bg": "component.link.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.link.foreground.focus",
+      "bg": "component.link.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.link.foreground.active",
+      "bg": "component.link.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.link.foreground.disabled",
+      "bg": "component.link.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.input.foreground.default",
+      "bg": "component.input.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.input.foreground.hover",
+      "bg": "component.input.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.input.foreground.focus",
+      "bg": "component.input.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.input.foreground.active",
+      "bg": "component.input.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.input.foreground.disabled",
+      "bg": "component.input.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.select.foreground.default",
+      "bg": "component.select.background.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.select.foreground.hover",
+      "bg": "component.select.background.hover",
+      "role": "text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.select.foreground.focus",
+      "bg": "component.select.background.focus",
+      "role": "text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.select.foreground.active",
+      "bg": "component.select.background.active",
+      "role": "text",
+      "state": "active"
+    },
+    {
+      "fg": "component.select.foreground.disabled",
+      "bg": "component.select.background.disabled",
+      "role": "text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.checkbox.foreground.default",
+      "bg": "component.checkbox.background.default",
+      "role": "non-text",
+      "state": "default"
+    },
+    {
+      "fg": "component.checkbox.foreground.hover",
+      "bg": "component.checkbox.background.hover",
+      "role": "non-text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.checkbox.foreground.focus",
+      "bg": "component.checkbox.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.checkbox.foreground.active",
+      "bg": "component.checkbox.background.active",
+      "role": "non-text",
+      "state": "active"
+    },
+    {
+      "fg": "component.checkbox.foreground.disabled",
+      "bg": "component.checkbox.background.disabled",
+      "role": "non-text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.radio.foreground.default",
+      "bg": "component.radio.background.default",
+      "role": "non-text",
+      "state": "default"
+    },
+    {
+      "fg": "component.radio.foreground.hover",
+      "bg": "component.radio.background.hover",
+      "role": "non-text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.radio.foreground.focus",
+      "bg": "component.radio.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.radio.foreground.active",
+      "bg": "component.radio.background.active",
+      "role": "non-text",
+      "state": "active"
+    },
+    {
+      "fg": "component.radio.foreground.disabled",
+      "bg": "component.radio.background.disabled",
+      "role": "non-text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.switch.foreground.default",
+      "bg": "component.switch.background.default",
+      "role": "non-text",
+      "state": "default"
+    },
+    {
+      "fg": "component.switch.foreground.hover",
+      "bg": "component.switch.background.hover",
+      "role": "non-text",
+      "state": "hover"
+    },
+    {
+      "fg": "component.switch.foreground.focus",
+      "bg": "component.switch.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.switch.foreground.active",
+      "bg": "component.switch.background.active",
+      "role": "non-text",
+      "state": "active"
+    },
+    {
+      "fg": "component.switch.foreground.disabled",
+      "bg": "component.switch.background.disabled",
+      "role": "non-text",
+      "state": "disabled",
+      "minRatio": 0
+    },
+    {
+      "fg": "component.button.primary.border.focus",
+      "bg": "component.button.primary.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.button.secondary.border.focus",
+      "bg": "component.button.secondary.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.button.ghost.border.focus",
+      "bg": "component.button.ghost.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.link.border.focus",
+      "bg": "component.link.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.input.border.focus",
+      "bg": "component.input.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.select.border.focus",
+      "bg": "component.select.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.checkbox.border.focus",
+      "bg": "component.checkbox.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.radio.border.focus",
+      "bg": "component.radio.background.focus",
+      "role": "non-text",
+      "state": "focus"
+    },
+    {
+      "fg": "component.switch.border.focus",
+      "bg": "component.switch.background.focus",
+      "role": "non-text",
+      "state": "focus"
     }
   ],
   "primitive": {
@@ -623,35 +957,1259 @@
   },
   "component": {
     "button": {
-      "background": {
-        "$type": "color",
-        "$value": "{semantic.color.primary.default}",
+      "primary": {
+        "radius": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{semantic.space.inset}",
+          "$class": "adapter-derived"
+        },
+        "paddingY": {
+          "$type": "dimension",
+          "$value": "{primitive.space.xs}",
+          "$class": "adapter-derived"
+        },
+        "borderWidth": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "label": {
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{semantic.typography.body.family}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{semantic.typography.body.weight}",
+            "$class": "adapter-derived"
+          },
+          "transform": {
+            "$type": "string",
+            "$value": "none",
+            "$class": "portable"
+          }
+        },
+        "transition": {
+          "$type": "duration",
+          "$value": "{semantic.motion.transition}",
+          "$class": "adapter-derived"
+        },
+        "background": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          }
+        },
+        "foreground": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.foreground}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.foreground}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.foreground}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.foreground}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.600}",
+            "$class": "adapter-derived"
+          }
+        },
+        "border": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.foreground}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          }
+        }
+      },
+      "secondary": {
+        "radius": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{semantic.space.inset}",
+          "$class": "adapter-derived"
+        },
+        "paddingY": {
+          "$type": "dimension",
+          "$value": "{primitive.space.xs}",
+          "$class": "adapter-derived"
+        },
+        "borderWidth": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "label": {
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{semantic.typography.body.family}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{semantic.typography.body.weight}",
+            "$class": "adapter-derived"
+          },
+          "transform": {
+            "$type": "string",
+            "$value": "none",
+            "$class": "portable"
+          }
+        },
+        "transition": {
+          "$type": "duration",
+          "$value": "{semantic.motion.transition}",
+          "$class": "adapter-derived"
+        },
+        "background": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          }
+        },
+        "foreground": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.foreground}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.foreground}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.foreground}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.foreground}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.600}",
+            "$class": "adapter-derived"
+          }
+        },
+        "border": {
+          "default": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.600}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.600}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          }
+        }
+      },
+      "ghost": {
+        "radius": {
+          "$type": "dimension",
+          "$value": {
+            "value": 2,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{semantic.space.inset}",
+          "$class": "adapter-derived"
+        },
+        "paddingY": {
+          "$type": "dimension",
+          "$value": "{primitive.space.xs}",
+          "$class": "adapter-derived"
+        },
+        "borderWidth": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "label": {
+          "family": {
+            "$type": "fontFamily",
+            "$value": "{semantic.typography.body.family}",
+            "$class": "adapter-derived"
+          },
+          "weight": {
+            "$type": "fontWeight",
+            "$value": "{semantic.typography.body.weight}",
+            "$class": "adapter-derived"
+          },
+          "transform": {
+            "$type": "string",
+            "$value": "none",
+            "$class": "portable"
+          }
+        },
+        "transition": {
+          "$type": "duration",
+          "$value": "{semantic.motion.transition}",
+          "$class": "adapter-derived"
+        },
+        "background": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          }
+        },
+        "foreground": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.hover}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.600}",
+            "$class": "adapter-derived"
+          }
+        },
+        "border": {
+          "default": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          },
+          "hover": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "focus": {
+            "$type": "color",
+            "$value": "{semantic.color.primary.default}",
+            "$class": "adapter-derived"
+          },
+          "active": {
+            "$type": "color",
+            "$value": "{primitive.color.neutral.100}",
+            "$class": "adapter-derived"
+          },
+          "disabled": {
+            "$type": "color",
+            "$value": "{semantic.color.surface.default}",
+            "$class": "adapter-derived"
+          }
+        }
+      }
+    },
+    "link": {
+      "underlineOffset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
         "$class": "adapter-derived"
       },
-      "backgroundHover": {
-        "$type": "color",
-        "$value": "{semantic.color.primary.hover}",
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
         "$class": "adapter-derived"
+      },
+      "label": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{semantic.typography.body.family}",
+          "$class": "adapter-derived"
+        },
+        "weight": {
+          "$type": "fontWeight",
+          "$value": "{semantic.typography.body.weight}",
+          "$class": "adapter-derived"
+        }
+      },
+      "transition": {
+        "$type": "duration",
+        "$value": "{semantic.motion.transition}",
+        "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        }
       },
       "foreground": {
-        "$type": "color",
-        "$value": "{semantic.color.primary.foreground}",
-        "$class": "adapter-derived"
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
       },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.hover}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "input": {
       "radius": {
         "$type": "dimension",
-        "$value": "{semantic.shape.control}",
+        "$value": {
+          "value": 0,
+          "unit": "px-base"
+        },
         "$class": "adapter-derived"
       },
       "paddingX": {
         "$type": "dimension",
-        "$value": "{semantic.space.inset}",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderPlacement": {
+        "$type": "string",
+        "$value": "bottom",
+        "$class": "portable"
+      },
+      "label": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{semantic.typography.body.family}",
+          "$class": "adapter-derived"
+        },
+        "weight": {
+          "$type": "fontWeight",
+          "$value": "{semantic.typography.body.weight}",
+          "$class": "adapter-derived"
+        },
+        "transform": {
+          "$type": "string",
+          "$value": "none",
+          "$class": "portable"
+        }
+      },
+      "transition": {
+        "$type": "duration",
+        "$value": "{semantic.motion.transition}",
+        "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      },
+      "foreground": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "select": {
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderPlacement": {
+        "$type": "string",
+        "$value": "bottom",
+        "$class": "portable"
+      },
+      "label": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{primitive.font.family.mono}",
+          "$class": "adapter-derived"
+        },
+        "weight": {
+          "$type": "fontWeight",
+          "$value": "{semantic.typography.caption.weight}",
+          "$class": "adapter-derived"
+        },
+        "transform": {
+          "$type": "string",
+          "$value": "uppercase",
+          "$class": "portable"
+        }
+      },
+      "transition": {
+        "$type": "duration",
+        "$value": "{semantic.motion.transition}",
+        "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      },
+      "foreground": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "checkbox": {
+      "size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 14,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
         "$class": "adapter-derived"
       },
       "transition": {
         "$type": "duration",
         "$value": "{semantic.motion.transition}",
         "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      },
+      "foreground": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "radio": {
+      "size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 14,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "transition": {
+        "$type": "duration",
+        "$value": "{semantic.motion.transition}",
+        "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      },
+      "foreground": {
+        "default": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "switch": {
+      "width": {
+        "$type": "dimension",
+        "$value": {
+          "value": 34,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": {
+          "value": 18,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "thumbSize": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "transition": {
+        "$type": "duration",
+        "$value": "{semantic.motion.transition}",
+        "$class": "adapter-derived"
+      },
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      },
+      "foreground": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "hover": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "focus": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "active": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "disabled": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        }
+      }
+    },
+    "card": {
+      "background": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.default}",
+        "$class": "adapter-derived"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{semantic.space.inset}",
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      }
+    },
+    "badge": {
+      "background": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.600}",
+        "$class": "adapter-derived"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "borderWidth": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "label": {
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{primitive.font.family.mono}",
+          "$class": "adapter-derived"
+        },
+        "weight": {
+          "$type": "fontWeight",
+          "$value": "{semantic.typography.caption.weight}",
+          "$class": "adapter-derived"
+        },
+        "transform": {
+          "$type": "string",
+          "$value": "uppercase",
+          "$class": "portable"
+        }
+      }
+    },
+    "divider": {
+      "color": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "thickness": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "style": {
+        "$type": "string",
+        "$value": "solid",
+        "$class": "portable"
       }
     }
   }

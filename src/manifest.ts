@@ -9,6 +9,7 @@ import {
 } from "./surface-data.js";
 import { pathTail, tokenEntriesUnder } from "./render-utils.js";
 import { DEMO_REGIONS } from "./demo-generator.js";
+import { COMPONENT_P1_ROLLOUT, componentPrimitiveNames } from "./component-registry.js";
 
 export interface Surfaces {
   readonly styleguideHtml: string;
@@ -160,7 +161,9 @@ function styleguideComplete(doc: TokensDocument, element: RequiredElement, html:
     case "shapes":
       return count(section, "data-shape-box") >= tokenEntriesUnder(doc.primitive, "radius", "primitive.radius").length;
     case "components":
-      return section.includes("data-component-demo") && count(section, "data-component-row") >= entriesFrom(doc.component, "component").length;
+      return section.includes("data-component-demo") &&
+        count(section, "data-component-row") >= entriesFrom(doc.component, "component").length &&
+        requiredComponentSpecimens(doc).every((primitive) => section.includes(`data-specimen="${primitive}"`));
     case "relationships":
       return count(section, "data-alias-row") >= aliasRows(doc).length;
     case "accessibility":
@@ -223,6 +226,12 @@ function typographyRoles(doc: TokensDocument): readonly string[] {
   return [...new Set(tokenEntriesUnder(doc.semantic, "typography", "semantic.typography")
     .map((entry) => pathTail(entry.path, "semantic.typography").split(".")[0])
     .filter((role) => role !== undefined))];
+}
+
+function requiredComponentSpecimens(doc: TokensDocument): readonly string[] {
+  return (COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe)
+    ? componentPrimitiveNames()
+    : [];
 }
 
 function count(value: string, needle: string): number {

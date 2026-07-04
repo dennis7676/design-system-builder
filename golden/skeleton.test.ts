@@ -39,7 +39,7 @@ const styleBody = (html: string): string => {
  * standard demo path byte-for-byte. Pinned on minimal-tech's token document
  * with the skeleton declaration stripped, so grammar diffusion across the
  * real recipes cannot silently drift the standard generator. */
-const STANDARD_SYNTHETIC_HASH = "5bc5a3e4d84d36147dfaf0ef65bedd96d128f5d8ef4d7d4587821e0850b4d383";
+const STANDARD_SYNTHETIC_HASH = "2ba2bad33d1caaa30bd83a9bc40f16d674590781ca70207cc8203f5b0e1ed1b4";
 
 const regions = ["nav", "hero", "features", "form", "footer"] as const;
 

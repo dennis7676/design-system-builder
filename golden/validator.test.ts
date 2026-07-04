@@ -65,7 +65,7 @@ describe("G6 — $class missing", () => {
 describe("G12 — unresolved alias", () => {
   it("errors on reference to a missing token", () => {
     const d = clone();
-    (d.component.button as any).background.$value = "{semantic.color.nope.default}";
+    (d.component.button as any).primary.background.default.$value = "{semantic.color.nope.default}";
     expect(codes(validateTokens(d))).toContain("alias-unresolved");
   });
 });
@@ -73,7 +73,7 @@ describe("G12 — unresolved alias", () => {
 describe("G13 — alias type mismatch", () => {
   it("errors when a dimension aliases a color", () => {
     const d = clone();
-    (d.component.button as any).radius.$value = "{semantic.color.primary.default}";
+    (d.component.button as any).primary.radius.$value = "{semantic.color.primary.default}";
     expect(codes(validateTokens(d))).toContain("alias-type");
   });
 });

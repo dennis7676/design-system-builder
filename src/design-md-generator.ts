@@ -109,9 +109,13 @@ function motionSection(doc: TokensDocument, realized: ReadonlyMap<string, string
 
 function components(doc: TokensDocument, realized: ReadonlyMap<string, string>): string {
   const rows = entriesFrom(doc.component, "component")
-    .map((entry) => `| button | ${entry.path} | ${mdEscape(tokenRef(entry.leaf))} | ${realized.get(entry.path) ?? ""} | default, hover |`)
+    .map((entry) => `| ${mdEscape(componentName(entry.path))} | ${entry.path} | ${mdEscape(tokenRef(entry.leaf))} | ${realized.get(entry.path) ?? ""} | default, hover, focus, active, disabled |`)
     .join("\n");
   return ["## 8. Components", "| Component | Token | Maps to | Realized | Core states |", "| - | - | - | - | - |", rows].join("\n");
+}
+
+function componentName(path: string): string {
+  return path.split(".")[1] ?? "component";
 }
 
 function relationships(doc: TokensDocument): string {

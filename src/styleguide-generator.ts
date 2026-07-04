@@ -598,8 +598,8 @@ function baseCss(doc: TokensDocument): string {
     : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; overflow-x: hidden; }
-    body { margin: 0; overflow-x: hidden; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); display: grid; grid-template-columns: 15rem minmax(0, 1fr); }
+    html { scroll-behavior: smooth; overflow-x: clip; }
+    body { margin: 0; overflow-x: clip; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); display: grid; grid-template-columns: 15rem minmax(0, 1fr); }
     nav { position: sticky; top: 0; align-self: flex-start; max-height: 100vh; overflow-y: auto; padding: var(--semantic-space-inset, 1.5rem); border-right: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 92%, transparent); backdrop-filter: blur(.75rem); }
     nav a { display: block; color: inherit; padding: .55rem .75rem; border-radius: var(--semantic-shape-control, .5rem); text-decoration: none; transition: background var(--semantic-motion-transition, 160ms) ease, color var(--semantic-motion-transition, 160ms) ease; }
     nav a:hover, nav a.is-active { color: var(--semantic-color-primary-default, currentColor); background: color-mix(in oklch, var(--semantic-color-primary-default, currentColor) 10%, transparent); }

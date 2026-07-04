@@ -27,6 +27,7 @@ import {
   usageHint,
 } from "./render-utils.js";
 import { webfontHeadTags } from "./font-sources.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 
 const TYPOGRAPHY_ROLES = ["display", "h1", "h2", "h3", "body", "caption", "heading"] as const;
 
@@ -487,7 +488,7 @@ function baseCss(doc: TokensDocument): string {
     .app-portrait-card { align-content: space-between; }
     .app-portrait-card h3 { font-size: clamp(1rem, 9.5cqw, calc(var(--semantic-typography-display-size) * 1.08)); }
     @media (max-width: 760px) { body { display: block; } nav { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } main { padding: 1rem; } h1 { font-size: calc(var(--semantic-typography-display-size) * .72); } .hero-panel, .tone-chip, .brand-card, .table-card, .color-card, .type-card, .radius-box, .elevation-card, .sample-card, .playground { padding: 1rem; } .color-card { grid-template-columns: 1fr; } .swatch { min-height: 6rem; } .bars div { grid-template-columns: 1fr; } }
-${reduce}`;
+${reduce}${textureOverlayCss(doc, [".hero-panel", ".brand-card", ".table-card", ".color-card", ".type-card", ".radius-box", ".elevation-card", ".sample-card", ".playground", ".application-frame", ".app-lower-bar"])}`;
 }
 
 function koCss(ko: boolean): string {

@@ -3,6 +3,7 @@ import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -117,7 +118,7 @@ function journalDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
     .journal-signature { padding: clamp(3rem, 7vw, 5rem) clamp(1rem, 5vw, 4rem); display: grid; justify-items: center; gap: .65rem; text-align: center; }
     .journal-signature .brand { font: italic var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
     .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 640px) { .journal-nav { align-items: flex-start; flex-direction: column; } .journal-nav nav { margin-left: 0; justify-content: flex-start; } }${reduce}${journalTierCss(tier)}${journalKoCss(ko)}`;
+    @media (max-width: 640px) { .journal-nav { align-items: flex-start; flex-direction: column; } .journal-nav nav { margin-left: 0; justify-content: flex-start; } }${reduce}${journalTierCss(tier)}${textureOverlayCss(doc, [".journal-hero", ".journal-form"])}${journalKoCss(ko)}`;
 }
 
 function journalTierCss(tier: DemoTier): string {

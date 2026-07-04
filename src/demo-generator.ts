@@ -13,6 +13,7 @@ import { toCssVars } from "./adapters/css-adapter.js";
 import { computeTokenHash } from "./validator.js";
 import { hasTokenPath } from "./surface-data.js";
 import { htmlEscape } from "./render-utils.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import { generateBriefingDemo } from "./demo-briefing.js";
 import { generateCollageDemo } from "./demo-collage.js";
 import { generateEditorialDemo } from "./demo-editorial.js";
@@ -209,7 +210,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .footer-cols a:hover { color: ${primary}; }
     .fine { width: min(72rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${koCss(ko)}`;
+    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${textureOverlayCss(doc, [".hero", ".hero-panel", ".card", ".signup-card"])}${koCss(ko)}`;
 }
 
 /** Korean rendering rules (spec: locale-typography). Appended last so they

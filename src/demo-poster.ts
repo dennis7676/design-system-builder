@@ -3,6 +3,7 @@ import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -114,7 +115,7 @@ function posterDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     .poster-ticket input { padding: .65rem .8rem; border: 1px solid ${hairline}; border-radius: 0; background: ${surface}; color: ${fg}; font: inherit; }
     .poster-footer { margin-top: 2rem; padding: 1.25rem clamp(1rem, 4vw, 3rem); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1rem; text-align: center; }
     .fine { font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    @media (max-width: 640px) { .poster-nav nav { display: none; } .poster-footer { display: grid; } }${reduce}${posterTierCss(tier)}${posterKoCss(ko)}`;
+    @media (max-width: 640px) { .poster-nav nav { display: none; } .poster-footer { display: grid; } }${reduce}${posterTierCss(tier)}${textureOverlayCss(doc, [".poster-hero", ".poster-ticket"])}${posterKoCss(ko)}`;
 }
 
 function posterTierCss(tier: DemoTier): string {

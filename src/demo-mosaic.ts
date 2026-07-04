@@ -3,6 +3,7 @@ import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -123,7 +124,7 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     .mosaic-footer { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: ${hairline}; }
     .mosaic-footer-brand .brand { font: var(--semantic-typography-display-weight) clamp(var(--semantic-typography-display-size), 8vw, calc(var(--semantic-typography-display-size) * 1.45))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .fine { margin: 0; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 62%, ${surface}); }
-    @media (max-width: 760px) { .mosaic-nav nav { display: none; } .mosaic-grid, .mosaic-feature-row, .mosaic-footer { grid-template-columns: 1fr; } .mosaic-headline, .mosaic-lead { grid-column: auto; grid-row: auto; } }${reduce}${mosaicTierCss(tier)}${mosaicKoCss(ko)}`;
+    @media (max-width: 760px) { .mosaic-nav nav { display: none; } .mosaic-grid, .mosaic-feature-row, .mosaic-footer { grid-template-columns: 1fr; } .mosaic-headline, .mosaic-lead { grid-column: auto; grid-row: auto; } }${reduce}${mosaicTierCss(tier)}${textureOverlayCss(doc, [".mosaic-tile"])}${mosaicKoCss(ko)}`;
 }
 
 function mosaicTierCss(tier: DemoTier): string {

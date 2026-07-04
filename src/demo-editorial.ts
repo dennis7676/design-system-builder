@@ -1,6 +1,7 @@
 import { toCssVars } from "./adapters/css-adapter.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import type { TokensDocument } from "./tokens-schema.js";
 import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
@@ -119,7 +120,7 @@ function editorialDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .colophon { border-top: 1px solid ${hairline}; padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem); display: grid; justify-items: center; gap: .65rem; text-align: center; }
     .colophon > p:not(.fine) { color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 760px) { .spread-row, .spread-row:nth-child(even) h3, .spread-row:nth-child(even) p { grid-template-columns: 1fr; grid-column: auto; grid-row: auto; } .spread-row { gap: .75rem; } }${reduce}${editorialTierCss(tier)}${editorialKoCss(ko)}`;
+    @media (max-width: 760px) { .spread-row, .spread-row:nth-child(even) h3, .spread-row:nth-child(even) p { grid-template-columns: 1fr; grid-column: auto; grid-row: auto; } .spread-row { gap: .75rem; } }${reduce}${editorialTierCss(tier)}${textureOverlayCss(doc, [".editorial-hero", ".invitation"])}${editorialKoCss(ko)}`;
 }
 
 function editorialTierCss(tier: DemoTier): string {

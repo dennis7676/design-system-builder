@@ -3,6 +3,7 @@ import type { DemoCopy } from "./demo-copy.js";
 import { webfontHeadTags } from "./font-sources.js";
 import { htmlEscape } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
+import { textureOverlayCss } from "./texture-overlay.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -141,7 +142,7 @@ function storyDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string 
     .story-footer-cols a { text-decoration: none; color: color-mix(in oklch, ${fg} 72%, ${surface}); }
     .story-footer-cols a:hover { color: ${primary}; }
     .fine { width: min(76rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: color-mix(in oklch, ${fg} 60%, ${surface}); }
-    @media (max-width: 760px) { .story-nav nav { display: none; } .story-hero, .story-band { grid-template-columns: 1fr; } .story-alt .story-band-copy, .story-alt .story-panel { grid-column: auto; grid-row: auto; } .story-footer-cols { grid-template-columns: 1fr; } }${reduce}${storyTierCss(tier)}${storyKoCss(ko)}`;
+    @media (max-width: 760px) { .story-nav nav { display: none; } .story-hero, .story-band { grid-template-columns: 1fr; } .story-alt .story-band-copy, .story-alt .story-panel { grid-column: auto; grid-row: auto; } .story-footer-cols { grid-template-columns: 1fr; } }${reduce}${storyTierCss(tier)}${textureOverlayCss(doc, [".story-panel", ".story-form-card"])}${storyKoCss(ko)}`;
 }
 
 function storyTierCss(tier: DemoTier): string {

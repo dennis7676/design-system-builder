@@ -2,7 +2,10 @@ import { EXPRESSION_TIERS } from "./brand-schema.js";
 import {
   COMPONENT_P1_REGISTRY,
   COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_COMPOSITES,
+  COMPONENT_P2_ROLLOUT,
   COMPONENT_STATES,
+  type ComponentCompositeDefinition,
   type ComponentPrimitiveDefinition,
 } from "./component-registry.js";
 import { EXPORT_GATE_CODES } from "./gate.js";
@@ -44,7 +47,7 @@ export const GATE_CATALOG = {
   "unit-invalid": "Dimension and duration leaves use normalized intent units.",
   "cubic-bezier-invalid": "Motion easing leaves use finite four-point cubic-bezier tuples.",
   "orphan-token": "Portable primitive leaves should be consumed by semantic or component aliases.",
-  "component-parity": "Rolled-out recipes expose the exact component primitive path registry.",
+  "component-parity": "Rolled-out recipes expose the exact component path registry for each rollout set.",
   "texture-opacity-invalid": "Texture overlay opacity is a numeric token.",
   "texture-opacity-cap": "Texture overlay opacity stays below the shipped cap.",
   "texture-contrast-unparseable": "Texture worst-case blended contrast colors must parse.",
@@ -115,14 +118,9 @@ export function buildContract(doc: TokensDocument): UsageContract {
     components: {
       rolloutRecipes: [...COMPONENT_P1_ROLLOUT],
       states: [...COMPONENT_STATES],
-      registry: (COMPONENT_P1_REGISTRY as readonly ComponentPrimitiveDefinition[]).map((definition) => ({
-        name: definition.name,
-        variants: [...(definition.variants ?? [])],
-        baseProperties: [...definition.baseProperties],
-        stateProperties: [...(definition.stateProperties ?? [])],
-        contrastRole: definition.contrastRole ?? null,
-        focusIndicator: definition.focusIndicator ?? null,
-      })),
+      registry: primitiveRegistrySnapshot(COMPONENT_P1_REGISTRY),
+      p2RolloutRecipes: [...COMPONENT_P2_ROLLOUT],
+      composites: compositeRegistrySnapshot(COMPONENT_P2_COMPOSITES),
     },
     gates: Object.entries(GATE_CATALOG).map(([code, purpose]) => ({ code, purpose })),
     accessibility: {
@@ -154,7 +152,7 @@ export function buildContract(doc: TokensDocument): UsageContract {
       },
       {
         claim: "The component registry surface follows the code registry.",
-        proof: "src/component-registry.ts COMPONENT_P1_REGISTRY plus golden/contract.test.ts registry flow assertion.",
+        proof: "src/component-registry.ts COMPONENT_P1_REGISTRY and COMPONENT_P2_COMPOSITES plus golden/contract.test.ts registry flow assertion.",
       },
       {
         claim: "Regression safety is enforced by the golden test suite.",
@@ -162,6 +160,39 @@ export function buildContract(doc: TokensDocument): UsageContract {
       },
     ],
   };
+}
+
+function primitiveRegistrySnapshot(
+  registry: readonly ComponentPrimitiveDefinition[],
+): ReadonlyArray<Record<string, unknown>> {
+  return registry.map((definition) => ({
+    name: definition.name,
+    variants: [...(definition.variants ?? [])],
+    baseProperties: [...definition.baseProperties],
+    stateProperties: [...(definition.stateProperties ?? [])],
+    contrastRole: definition.contrastRole ?? null,
+    focusIndicator: definition.focusIndicator ?? null,
+  }));
+}
+
+function compositeRegistrySnapshot(
+  registry: readonly ComponentCompositeDefinition[],
+): ReadonlyArray<Record<string, unknown>> {
+  return registry.map((definition) => ({
+    name: definition.name,
+    leafPaths: [...definition.leafPaths],
+    contrastTargets: definition.contrastTargets.map((target) => ({
+      fg: target.fg,
+      bg: target.bg,
+      role: target.role,
+      ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
+    })),
+    exemptions: definition.exemptions.map((exemption) => ({
+      path: exemption.path,
+      reason: exemption.reason,
+      exemption: exemption.exemption,
+    })),
+  }));
 }
 
 export function buildContractJson(doc: TokensDocument): string {

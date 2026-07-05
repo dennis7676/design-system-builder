@@ -8,6 +8,7 @@ import {
   COMPONENT_P1_PATHS,
   COMPONENT_P1_REGISTRY,
   COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_PATHS,
   componentContrastTargets,
   componentFocusTargets,
   componentPaths,
@@ -29,7 +30,7 @@ import { buildContractJson } from "../src/contract.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const KEYSTONE_HASH = "sha256:3da1c49f68f7ab672b314d8200ed395ba4a66f3b0a3cb6b29e42292c31455e47";
+const KEYSTONE_HASH = "sha256:78580efe929e6cc86ba395cc5bcfa7c94b0b9667562e873e87527dc8dc991f25";
 
 const NON_ROLLOUT_BUILD_SHA256: Record<string, string> = {
   enterprise: "e2682eadfc7a0aa77372f85adcd7850a32000125f296b03a4280694c6b8d0d26",
@@ -62,6 +63,16 @@ function buildFor(key: string, extra: Partial<BrandJson> = {}): TokensDocument {
 
 function leafPaths(doc: TokensDocument): readonly string[] {
   return [...flatten(doc.component, "component").keys()].sort();
+}
+
+function pathsInSet(paths: readonly string[], expected: readonly string[]): readonly string[] {
+  const roots = new Set(expected.map(componentPathRoot));
+  return paths.filter((path) => roots.has(componentPathRoot(path))).sort();
+}
+
+function componentPathRoot(path: string): string {
+  const [namespace, name] = path.split(".");
+  return `${namespace ?? ""}.${name ?? ""}`;
 }
 
 function sha256(value: string): string {
@@ -116,9 +127,9 @@ describe("component registry", () => {
 });
 
 describe("component parity gate", () => {
-  it("accepts the pilot recipe exact path set", () => {
+  it("accepts the pilot recipe exact P1 path set", () => {
     const doc = buildFor("minimal-tech");
-    expect(leafPaths(doc)).toEqual([...COMPONENT_P1_PATHS].sort());
+    expect(pathsInSet(leafPaths(doc), COMPONENT_P1_PATHS)).toEqual([...COMPONENT_P1_PATHS].sort());
     expect(validateTokens(doc).findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
   });
 
@@ -284,7 +295,7 @@ describe("keystone rebaseline", () => {
 
     expect(computeTokenHash(SAMPLE)).toBe(KEYSTONE_HASH);
     expect(computeTokenHash(built)).toBe(KEYSTONE_HASH);
-    expect(SAMPLE.contrastPairs).toHaveLength(57);
-    expect(leafPaths(SAMPLE)).toEqual([...COMPONENT_P1_PATHS].sort());
+    expect(SAMPLE.contrastPairs).toHaveLength(67);
+    expect(leafPaths(SAMPLE)).toEqual([...COMPONENT_P1_PATHS, ...COMPONENT_P2_PATHS].sort());
   });
 });

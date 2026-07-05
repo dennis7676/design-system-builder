@@ -9,7 +9,12 @@ import {
 } from "./surface-data.js";
 import { pathTail, tokenEntriesUnder } from "./render-utils.js";
 import { DEMO_REGIONS } from "./demo-generator.js";
-import { COMPONENT_P1_ROLLOUT, componentPrimitiveNames } from "./component-registry.js";
+import {
+  COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_ROLLOUT,
+  componentCompositeNames,
+  componentPrimitiveNames,
+} from "./component-registry.js";
 
 export interface Surfaces {
   readonly styleguideHtml: string;
@@ -262,9 +267,10 @@ function typographyRoles(doc: TokensDocument): readonly string[] {
 }
 
 function requiredComponentSpecimens(doc: TokensDocument): readonly string[] {
-  return (COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe)
-    ? componentPrimitiveNames()
-    : [];
+  return [
+    ...((COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe) ? componentPrimitiveNames() : []),
+    ...((COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe) ? componentCompositeNames() : []),
+  ];
 }
 
 function count(value: string, needle: string): number {

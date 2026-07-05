@@ -32,7 +32,10 @@ import { glassPanelCss, hasGlassSurface } from "./glass-surface.js";
 import {
   COMPONENT_P1_REGISTRY,
   COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_COMPOSITES,
+  COMPONENT_P2_ROLLOUT,
   COMPONENT_STATES,
+  type ComponentCompositeDefinition,
   type ComponentPrimitiveDefinition,
   type ComponentState,
 } from "./component-registry.js";
@@ -312,12 +315,14 @@ function components(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
   const mappings = entriesFrom(doc.component, "component")
     .map((entry) => `<tr data-component-row><td>${entry.path}</td><td>${htmlEscape(tokenRef(entry.leaf))}</td><td>${htmlEscape(componentUsage(entry.path, ko))}</td></tr>`)
     .join("");
-  const specimens = isComponentRollout(doc) ? componentSpecimens() : "";
+  const specimens = hasComponentSpecimens(doc) ? componentSpecimens(doc) : "";
   return section("components", t.sections.components, `<p class="section-lead">${t.componentsLead}</p><div class="playground" data-playground><div class="playground-toolbar" role="group" aria-label="${t.previewAria}"><button type="button" data-playground-state="default" class="is-selected">Default</button><button type="button" data-playground-state="hover">Hover</button><button type="button" data-playground-state="focus">Focus</button><button type="button" data-playground-state="disabled">Disabled</button></div><div class="component-stage"><div><button data-component-demo class="demo-button playground-target">${t.primaryButton}</button><div class="state-row"><button class="demo-button state-hover" type="button">Hover</button><button class="demo-button state-focus" type="button">Focus</button><button class="demo-button" type="button" disabled>Disabled</button></div></div><article class="sample-card"><p class="meta-label">${t.composedExample}</p><h3>${t.tokenCardTitle}</h3><p>${t.tokenCardBody}</p><button class="demo-button" type="button">${t.continueLabel}</button></article></div></div>${specimens}<div class="table-card">${collapsible(t.componentTokenMap, `<table><tbody>${mappings}</tbody></table>`)}</div>`);
 }
 
-function componentSpecimens(): string {
-  return `<div class="component-specimens">${COMPONENT_P1_REGISTRY.map(specimenFor).join("")}</div>`;
+function componentSpecimens(doc: TokensDocument): string {
+  const primitives = isComponentRollout(doc) ? COMPONENT_P1_REGISTRY.map(specimenFor).join("") : "";
+  const composites = isCompositeRollout(doc) ? COMPONENT_P2_COMPOSITES.map(compositeSpecimenFor).join("") : "";
+  return `<div class="component-specimens">${primitives}${composites}</div>`;
 }
 
 function specimenFor(definition: ComponentPrimitiveDefinition): string {
@@ -407,6 +412,83 @@ function specimenShell(name: string, body: string): string {
   return `<article class="component-specimen" data-specimen="${htmlEscape(name)}"><h3>${htmlEscape(name)}</h3>${body}</article>`;
 }
 
+function compositeSpecimenFor(definition: ComponentCompositeDefinition): string {
+  switch (definition.name) {
+    case "nav":
+      return navCompositeSpecimen(definition);
+    case "table":
+      return tableCompositeSpecimen(definition);
+    case "modal":
+      return modalCompositeSpecimen(definition);
+    case "formRow":
+      return formRowCompositeSpecimen(definition);
+    default:
+      return "";
+  }
+}
+
+function navCompositeSpecimen(definition: ComponentCompositeDefinition): string {
+  const link = COMPONENT_P1_REGISTRY.find((entry) => entry.name === "link");
+  const button = COMPONENT_P1_REGISTRY.find((entry) => entry.name === "button");
+  const linkStyle = link === undefined ? "" : `${specimenStateStyle("component.link", "default")}${specimenBaseStyle("component.link", link)}`;
+  const buttonStyle = button === undefined ? "" : `${specimenStateStyle("component.button.ghost", "default")}${specimenBaseStyle("component.button.ghost", button)}`;
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-nav" role="navigation" aria-label="Composite nav" style="${compositeBaseStyle("nav", {
+      background: "composite-nav-bg",
+      foreground: "composite-nav-fg",
+      border: "composite-nav-border",
+      paddingX: "composite-nav-padding-x",
+      paddingY: "composite-nav-padding-y",
+    })}"><a class="specimen-link" href="#" style="${linkStyle}">Docs</a><a class="specimen-link" href="#" style="${linkStyle}">Status</a><button class="specimen-control specimen-button" type="button" style="${buttonStyle}">Open console</button></div>`,
+  );
+}
+
+function tableCompositeSpecimen(definition: ComponentCompositeDefinition): string {
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-table-wrap" style="${compositeBaseStyle("table", {
+      headerBackground: "composite-table-header-bg",
+      headerForeground: "composite-table-header-fg",
+      rowBackground: "composite-table-row-bg",
+      rowStripeBackground: "composite-table-stripe-bg",
+      rowHoverBackground: "composite-table-hover-bg",
+      cellForeground: "composite-table-cell-fg",
+      border: "composite-table-border",
+      cellPaddingX: "composite-table-cell-padding-x",
+      cellPaddingY: "composite-table-cell-padding-y",
+    })}"><table class="specimen-table"><thead><tr><th>Service</th><th>Status</th><th>Owner</th></tr></thead><tbody><tr><td>API</td><td>Live</td><td>Platform</td></tr><tr><td>Sync</td><td>Queued</td><td>Data</td></tr><tr data-row-hover><td>Billing</td><td>Review</td><td>Ops</td></tr></tbody></table></div>`,
+  );
+}
+
+function modalCompositeSpecimen(definition: ComponentCompositeDefinition): string {
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-modal-scrim" style="${compositeBaseStyle("modal", {
+      overlayBackground: "composite-modal-overlay-bg",
+      panelBackground: "composite-modal-panel-bg",
+      panelForeground: "composite-modal-panel-fg",
+      panelBorder: "composite-modal-panel-border",
+      panelRadius: "composite-modal-panel-radius",
+      panelShadow: "composite-modal-panel-shadow",
+      padding: "composite-modal-padding",
+    })}"><article class="specimen-modal-panel"><p class="meta-label">Modal</p><h4>Review changes</h4><p>Confirm the settings before you publish.</p></article></div>`,
+  );
+}
+
+function formRowCompositeSpecimen(definition: ComponentCompositeDefinition): string {
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-form-row" style="${compositeBaseStyle("formRow", {
+      gap: "composite-form-row-gap",
+      labelForeground: "composite-form-label-fg",
+      helpForeground: "composite-form-help-fg",
+      errorForeground: "composite-form-error-fg",
+      errorBorder: "composite-form-error-border",
+    })}"><label for="specimen-form-row-input">Workspace name</label><input id="specimen-form-row-input" value="Atlas API" aria-describedby="specimen-form-row-help specimen-form-row-error"><p id="specimen-form-row-help" class="specimen-form-help">Use a public display name.</p><p id="specimen-form-row-error" class="specimen-form-error">Enter a workspace name.</p></div>`,
+  );
+}
+
 function specimenStateStyle(prefix: string, state: ComponentState): string {
   return [
     cssCustom("specimen-bg", `${prefix}.background.${state}`),
@@ -448,6 +530,12 @@ function specimenBaseStyle(prefix: string, definition: ComponentPrimitiveDefinit
 
 function cssCustom(name: string, path: string): string {
   return `--${name}: var(--${path.replaceAll(".", "-")});`;
+}
+
+function compositeBaseStyle(name: string, aliases: Readonly<Record<string, string>>): string {
+  return Object.entries(aliases)
+    .map(([leaf, custom]) => cssCustom(custom, `component.${name}.${leaf}`))
+    .join("");
 }
 
 function applications(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
@@ -564,6 +652,14 @@ function isComponentRollout(doc: TokensDocument): boolean {
   return (COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe);
 }
 
+function isCompositeRollout(doc: TokensDocument): boolean {
+  return (COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe);
+}
+
+function hasComponentSpecimens(doc: TokensDocument): boolean {
+  return isComponentRollout(doc) || isCompositeRollout(doc);
+}
+
 function baseCss(doc: TokensDocument): string {
   const reduce = hasMotion(doc)
     ? `
@@ -577,7 +673,7 @@ function baseCss(doc: TokensDocument): string {
     .glass-edge-panel { width: min(34rem, 100%); display: grid; gap: .75rem; padding: clamp(1.25rem, 4vw, 2.5rem); border-radius: var(--semantic-shape-control, .5rem); }
     .glass-edge-panel h3, .glass-edge-panel p { margin: 0; }`
     : "";
-  const componentGallery = isComponentRollout(doc)
+  const componentGallery = hasComponentSpecimens(doc)
     ? `
     .component-specimens { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; margin: 1rem 0; }
     .component-specimen { min-width: 0; display: grid; gap: .75rem; align-content: start; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: color-mix(in oklch, var(--semantic-color-surface-default, Canvas) 96%, var(--semantic-color-primary-default, currentColor)); padding: var(--semantic-space-inset, 1.5rem); }
@@ -599,7 +695,25 @@ function baseCss(doc: TokensDocument): string {
     .specimen-static-card { display: grid; gap: .35rem; background: var(--specimen-bg); color: var(--specimen-fg); border: var(--specimen-border-width) solid var(--specimen-border); border-radius: var(--specimen-radius); padding: var(--specimen-padding); }
     .specimen-static-card h3, .specimen-static-card p { margin: 0; }
     .specimen-badge { width: fit-content; background: var(--specimen-bg); color: var(--specimen-fg); border: var(--specimen-border-width) solid var(--specimen-border); border-radius: var(--specimen-radius); padding: var(--specimen-padding-y) var(--specimen-padding-x); font-family: var(--specimen-label-family); font-weight: var(--specimen-label-weight); text-transform: var(--specimen-label-transform); }
-    .specimen-divider { width: 100%; border: 0; border-top: var(--specimen-divider-thickness) var(--specimen-divider-style) var(--specimen-divider-color); }`
+    .specimen-divider { width: 100%; border: 0; border-top: var(--specimen-divider-thickness) var(--specimen-divider-style) var(--specimen-divider-color); }
+    .specimen-nav { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; background: var(--composite-nav-bg); color: var(--composite-nav-fg); border: 1px solid var(--composite-nav-border); padding: var(--composite-nav-padding-y) var(--composite-nav-padding-x); font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; }
+    .specimen-nav .specimen-link, .specimen-nav .specimen-control { font-family: inherit; text-transform: inherit; letter-spacing: 0; }
+    .specimen-table-wrap { min-width: 0; overflow-x: auto; }
+    .specimen-table { margin: 0; border: 1px solid var(--composite-table-border); color: var(--composite-table-cell-fg); }
+    .specimen-table th, .specimen-table td { border-bottom: 1px solid var(--composite-table-border); padding: var(--composite-table-cell-padding-y) var(--composite-table-cell-padding-x); }
+    .specimen-table th { background: var(--composite-table-header-bg); color: var(--composite-table-header-fg); font-family: var(--primitive-font-family-mono, ui-monospace, monospace); font-size: .78rem; text-transform: uppercase; letter-spacing: 0; }
+    .specimen-table td { background: var(--composite-table-row-bg); }
+    .specimen-table tbody tr:nth-child(2) td { background: var(--composite-table-stripe-bg); }
+    .specimen-table tbody tr[data-row-hover] td { background: var(--composite-table-hover-bg); }
+    .specimen-modal-scrim { min-height: 15rem; display: grid; place-items: center; background: color-mix(in oklch, var(--composite-modal-overlay-bg) 68%, transparent); padding: var(--composite-modal-padding); }
+    .specimen-modal-panel { width: min(22rem, 100%); display: grid; gap: .5rem; background: var(--composite-modal-panel-bg); color: var(--composite-modal-panel-fg); border: 1px solid var(--composite-modal-panel-border); border-radius: var(--composite-modal-panel-radius); box-shadow: var(--composite-modal-panel-shadow); padding: var(--composite-modal-padding); }
+    .specimen-modal-panel h4, .specimen-modal-panel p { margin: 0; }
+    .specimen-form-row { display: grid; gap: var(--composite-form-row-gap); }
+    .specimen-form-row label { color: var(--composite-form-label-fg); font-weight: 600; }
+    .specimen-form-row input { min-width: 0; width: 100%; border: 1px solid var(--composite-form-error-border); border-radius: var(--semantic-shape-control, .5rem); background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); padding: .7rem .8rem; font: inherit; }
+    .specimen-form-row p { margin: 0; }
+    .specimen-form-help { color: var(--composite-form-help-fg); }
+    .specimen-form-error { color: var(--composite-form-error-fg); }`
     : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }

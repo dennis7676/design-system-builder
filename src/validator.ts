@@ -24,7 +24,13 @@ import {
 } from "./tokens-schema.js";
 import { contrastRatio, linearToHex, parseColor, relativeLuminance, type LinearRGB } from "./color.js";
 import { TEXTURE_GRAIN_OPACITY_CAP, TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
-import { COMPONENT_P1_PATHS, COMPONENT_P1_ROLLOUT } from "./component-registry.js";
+import {
+  COMPONENT_P1_PATHS,
+  COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_PATHS,
+  COMPONENT_P2_ROLLOUT,
+  componentCompositeExemptions,
+} from "./component-registry.js";
 
 export type Severity = "error" | "warn" | "info";
 
@@ -192,6 +198,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
 
   // 3. WCAG contrast over contrastPairs + foreground pairing
   checkComponentParity(doc, findings);
+  checkComponentContrastExemptions(doc, findings);
   checkContrast(doc, leaves, findings);
   checkTextureOverlay(doc, leaves, findings);
   checkGlassSurface(doc, leaves, findings);
@@ -244,10 +251,28 @@ function colorValueOf(path: string, leaves: Map<string, LeafToken>): string | nu
 }
 
 function checkComponentParity(doc: TokensDocument, findings: Finding[]): void {
-  if (!(COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe)) return;
-
-  const expected = new Set(COMPONENT_P1_PATHS);
   const actual = new Set(flatten(doc.component, "component").keys());
+  const sets = [
+    { name: "P1 registry", rollout: COMPONENT_P1_ROLLOUT, paths: COMPONENT_P1_PATHS },
+    { name: "P2 composite registry", rollout: COMPONENT_P2_ROLLOUT, paths: COMPONENT_P2_PATHS },
+  ] as const;
+
+  for (const set of sets) {
+    if (!(set.rollout as readonly string[]).includes(doc.meta.recipe)) continue;
+    checkComponentParitySet(doc.meta.recipe, set.name, set.paths, actual, findings);
+  }
+}
+
+function checkComponentParitySet(
+  recipe: string,
+  setName: string,
+  paths: readonly string[],
+  allActual: ReadonlySet<string>,
+  findings: Finding[],
+): void {
+  const expected = new Set(paths);
+  const roots = new Set(paths.map(componentPathRoot));
+  const actual = new Set([...allActual].filter((path) => roots.has(componentPathRoot(path))));
   const missing = [...expected].filter((path) => !actual.has(path)).sort();
   const extra = [...actual].filter((path) => !expected.has(path)).sort();
   if (missing.length === 0 && extra.length === 0) return;
@@ -260,9 +285,36 @@ function checkComponentParity(doc: TokensDocument, findings: Finding[]): void {
     severity: "error",
     code: "component-parity",
     path: "component",
-    message: `component path parity mismatch for '${doc.meta.recipe}' (${diff})`,
-    meta: { recipe: doc.meta.recipe, missing, extra },
+    message: `component path parity mismatch for ${setName} '${recipe}' (${diff})`,
+    meta: { set: setName, recipe, missing, extra },
   });
+}
+
+function componentPathRoot(path: string): string {
+  const [namespace, name] = path.split(".");
+  return `${namespace ?? ""}.${name ?? ""}`;
+}
+
+function checkComponentContrastExemptions(doc: TokensDocument, findings: Finding[]): void {
+  if (!(COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe)) return;
+
+  const leaves = flatten(doc.component, "component");
+  for (const exemption of componentCompositeExemptions()) {
+    if (!leaves.has(exemption.path)) continue;
+    findings.push({
+      severity: "info",
+      code: "contrast-exempt",
+      path: exemption.path,
+      message: `component contrast is exempt for decorative content (${exemption.path})`,
+      meta: {
+        exemption: exemption.exemption,
+        reason: exemption.reason,
+        role: "non-text",
+        state: "default",
+        requiredWithoutExemption: MIN_RATIO["non-text"],
+      },
+    });
+  }
 }
 
 interface TextureOverlayGate {

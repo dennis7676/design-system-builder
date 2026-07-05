@@ -2,7 +2,13 @@ import type { BrandJson, BrandOverrides } from "./brand-schema.js";
 import { normalizeToneVector } from "./brand-schema.js";
 import { TEXTURE_GRAIN_OVERLAY } from "./edge-point.js";
 import { MOTION_EASING_PRESETS, type MotionEasingPreset, type MotionEasingTriple } from "./motion-easing.js";
-import { COMPONENT_P1_ROLLOUT, componentContrastTargets, componentFocusTargets } from "./component-registry.js";
+import {
+  COMPONENT_P1_ROLLOUT,
+  COMPONENT_P2_ROLLOUT,
+  componentCompositeContrastTargets,
+  componentContrastTargets,
+  componentFocusTargets,
+} from "./component-registry.js";
 import type { Recipe } from "./recipe-selection.js";
 import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type CubicBezierValue, type LeafToken, type MotionOverrideMeta, type Philosophy, type TokenGroup, type TokensDocument } from "./tokens-schema.js";
 import { clampOklchChroma, contrastRatio, formatOklch, parseColor, parseOklch, relativeLuminance, type Oklch } from "./color.js";
@@ -76,22 +82,35 @@ function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy)
 }
 
 function applyComponentContrastPairs(base: MutableBase, recipeKey: string): void {
-  if (!(COMPONENT_P1_ROLLOUT as readonly string[]).includes(recipeKey)) return;
-  const derived: ContrastPair[] = [
-    ...componentContrastTargets().map((target) => ({
-      fg: target.fg,
-      bg: target.bg,
-      role: target.role,
-      state: target.state,
-      ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
-    })),
-    ...componentFocusTargets().map((target) => ({
-      fg: target.fg,
-      bg: target.bg,
-      role: target.role,
-      state: target.state,
-    })),
-  ];
+  const derived: ContrastPair[] = [];
+  if ((COMPONENT_P1_ROLLOUT as readonly string[]).includes(recipeKey)) {
+    derived.push(
+      ...componentContrastTargets().map((target) => ({
+        fg: target.fg,
+        bg: target.bg,
+        role: target.role,
+        state: target.state,
+        ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
+      })),
+      ...componentFocusTargets().map((target) => ({
+        fg: target.fg,
+        bg: target.bg,
+        role: target.role,
+        state: target.state,
+      })),
+    );
+  }
+  if ((COMPONENT_P2_ROLLOUT as readonly string[]).includes(recipeKey)) {
+    derived.push(
+      ...componentCompositeContrastTargets().map((target) => ({
+        fg: target.fg,
+        bg: target.bg,
+        role: target.role,
+        state: "default" as const,
+        ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
+      })),
+    );
+  }
   const existing = new Set(base.contrastPairs.map(pairKey));
   for (const pair of derived) {
     const key = pairKey(pair);

@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   COMPONENT_P1_REGISTRY,
+  COMPONENT_P2_COMPOSITES,
+  COMPONENT_P2_ROLLOUT,
   buildContractJson,
   checkManifest,
   computeTokenHash,
@@ -19,7 +21,7 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const CONTRACT_SHA256 = "fc5781bef4642f25c4b08916138e588932a831ca589407df8acb287e52dacbfd";
+const CONTRACT_SHA256 = "cbf186486e5b7d0b2da8a2634f1d21ca95616f6ec256d469f8502f6f4293504f";
 
 const sha256 = (value: string): string => createHash("sha256").update(value).digest("hex");
 
@@ -55,12 +57,20 @@ describe("usage contract", () => {
     expect(Object.keys(GATE_CATALOG).sort()).toEqual([...actual].sort());
   });
 
-  it("derives the component registry snapshot from COMPONENT_P1_REGISTRY", () => {
+  it("derives the component registry snapshot from the component registries", () => {
     const contract = JSON.parse(buildContractJson(SAMPLE)) as {
-      readonly components: { readonly registry: ReadonlyArray<{ readonly name: string }> };
+      readonly components: {
+        readonly registry: ReadonlyArray<{ readonly name: string }>;
+        readonly p2RolloutRecipes: readonly string[];
+        readonly composites: ReadonlyArray<{ readonly name: string }>;
+      };
     };
     expect(contract.components.registry.map((entry) => entry.name)).toEqual(
       COMPONENT_P1_REGISTRY.map((entry) => entry.name),
+    );
+    expect(contract.components.p2RolloutRecipes).toEqual([...COMPONENT_P2_ROLLOUT]);
+    expect(contract.components.composites.map((entry) => entry.name)).toEqual(
+      COMPONENT_P2_COMPOSITES.map((entry) => entry.name),
     );
   });
 

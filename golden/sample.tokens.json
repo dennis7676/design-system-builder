@@ -432,6 +432,66 @@
       "bg": "component.switch.background.focus",
       "role": "non-text",
       "state": "focus"
+    },
+    {
+      "fg": "component.nav.foreground",
+      "bg": "component.nav.background",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.table.headerForeground",
+      "bg": "component.table.headerBackground",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.table.cellForeground",
+      "bg": "component.table.rowBackground",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.table.cellForeground",
+      "bg": "component.table.rowStripeBackground",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.table.cellForeground",
+      "bg": "component.table.rowHoverBackground",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.modal.panelForeground",
+      "bg": "component.modal.panelBackground",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.formRow.labelForeground",
+      "bg": "semantic.color.surface.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.formRow.helpForeground",
+      "bg": "semantic.color.surface.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.formRow.errorForeground",
+      "bg": "semantic.color.surface.default",
+      "role": "text",
+      "state": "default"
+    },
+    {
+      "fg": "component.formRow.errorBorder",
+      "bg": "semantic.color.surface.default",
+      "role": "non-text",
+      "state": "default"
     }
   ],
   "primitive": {
@@ -2210,6 +2270,153 @@
         "$type": "string",
         "$value": "solid",
         "$class": "portable"
+      }
+    },
+    "nav": {
+      "background": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.default}",
+        "$class": "adapter-derived"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "paddingY": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      }
+    },
+    "table": {
+      "headerBackground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "headerForeground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.default}",
+        "$class": "adapter-derived"
+      },
+      "rowBackground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.default}",
+        "$class": "adapter-derived"
+      },
+      "rowStripeBackground": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "rowHoverBackground": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "cellForeground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "cellPaddingX": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "cellPaddingY": {
+        "$type": "dimension",
+        "$value": {
+          "value": 6,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      }
+    },
+    "modal": {
+      "overlayBackground": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.900}",
+        "$class": "adapter-derived"
+      },
+      "panelBackground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.default}",
+        "$class": "adapter-derived"
+      },
+      "panelForeground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "panelBorder": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.100}",
+        "$class": "adapter-derived"
+      },
+      "panelRadius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 2,
+          "unit": "px-base"
+        },
+        "$class": "adapter-derived"
+      },
+      "panelShadow": {
+        "$type": "string",
+        "$value": "none",
+        "$class": "adapter-derived"
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{semantic.space.inset}",
+        "$class": "adapter-derived"
+      }
+    },
+    "formRow": {
+      "gap": {
+        "$type": "dimension",
+        "$value": "{primitive.space.xs}",
+        "$class": "adapter-derived"
+      },
+      "labelForeground": {
+        "$type": "color",
+        "$value": "{semantic.color.surface.foreground}",
+        "$class": "adapter-derived"
+      },
+      "helpForeground": {
+        "$type": "color",
+        "$value": "{primitive.color.neutral.600}",
+        "$class": "adapter-derived"
+      },
+      "errorForeground": {
+        "$type": "color",
+        "$value": "{semantic.color.primary.default}",
+        "$class": "adapter-derived"
+      },
+      "errorBorder": {
+        "$type": "color",
+        "$value": "{semantic.color.primary.default}",
+        "$class": "adapter-derived"
       }
     }
   }

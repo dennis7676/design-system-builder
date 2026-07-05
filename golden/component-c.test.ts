@@ -52,6 +52,16 @@ function leafPaths(doc: TokensDocument): readonly string[] {
   return [...flatten(doc.component, "component").keys()].sort();
 }
 
+function pathsInSet(paths: readonly string[], expected: readonly string[]): readonly string[] {
+  const roots = new Set(expected.map(componentPathRoot));
+  return paths.filter((path) => roots.has(componentPathRoot(path))).sort();
+}
+
+function componentPathRoot(path: string): string {
+  const [namespace, name] = path.split(".");
+  return `${namespace ?? ""}.${name ?? ""}`;
+}
+
 function surfacesFor(doc: TokensDocument) {
   return {
     styleguideHtml: generateStyleguide(doc),
@@ -77,7 +87,7 @@ describe("component batch c rollout", () => {
       const doc = buildFor(key);
       const result = validateTokens(doc);
 
-      expect(leafPaths(doc)).toEqual([...COMPONENT_P1_PATHS].sort());
+      expect(pathsInSet(leafPaths(doc), COMPONENT_P1_PATHS)).toEqual([...COMPONENT_P1_PATHS].sort());
       expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
       expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
     }

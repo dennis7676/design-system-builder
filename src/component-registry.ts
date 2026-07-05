@@ -147,6 +147,93 @@ export interface ComponentFocusTarget {
   readonly role: "non-text";
 }
 
+export interface ComponentCompositeContrastTarget {
+  readonly fg: string;
+  readonly bg: string;
+  readonly role: ContrastRole;
+  readonly minRatio?: number;
+}
+
+export interface ComponentCompositeExemption {
+  readonly path: string;
+  readonly reason: string;
+  readonly exemption: string;
+}
+
+export interface ComponentCompositeDefinition {
+  readonly name: string;
+  readonly leafPaths: readonly string[];
+  readonly contrastTargets: readonly ComponentCompositeContrastTarget[];
+  readonly exemptions: readonly ComponentCompositeExemption[];
+}
+
+export const COMPONENT_P2_ROLLOUT = ["minimal-tech"] as const;
+
+export const COMPONENT_P2_COMPOSITES = [
+  {
+    name: "nav",
+    leafPaths: ["background", "foreground", "border", "paddingX", "paddingY"],
+    contrastTargets: [
+      { fg: "component.nav.foreground", bg: "component.nav.background", role: "text" },
+    ],
+    exemptions: [],
+  },
+  {
+    name: "table",
+    leafPaths: [
+      "headerBackground",
+      "headerForeground",
+      "rowBackground",
+      "rowStripeBackground",
+      "rowHoverBackground",
+      "cellForeground",
+      "border",
+      "cellPaddingX",
+      "cellPaddingY",
+    ],
+    contrastTargets: [
+      { fg: "component.table.headerForeground", bg: "component.table.headerBackground", role: "text" },
+      { fg: "component.table.cellForeground", bg: "component.table.rowBackground", role: "text" },
+      { fg: "component.table.cellForeground", bg: "component.table.rowStripeBackground", role: "text" },
+      { fg: "component.table.cellForeground", bg: "component.table.rowHoverBackground", role: "text" },
+    ],
+    exemptions: [],
+  },
+  {
+    name: "modal",
+    leafPaths: [
+      "overlayBackground",
+      "panelBackground",
+      "panelForeground",
+      "panelBorder",
+      "panelRadius",
+      "panelShadow",
+      "padding",
+    ],
+    contrastTargets: [
+      { fg: "component.modal.panelForeground", bg: "component.modal.panelBackground", role: "text" },
+    ],
+    exemptions: [
+      {
+        path: "component.modal.overlayBackground",
+        reason: "Non-text decorative scrim; panel legibility is covered by panelForeground on panelBackground.",
+        exemption: "WCAG 1.4.3 incidental decorative content",
+      },
+    ],
+  },
+  {
+    name: "formRow",
+    leafPaths: ["gap", "labelForeground", "helpForeground", "errorForeground", "errorBorder"],
+    contrastTargets: [
+      { fg: "component.formRow.labelForeground", bg: "semantic.color.surface.default", role: "text" },
+      { fg: "component.formRow.helpForeground", bg: "semantic.color.surface.default", role: "text" },
+      { fg: "component.formRow.errorForeground", bg: "semantic.color.surface.default", role: "text" },
+      { fg: "component.formRow.errorBorder", bg: "semantic.color.surface.default", role: "non-text" },
+    ],
+    exemptions: [],
+  },
+] as const satisfies readonly ComponentCompositeDefinition[];
+
 export function componentPrimitiveNames(
   registry: readonly ComponentPrimitiveDefinition[] = COMPONENT_P1_REGISTRY,
 ): readonly string[] {
@@ -195,6 +282,34 @@ export function componentFocusTargets(
 }
 
 export const COMPONENT_P1_PATHS = componentPaths();
+
+export function componentCompositeNames(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P2_COMPOSITES,
+): readonly string[] {
+  return registry.map((entry) => entry.name);
+}
+
+export function componentCompositePaths(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P2_COMPOSITES,
+): readonly string[] {
+  return registry.flatMap((definition) =>
+    definition.leafPaths.map((path) => `component.${definition.name}.${path}`),
+  );
+}
+
+export function componentCompositeContrastTargets(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P2_COMPOSITES,
+): readonly ComponentCompositeContrastTarget[] {
+  return registry.flatMap((definition) => definition.contrastTargets);
+}
+
+export function componentCompositeExemptions(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P2_COMPOSITES,
+): readonly ComponentCompositeExemption[] {
+  return registry.flatMap((definition) => definition.exemptions);
+}
+
+export const COMPONENT_P2_PATHS = componentCompositePaths();
 
 function pathsForDefinition(definition: ComponentPrimitiveDefinition): readonly string[] {
   return prefixesForDefinition(definition).flatMap(({ prefix }) => [

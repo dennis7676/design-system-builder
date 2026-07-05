@@ -111,7 +111,13 @@ Adopted points and order:
    (`add-component-foundation` + `component-batch-a/b/c`): 10-primitive
    registry, component-parity gate, generic state contrastPairs (disabled
    exempt, focus 3:1), specimen gallery; all 8 recipes rolled out with
-   full catalog parity (365 tests). Next: P2 composites → P3 patterns.
+   full catalog parity (365 tests). **P2 SHIPPED 2026-07-05**
+   (`add-composite-foundation` + `composite-batch-a/b`): 4 composites
+   (nav/table/modal/formRow, 26 leaves) via a separate P2 registry with
+   registry-declared contrastTargets (10 pairs/recipe), no state-enum
+   expansion, modal overlay explicitly exempt; all 8 recipes rolled out
+   with full-parity asserted against the recipe directory (423 tests).
+   Next: P3 patterns.
    The shadcn/Tailwind adapter (old M2.5) stays **demoted** below this.
 4. **AI-consumable contract (B1) + Guarantees (B5)** — **SHIPPED 2026-07-05**
    (`add-usage-contract`): contract.json emitted with every build (consume

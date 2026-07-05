@@ -25,12 +25,7 @@ import { flatten, validateTokens } from "../src/validator.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 
-const NON_P2_BUILD_SHA256: Record<string, string> = {
-  expressive: "77a9984cff523323a12c16a29f282e1e641e07dc3107e34a3cc47fc5021917a3",
-  "creative-multiscale": "bc425f42f493f7a04b844907e1463856b155e179282392c93ce4b3931e61914e",
-  "warm-creator": "92bed21f8be440203a3915bab6f8451d65a04e73e753f53d3c0da6cdbe25a01d",
-  retro: "756501b28c03483ec95d07128cf82bc384e8fa741a7234bafd1650790e207eb8",
-};
+const NON_P2_BUILD_SHA256: Record<string, string> = {};
 
 function recipe(key: string): Recipe {
   const found = RECIPES.find((item) => item.key === key);
@@ -80,7 +75,16 @@ function sha256(value: string): string {
 describe("P2 composite registry", () => {
   it("declares the fixed rollout set without expanding component states", () => {
     expect(componentCompositeNames()).toEqual(["nav", "table", "modal", "formRow"]);
-    expect(COMPONENT_P2_ROLLOUT).toEqual(["minimal-tech", "enterprise", "pro-emotive", "luxury"]);
+    expect(COMPONENT_P2_ROLLOUT).toEqual([
+      "minimal-tech",
+      "enterprise",
+      "pro-emotive",
+      "luxury",
+      "retro",
+      "warm-creator",
+      "expressive",
+      "creative-multiscale",
+    ]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P2_PATHS).toContain("component.table.rowHoverBackground");
     expect(COMPONENT_P2_PATHS).toContain("component.formRow.errorForeground");

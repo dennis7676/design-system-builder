@@ -21,7 +21,7 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const CONTRACT_SHA256 = "f9effee80fbcc16ee319a40ee49bcd9c6690f6715df1f47db1990506a91e74f5";
+const CONTRACT_SHA256 = "ae6f4a3b8b95b3866ea1fd360fb19fd54d947a941c3d3c4d95114fe1bf6b4ee0";
 
 const sha256 = (value: string): string => createHash("sha256").update(value).digest("hex");
 

@@ -167,7 +167,16 @@ export interface ComponentCompositeDefinition {
   readonly exemptions: readonly ComponentCompositeExemption[];
 }
 
-export const COMPONENT_P2_ROLLOUT = ["minimal-tech", "enterprise", "pro-emotive", "luxury"] as const;
+export const COMPONENT_P2_ROLLOUT = [
+  "minimal-tech",
+  "enterprise",
+  "pro-emotive",
+  "luxury",
+  "retro",
+  "warm-creator",
+  "expressive",
+  "creative-multiscale",
+] as const;
 
 export const COMPONENT_P2_COMPOSITES = [
   {

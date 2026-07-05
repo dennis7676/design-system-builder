@@ -26,8 +26,8 @@ const BATCH = ["expressive", "creative-multiscale"] as const;
 type BatchKey = (typeof BATCH)[number];
 
 const TOKEN_HASHES: Record<BatchKey, string> = {
-  expressive: "sha256:40d3fb1fe8d85ffc5882df1f77ea59f73cbfd4d4fe65697345772c69cafaeae0",
-  "creative-multiscale": "sha256:b316f8c2732acb49a4d626a6d737c9204f83b4d97972b665c7086acfbe8ef4ff",
+  expressive: "sha256:31ab781d12ed99dccc94ec066e268c3101494db4181e2e4035de1a6229db1dd8",
+  "creative-multiscale": "sha256:abc84e1900747fa2d2f97a02638e24166f96b1ce88a03f1a1287c9192efd3ab3",
 };
 
 function recipe(key: string): Recipe {
@@ -98,7 +98,7 @@ describe("component batch c rollout", () => {
       const doc = buildFor(key);
       const result = validateTokens(doc);
 
-      expect(leafPaths(doc)).toEqual([...COMPONENT_P1_PATHS].sort());
+      expect(pathsInSet(leafPaths(doc), COMPONENT_P1_PATHS)).toEqual([...COMPONENT_P1_PATHS].sort());
       expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
       expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
     });

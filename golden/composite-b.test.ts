@@ -21,30 +21,32 @@ import { computeTokenHash, flatten, validateTokens } from "../src/validator.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-const BATCH = ["enterprise", "pro-emotive", "luxury"] as const;
+const PREVIOUS = ["minimal-tech", "enterprise", "pro-emotive", "luxury"] as const;
+const BATCH = ["retro", "warm-creator", "expressive", "creative-multiscale"] as const;
 type BatchKey = (typeof BATCH)[number];
 
 const TOKEN_HASHES: Record<BatchKey, string> = {
-  enterprise: "sha256:6db24f210b320dabc85df376541504998b82da776b81df9a4fcbbca8e2a38252",
-  "pro-emotive": "sha256:fb15cd36b87d8ac2f8cc16d08b893ea1e194a9594734758be89363c59e91882a",
-  luxury: "sha256:3f28f6ce32244018d257c2799e857ad531258417e23cb80c87efce2ba1277981",
+  retro: "sha256:e040faa61bbf15081d561aaff9f83a39b1dbeb9159929a835019a2c8664c615d",
+  "warm-creator": "sha256:32ba7064639ec0f97dc6e847b752e96bc2a81bc19d98a37e8fdb508e3d264139",
+  expressive: "sha256:31ab781d12ed99dccc94ec066e268c3101494db4181e2e4035de1a6229db1dd8",
+  "creative-multiscale": "sha256:abc84e1900747fa2d2f97a02638e24166f96b1ce88a03f1a1287c9192efd3ab3",
 };
 
-function recipe(key: BatchKey): Recipe {
+function recipe(key: string): Recipe {
   const found = RECIPES.find((item) => item.key === key);
   if (found === undefined) throw new Error(`recipe fixture missing: ${key}`);
   return found;
 }
 
-function brandFor(key: BatchKey): BrandJson {
+function brandFor(key: string): BrandJson {
   return {
     schemaVersion: "2026-06-30",
-    product: { name: "Composite A", medium: "web" },
+    product: { name: "Composite B", medium: "web" },
     branding: { tone_vector: recipe(key).toneAnchor },
   };
 }
 
-function buildFor(key: BatchKey): TokensDocument {
+function buildFor(key: string): TokensDocument {
   return buildTokens(brandFor(key), recipe(key));
 }
 
@@ -75,9 +77,23 @@ function compositePairKey(pair: Pick<ContrastPair, "fg" | "bg" | "role" | "state
   return `${pair.fg}|${pair.bg}|${pair.role}|${pair.state}|${pair.minRatio ?? ""}`;
 }
 
-describe("composite batch a rollout", () => {
-  it("appends enterprise, pro-emotive, and luxury to the P2 rollout after the pilot", () => {
-    expect(COMPONENT_P2_ROLLOUT.slice(0, BATCH.length + 1)).toEqual(["minimal-tech", ...BATCH]);
+describe("composite batch b rollout", () => {
+  it("appends the final four recipes to the P2 rollout set", () => {
+    expect(COMPONENT_P2_ROLLOUT).toEqual([...PREVIOUS, ...BATCH]);
+  });
+
+  it("rolls out every catalog recipe to P2 composite parity", () => {
+    const catalogKeys = RECIPES.map((item) => item.key).sort();
+    expect([...COMPONENT_P2_ROLLOUT].sort()).toEqual(catalogKeys);
+
+    for (const key of catalogKeys) {
+      const doc = buildFor(key);
+      const result = validateTokens(doc);
+
+      expect(pathsInSet(leafPaths(doc), COMPONENT_P2_PATHS)).toEqual([...COMPONENT_P2_PATHS].sort());
+      expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
+      expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
+    }
   });
 
   it.each(BATCH)("accepts %s exact P2 composite path parity", (key) => {
@@ -118,50 +134,61 @@ describe("composite batch a rollout", () => {
     expect(checkManifest(doc, surfacesFor(doc)).filter((finding) => finding.severity === "error")).toEqual([]);
   });
 
-  it("records the four-recipe P2 rollout set in contract.json", () => {
-    const contract = JSON.parse(buildContractJson(buildFor("enterprise"))) as {
+  it("records the eight-recipe P2 rollout set in contract.json", () => {
+    const contract = JSON.parse(buildContractJson(buildFor("retro"))) as {
       readonly components: { readonly p2RolloutRecipes: readonly string[] };
     };
 
-    expect(contract.components.p2RolloutRecipes.slice(0, BATCH.length + 1)).toEqual(["minimal-tech", ...BATCH]);
+    expect(contract.components.p2RolloutRecipes).toEqual([...PREVIOUS, ...BATCH]);
   });
 
-  it("carries enterprise briefing-density composite deltas", () => {
-    const component = buildFor("enterprise").component as any;
+  it("carries retro poster-rhythm composite deltas", () => {
+    const component = buildFor("retro").component as any;
 
-    expect(component.nav.border.$value).toBe("{semantic.color.primary.default}");
-    expect(component.nav.paddingY.$value).toEqual({ value: 2, unit: "px-base" });
-    expect(component.table.cellPaddingX.$value).toBe("{primitive.space.xs}");
+    expect(component.nav.background.$value).toBe("{semantic.color.surface.foreground}");
+    expect(component.table.border.$value).toBe("{semantic.color.surface.foreground}");
+    expect(component.table.rowHoverBackground.$value).toBe("{semantic.color.accent.default}");
     expect(component.table.cellPaddingY.$value).toEqual({ value: 4, unit: "px-base" });
-    expect(component.modal.panelRadius.$value).toBe("{primitive.radius.sm}");
-    expect(component.modal.padding.$value).toBe("{primitive.space.sm}");
+    expect(component.modal.panelRadius.$value).toEqual({ value: 0, unit: "px-base" });
+    expect(component.modal.panelShadow.$value).toBe("8px 8px 0 oklch(0.25 0.02 55 / 0.88)");
     expect(component.formRow.errorBorder.$value).toBe("{semantic.color.primary.hover}");
   });
 
-  it("carries pro-emotive balanced-professional composite deltas", () => {
-    const component = buildFor("pro-emotive").component as any;
+  it("carries warm-creator organic composite deltas", () => {
+    const component = buildFor("warm-creator").component as any;
 
-    expect(component.table.rowStripeBackground.$value).toBe("{semantic.color.surface.default}");
+    expect(component.nav.paddingX.$value).toBe("{semantic.space.inset}");
     expect(component.table.rowHoverBackground.$value).toBe("{primitive.color.neutral.100}");
     expect(component.table.cellPaddingY.$value).toEqual({ value: 8, unit: "px-base" });
     expect(component.modal.panelRadius.$value).toBe("{semantic.shape.control}");
     expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.raised}");
-    expect(component.formRow.gap.$value).toBe("{primitive.space.sm}");
+    expect(component.formRow.gap.$value).toBe("{primitive.space.md}");
   });
 
-  it("carries luxury editorial-whitespace composite deltas", () => {
-    const component = buildFor("luxury").component as any;
+  it("carries expressive high-chroma composite deltas", () => {
+    const component = buildFor("expressive").component as any;
 
-    expect(component.nav.paddingX.$value).toBe("{primitive.space.lg}");
-    expect(component.nav.paddingY.$value).toBe("{primitive.space.sm}");
-    expect(component.table.border.$value).toBe("{primitive.color.neutral.100}");
-    expect(component.table.rowStripeBackground.$value).toBe("{primitive.color.neutral.100}");
-    expect(component.table.cellPaddingX.$value).toBe("{primitive.space.lg}");
-    expect(component.table.cellPaddingY.$value).toBe("{primitive.space.sm}");
+    expect(component.nav.background.$value).toBe("{semantic.color.primary.default}");
+    expect(component.nav.foreground.$value).toBe("{semantic.color.primary.foreground}");
+    expect(component.table.rowStripeBackground.$type).toBe("gradient");
+    expect(component.table.rowStripeBackground.$value).toBe("{semantic.gradient.hero}");
+    expect(component.modal.panelBackground.$type).toBe("gradient");
+    expect(component.modal.panelBackground.$value).toBe("{semantic.gradient.hero}");
+    expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.overlay}");
+  });
+
+  it("carries creative-multiscale split-scale composite deltas", () => {
+    const component = buildFor("creative-multiscale").component as any;
+
+    expect(component.nav.paddingY.$value).toEqual({ value: 2, unit: "px-base" });
+    expect(component.table.cellPaddingX.$value).toBe("{primitive.space.xs}");
+    expect(component.table.cellPaddingY.$value).toEqual({ value: 3, unit: "px-base" });
     expect(component.modal.padding.$value).toBe("{primitive.space.lg}");
+    expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.overlay}");
+    expect(component.formRow.gap.$value).toBe("{primitive.space.lg}");
   });
 
-  it.each(BATCH)("pins %s composite batch a tokenHash", (key) => {
+  it.each(BATCH)("pins %s composite batch b tokenHash", (key) => {
     expect(computeTokenHash(buildFor(key))).toBe(TOKEN_HASHES[key]);
   });
 });

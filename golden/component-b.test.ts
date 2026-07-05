@@ -24,7 +24,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const BATCH = ["luxury", "retro", "warm-creator"] as const;
 const TOKEN_HASHES: Record<(typeof BATCH)[number], string> = {
-  luxury: "sha256:9d91be10303b1f1e3a56fd39de460a98201a9981d11b01bb26c5234e27b03207",
+  luxury: "sha256:3f28f6ce32244018d257c2799e857ad531258417e23cb80c87efce2ba1277981",
   retro: "sha256:47b895a6a1c6194f889950afe653fa6a090ef83ec666bc898cd74c562967e5c5",
   "warm-creator": "sha256:d41c91679913449034dccfbeca837deb1d0c22436a02d6aad5fc805277ac4edc",
 };
@@ -51,6 +51,16 @@ function leafPaths(doc: TokensDocument): readonly string[] {
   return [...flatten(doc.component, "component").keys()].sort();
 }
 
+function pathsInSet(paths: readonly string[], expected: readonly string[]): readonly string[] {
+  const roots = new Set(expected.map(componentPathRoot));
+  return paths.filter((path) => roots.has(componentPathRoot(path))).sort();
+}
+
+function componentPathRoot(path: string): string {
+  const [namespace, name] = path.split(".");
+  return `${namespace ?? ""}.${name ?? ""}`;
+}
+
 function surfacesFor(doc: TokensDocument) {
   return {
     styleguideHtml: generateStyleguide(doc),
@@ -70,7 +80,7 @@ describe("component batch b rollout", () => {
       const doc = buildFor(key);
       const result = validateTokens(doc);
 
-      expect(leafPaths(doc)).toEqual([...COMPONENT_P1_PATHS].sort());
+      expect(pathsInSet(leafPaths(doc), COMPONENT_P1_PATHS)).toEqual([...COMPONENT_P1_PATHS].sort());
       expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
       expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
     });

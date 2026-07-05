@@ -26,12 +26,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 
 const NON_P2_BUILD_SHA256: Record<string, string> = {
-  enterprise: "bedc6dd5a0bdc295f045fdde41fc512f1428917ac08ddf8cc7b02e4e4121be44",
   expressive: "77a9984cff523323a12c16a29f282e1e641e07dc3107e34a3cc47fc5021917a3",
-  "pro-emotive": "ada1ce06ee820378a35bf53a62827ea760e24260a0827b6730f51bdd2e867927",
   "creative-multiscale": "bc425f42f493f7a04b844907e1463856b155e179282392c93ce4b3931e61914e",
   "warm-creator": "92bed21f8be440203a3915bab6f8451d65a04e73e753f53d3c0da6cdbe25a01d",
-  luxury: "f8ecabe88cb9a33d554e201abbde1faa38809660f1b1cae3093f71ce59da7114",
   retro: "756501b28c03483ec95d07128cf82bc384e8fa741a7234bafd1650790e207eb8",
 };
 
@@ -81,9 +78,9 @@ function sha256(value: string): string {
 }
 
 describe("P2 composite registry", () => {
-  it("declares the fixed pilot set without expanding component states", () => {
+  it("declares the fixed rollout set without expanding component states", () => {
     expect(componentCompositeNames()).toEqual(["nav", "table", "modal", "formRow"]);
-    expect(COMPONENT_P2_ROLLOUT).toEqual(["minimal-tech"]);
+    expect(COMPONENT_P2_ROLLOUT).toEqual(["minimal-tech", "enterprise", "pro-emotive", "luxury"]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P2_PATHS).toContain("component.table.rowHoverBackground");
     expect(COMPONENT_P2_PATHS).toContain("component.formRow.errorForeground");

@@ -25,8 +25,8 @@ const BATCH = ["enterprise", "pro-emotive"] as const;
 type BatchKey = (typeof BATCH)[number];
 
 const TOKEN_HASHES: Record<BatchKey, string> = {
-  enterprise: "sha256:e03ef138b77a92f1b69f293ff458f9a1325883b0dc91886650288e2fc8bb69ce",
-  "pro-emotive": "sha256:c26a8ed9be784ddb044f3fd55d6a27be353ae590d480cc763eff6dd1031ae85e",
+  enterprise: "sha256:6db24f210b320dabc85df376541504998b82da776b81df9a4fcbbca8e2a38252",
+  "pro-emotive": "sha256:fb15cd36b87d8ac2f8cc16d08b893ea1e194a9594734758be89363c59e91882a",
 };
 
 function recipe(key: BatchKey): Recipe {
@@ -51,6 +51,16 @@ function leafPaths(doc: TokensDocument): readonly string[] {
   return [...flatten(doc.component, "component").keys()].sort();
 }
 
+function pathsInSet(paths: readonly string[], expected: readonly string[]): readonly string[] {
+  const roots = new Set(expected.map(componentPathRoot));
+  return paths.filter((path) => roots.has(componentPathRoot(path))).sort();
+}
+
+function componentPathRoot(path: string): string {
+  const [namespace, name] = path.split(".");
+  return `${namespace ?? ""}.${name ?? ""}`;
+}
+
 function surfacesFor(doc: TokensDocument) {
   return {
     styleguideHtml: generateStyleguide(doc),
@@ -68,11 +78,11 @@ describe("component batch a rollout", () => {
     expect(rollout.indexOf("pro-emotive")).toBe(rollout.indexOf("enterprise") + 1);
   });
 
-  it.each(BATCH)("accepts %s exact component path parity", (key) => {
+  it.each(BATCH)("accepts %s exact P1 component path parity", (key) => {
     const doc = buildFor(key);
     const result = validateTokens(doc);
 
-    expect(leafPaths(doc)).toEqual([...COMPONENT_P1_PATHS].sort());
+    expect(pathsInSet(leafPaths(doc), COMPONENT_P1_PATHS)).toEqual([...COMPONENT_P1_PATHS].sort());
     expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
     expect(result.ok).toBe(true);
   });

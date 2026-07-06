@@ -117,7 +117,14 @@ Adopted points and order:
    registry-declared contrastTargets (10 pairs/recipe), no state-enum
    expansion, modal overlay explicitly exempt; all 8 recipes rolled out
    with full-parity asserted against the recipe directory (423 tests).
-   Next: P3 patterns.
+   **P3 SHIPPED 2026-07-06** (`add-pattern-foundation` +
+   `pattern-batch-a/b`): 4 page-level patterns (hero/pricing/featureGrid/
+   footer, 28 leaves) reusing the P2 registry shape — declared
+   contrastTargets (11 pairs/recipe), featured pricing tier as named
+   leaves (no state-enum growth), pattern specimens composing button/link
+   primitives; all 8 recipes rolled out with full-parity asserted against
+   the recipe directory (484 tests). Vocabulary now spans primitives →
+   composites → patterns.
    The shadcn/Tailwind adapter (old M2.5) stays **demoted** below this.
 4. **AI-consumable contract (B1) + Guarantees (B5)** — **SHIPPED 2026-07-05**
    (`add-usage-contract`): contract.json emitted with every build (consume

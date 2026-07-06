@@ -3,10 +3,10 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import type { BrandJson } from "../src/brand-schema.js";
 import {
-  COMPONENT_P2_PATHS,
-  COMPONENT_P2_ROLLOUT,
-  componentCompositeContrastTargets,
-  componentCompositeNames,
+  COMPONENT_P3_PATHS,
+  COMPONENT_P3_ROLLOUT,
+  componentPatternContrastTargets,
+  componentPatternNames,
 } from "../src/component-registry.js";
 import { buildContractJson } from "../src/contract.js";
 import { generateDemo } from "../src/demo-generator.js";
@@ -41,7 +41,7 @@ function recipe(key: string): Recipe {
 function brandFor(key: string): BrandJson {
   return {
     schemaVersion: "2026-06-30",
-    product: { name: "Composite B", medium: "web" },
+    product: { name: "Pattern B", medium: "web" },
     branding: { tone_vector: recipe(key).toneAnchor },
   };
 }
@@ -73,41 +73,41 @@ function surfacesFor(doc: TokensDocument) {
   };
 }
 
-function compositePairKey(pair: Pick<ContrastPair, "fg" | "bg" | "role" | "state" | "minRatio">): string {
+function patternPairKey(pair: Pick<ContrastPair, "fg" | "bg" | "role" | "state" | "minRatio">): string {
   return `${pair.fg}|${pair.bg}|${pair.role}|${pair.state}|${pair.minRatio ?? ""}`;
 }
 
-describe("composite batch b rollout", () => {
-  it("appends the final four recipes to the P2 rollout set", () => {
-    expect(COMPONENT_P2_ROLLOUT).toEqual([...PREVIOUS, ...BATCH]);
+describe("pattern batch b rollout", () => {
+  it("appends the final four recipes to the P3 rollout set", () => {
+    expect(COMPONENT_P3_ROLLOUT).toEqual([...PREVIOUS, ...BATCH]);
   });
 
-  it("rolls out every catalog recipe to P2 composite parity", () => {
+  it("rolls out every catalog recipe to P3 pattern parity", () => {
     const catalogKeys = RECIPES.map((item) => item.key).sort();
-    expect([...COMPONENT_P2_ROLLOUT].sort()).toEqual(catalogKeys);
+    expect([...COMPONENT_P3_ROLLOUT].sort()).toEqual(catalogKeys);
 
     for (const key of catalogKeys) {
       const doc = buildFor(key);
       const result = validateTokens(doc);
 
-      expect(pathsInSet(leafPaths(doc), COMPONENT_P2_PATHS)).toEqual([...COMPONENT_P2_PATHS].sort());
+      expect(pathsInSet(leafPaths(doc), COMPONENT_P3_PATHS)).toEqual([...COMPONENT_P3_PATHS].sort());
       expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
       expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
     }
   });
 
-  it.each(BATCH)("accepts %s exact P2 composite path parity", (key) => {
+  it.each(BATCH)("accepts %s exact P3 pattern path parity", (key) => {
     const doc = buildFor(key);
     const result = validateTokens(doc);
 
-    expect(pathsInSet(leafPaths(doc), COMPONENT_P2_PATHS)).toEqual([...COMPONENT_P2_PATHS].sort());
+    expect(pathsInSet(leafPaths(doc), COMPONENT_P3_PATHS)).toEqual([...COMPONENT_P3_PATHS].sort());
     expect(result.findings.filter((finding) => finding.code === "component-parity")).toEqual([]);
     expect(result.findings.filter((finding) => finding.severity === "error")).toEqual([]);
   });
 
-  it.each(BATCH)("derives all 10 composite contrast pairs and keeps %s floors green", (key) => {
+  it.each(BATCH)("derives all 11 pattern contrast pairs and keeps %s floors green", (key) => {
     const doc = buildFor(key);
-    const targets = componentCompositeContrastTargets();
+    const targets = componentPatternContrastTargets();
     const expected = targets.map((target) => ({
       fg: target.fg,
       bg: target.bg,
@@ -115,80 +115,87 @@ describe("composite batch b rollout", () => {
       state: "default" as const,
       ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
     }));
-    const actual = new Set(doc.contrastPairs.map(compositePairKey));
+    const actual = new Set(doc.contrastPairs.map(patternPairKey));
 
-    expect(targets).toHaveLength(10);
+    expect(targets).toHaveLength(11);
     for (const pair of expected) {
-      expect(actual.has(compositePairKey(pair))).toBe(true);
+      expect(actual.has(patternPairKey(pair))).toBe(true);
     }
     expect(contrastResults(doc).filter((result) => !result.pass)).toEqual([]);
   });
 
-  it.each(BATCH)("renders one %s styleguide specimen per composite and passes manifest completeness", (key) => {
+  it.each(BATCH)("renders one %s styleguide specimen per pattern and passes manifest completeness", (key) => {
     const doc = buildFor(key);
     const html = generateStyleguide(doc);
 
-    for (const composite of componentCompositeNames()) {
-      expect(html).toContain(`data-specimen="${composite}"`);
+    for (const pattern of componentPatternNames()) {
+      expect(html).toContain(`data-specimen="${pattern}"`);
     }
     expect(checkManifest(doc, surfacesFor(doc)).filter((finding) => finding.severity === "error")).toEqual([]);
   });
 
-  it("records the eight-recipe P2 rollout set in contract.json", () => {
+  it("records the eight-recipe P3 rollout set in contract.json", () => {
     const contract = JSON.parse(buildContractJson(buildFor("retro"))) as {
-      readonly components: { readonly p2RolloutRecipes: readonly string[] };
+      readonly components: { readonly p3RolloutRecipes: readonly string[] };
     };
 
-    expect(contract.components.p2RolloutRecipes).toEqual([...PREVIOUS, ...BATCH]);
+    expect(contract.components.p3RolloutRecipes).toEqual([...PREVIOUS, ...BATCH]);
   });
 
-  it("carries retro poster-rhythm composite deltas", () => {
+  it("carries retro poster-rhythm pattern deltas", () => {
     const component = buildFor("retro").component as any;
 
-    expect(component.nav.background.$value).toBe("{semantic.color.surface.foreground}");
-    expect(component.table.border.$value).toBe("{semantic.color.surface.foreground}");
-    expect(component.table.rowHoverBackground.$value).toBe("{semantic.color.accent.default}");
-    expect(component.table.cellPaddingY.$value).toEqual({ value: 4, unit: "px-base" });
-    expect(component.modal.panelRadius.$value).toEqual({ value: 0, unit: "px-base" });
-    expect(component.modal.panelShadow.$value).toBe("8px 8px 0 oklch(0.25 0.02 55 / 0.88)");
-    expect(component.formRow.errorBorder.$value).toBe("{semantic.color.primary.hover}");
+    expect(component.hero.background.$type).toBe("gradient");
+    expect(component.hero.background.$value).toBe("{semantic.gradient.hero}");
+    expect(component.pricing.cardBorder.$value).toBe("{semantic.color.surface.foreground}");
+    expect(component.pricing.cardRadius.$value).toEqual({ value: 0, unit: "px-base" });
+    expect(component.pricing.featuredBackground.$value).toBe("{semantic.color.surface.foreground}");
+    expect(component.featureGrid.background.$value).toBe("{semantic.color.accent.default}");
+    expect(component.footer.background.$value).toBe("{semantic.color.surface.foreground}");
+    expect(component.footer.border.$value).toBe("{semantic.color.primary.default}");
+    expect(component.footer.gap.$value).toBe("{primitive.space.xs}");
   });
 
-  it("carries warm-creator organic composite deltas", () => {
+  it("carries warm-creator organic pattern deltas", () => {
     const component = buildFor("warm-creator").component as any;
 
-    expect(component.nav.paddingX.$value).toBe("{semantic.space.inset}");
-    expect(component.table.rowHoverBackground.$value).toBe("{primitive.color.neutral.100}");
-    expect(component.table.cellPaddingY.$value).toEqual({ value: 8, unit: "px-base" });
-    expect(component.modal.panelRadius.$value).toBe("{semantic.shape.control}");
-    expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.raised}");
-    expect(component.formRow.gap.$value).toBe("{primitive.space.md}");
+    expect(component.hero.gap.$value).toBe("{primitive.space.md}");
+    expect(component.pricing.cardRadius.$value).toBe("{semantic.shape.control}");
+    expect(component.pricing.gap.$value).toBe("{primitive.space.md}");
+    expect(component.featureGrid.background.$value).toBe("{primitive.color.neutral.100}");
+    expect(component.featureGrid.cellPadding.$value).toBe("{primitive.space.md}");
+    expect(component.featureGrid.gap.$value).toBe("{primitive.space.md}");
+    expect(component.footer.paddingY.$value).toBe("{primitive.space.lg}");
+    expect(component.footer.gap.$value).toBe("{primitive.space.md}");
   });
 
-  it("carries expressive high-chroma composite deltas", () => {
+  it("carries expressive loud pattern deltas", () => {
     const component = buildFor("expressive").component as any;
 
-    expect(component.nav.background.$value).toBe("{semantic.color.primary.default}");
-    expect(component.nav.foreground.$value).toBe("{semantic.color.primary.foreground}");
-    expect(component.table.rowStripeBackground.$type).toBe("gradient");
-    expect(component.table.rowStripeBackground.$value).toBe("{semantic.gradient.hero}");
-    expect(component.modal.panelBackground.$type).toBe("gradient");
-    expect(component.modal.panelBackground.$value).toBe("{semantic.gradient.hero}");
-    expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.overlay}");
+    expect(component.hero.background.$type).toBe("gradient");
+    expect(component.hero.background.$value).toBe("{semantic.gradient.hero}");
+    expect(component.pricing.cardBorder.$value).toBe("{semantic.color.primary.default}");
+    expect(component.pricing.cardRadius.$value).toBe("{semantic.shape.control}");
+    expect(component.pricing.featuredBackground.$value).toBe("{semantic.color.primary.default}");
+    expect(component.pricing.featuredBorder.$value).toBe("{semantic.color.primary.hover}");
+    expect(component.featureGrid.cellPadding.$value).toBe("{primitive.space.lg}");
+    expect(component.footer.background.$value).toBe("{semantic.color.primary.default}");
   });
 
-  it("carries creative-multiscale split-scale composite deltas", () => {
+  it("carries creative-multiscale split-scale pattern deltas", () => {
     const component = buildFor("creative-multiscale").component as any;
 
-    expect(component.nav.paddingY.$value).toEqual({ value: 2, unit: "px-base" });
-    expect(component.table.cellPaddingX.$value).toBe("{primitive.space.xs}");
-    expect(component.table.cellPaddingY.$value).toEqual({ value: 3, unit: "px-base" });
-    expect(component.modal.padding.$value).toBe("{primitive.space.lg}");
-    expect(component.modal.panelShadow.$value).toBe("{semantic.elevation.overlay}");
-    expect(component.formRow.gap.$value).toBe("{primitive.space.lg}");
+    expect(component.hero.paddingX.$value).toBe("{primitive.space.sm}");
+    expect(component.hero.paddingY.$value).toBe("{primitive.space.lg}");
+    expect(component.hero.gap.$value).toBe("{primitive.space.xs}");
+    expect(component.pricing.cardRadius.$value).toBe("{primitive.radius.sm}");
+    expect(component.pricing.gap.$value).toBe("{primitive.space.lg}");
+    expect(component.featureGrid.cellPadding.$value).toBe("{primitive.space.xs}");
+    expect(component.featureGrid.gap.$value).toBe("{primitive.space.xs}");
+    expect(component.footer.gap.$value).toBe("{primitive.space.xs}");
   });
 
-  it.each(BATCH)("pins %s composite batch b tokenHash", (key) => {
+  it.each(BATCH)("pins %s pattern batch b tokenHash", (key) => {
     expect(computeTokenHash(buildFor(key))).toBe(TOKEN_HASHES[key]);
   });
 });

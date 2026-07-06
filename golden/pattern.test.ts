@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -26,13 +25,6 @@ import { flatten, validateTokens } from "../src/validator.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-
-const NON_P3_BUILD_SHA256: Record<string, string> = {
-  expressive: "3edcb0433bd45d055398259d8ab07e54a4ff940bfb9150f49ab0af81cfbf7caa",
-  "creative-multiscale": "3ae312e5f009dc5bd3fdc39b1ac5635804397bc55cbff592c80a57839edac403",
-  "warm-creator": "f00b22f38f403ceb405df341424c6052d161d5bdccf0c9a260fbf8463a29a2de",
-  retro: "0c0b079279864c580b5eb209545b0ead5c0b70e1ec601a57fae12f2e8628d722",
-};
 
 function recipe(key: string): Recipe {
   const found = RECIPES.find((item) => item.key === key);
@@ -75,18 +67,23 @@ function surfacesFor(doc: TokensDocument) {
   };
 }
 
-function sha256(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
-}
-
 function specimen(html: string, name: string): string {
   return new RegExp(`<article class="component-specimen" data-specimen="${name}"[\\s\\S]*?</article>`).exec(html)?.[0] ?? "";
 }
 
 describe("P3 pattern registry", () => {
-  it("declares the batch-a rollout without expanding component states", () => {
+  it("declares the full rollout without expanding component states", () => {
     expect(componentPatternNames()).toEqual(["hero", "pricing", "featureGrid", "footer"]);
-    expect(COMPONENT_P3_ROLLOUT).toEqual(["minimal-tech", "enterprise", "pro-emotive", "luxury"]);
+    expect(COMPONENT_P3_ROLLOUT).toEqual([
+      "minimal-tech",
+      "enterprise",
+      "pro-emotive",
+      "luxury",
+      "retro",
+      "warm-creator",
+      "expressive",
+      "creative-multiscale",
+    ]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P3_PATHS).toContain("component.pricing.featuredBackground");
     expect(COMPONENT_P3_PATHS).toContain("component.footer.mutedForeground");
@@ -224,7 +221,7 @@ describe("P3 pattern surfaces and contract", () => {
   });
 });
 
-describe("P3 pilot values and rollout isolation", () => {
+describe("P3 pilot values", () => {
   it("keeps minimal-tech patterns alias-first with explicit archetype deltas", () => {
     const component = buildFor("minimal-tech").component as any;
     const html = generateStyleguide(buildFor("minimal-tech"));
@@ -238,12 +235,5 @@ describe("P3 pilot values and rollout isolation", () => {
     expect(html).toContain(".specimen-footer {");
     expect(html).toContain("font-family: var(--primitive-font-family-mono");
     expect(html).toContain("text-transform: uppercase");
-  });
-
-  it("keeps recipes outside COMPONENT_P3_ROLLOUT byte-identical", () => {
-    for (const [key, expected] of Object.entries(NON_P3_BUILD_SHA256)) {
-      expect(COMPONENT_P3_ROLLOUT).not.toContain(key);
-      expect(sha256(JSON.stringify(buildFor(key), null, 2)), key).toBe(expected);
-    }
   });
 });

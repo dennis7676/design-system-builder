@@ -26,8 +26,8 @@ const BATCH = ["expressive", "creative-multiscale"] as const;
 type BatchKey = (typeof BATCH)[number];
 
 const TOKEN_HASHES: Record<BatchKey, string> = {
-  expressive: "sha256:31ab781d12ed99dccc94ec066e268c3101494db4181e2e4035de1a6229db1dd8",
-  "creative-multiscale": "sha256:abc84e1900747fa2d2f97a02638e24166f96b1ce88a03f1a1287c9192efd3ab3",
+  expressive: "sha256:f36a9d63ca675514f48a361b190ad4e0e8e7efb23c0c70372e16e3424e0904fc",
+  "creative-multiscale": "sha256:c8ff00bc84368173612274f130042a4f15e0c9a65fe9869ae18d6070c26275fc",
 };
 
 function recipe(key: string): Recipe {

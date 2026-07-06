@@ -243,7 +243,16 @@ export const COMPONENT_P2_COMPOSITES = [
   },
 ] as const satisfies readonly ComponentCompositeDefinition[];
 
-export const COMPONENT_P3_ROLLOUT = ["minimal-tech", "enterprise", "pro-emotive", "luxury"] as const;
+export const COMPONENT_P3_ROLLOUT = [
+  "minimal-tech",
+  "enterprise",
+  "pro-emotive",
+  "luxury",
+  "retro",
+  "warm-creator",
+  "expressive",
+  "creative-multiscale",
+] as const;
 
 export const COMPONENT_P3_PATTERNS = [
   {

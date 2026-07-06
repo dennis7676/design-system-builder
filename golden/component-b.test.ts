@@ -25,8 +25,8 @@ const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const BATCH = ["luxury", "retro", "warm-creator"] as const;
 const TOKEN_HASHES: Record<(typeof BATCH)[number], string> = {
   luxury: "sha256:5884290d9770395ff0805502e1fee524e347ff660be4edbe76b5997c213093fa",
-  retro: "sha256:e040faa61bbf15081d561aaff9f83a39b1dbeb9159929a835019a2c8664c615d",
-  "warm-creator": "sha256:32ba7064639ec0f97dc6e847b752e96bc2a81bc19d98a37e8fdb508e3d264139",
+  retro: "sha256:cbeef50c2d177516472ac267bf65887d315a0d24efc8769a35a970f84701efde",
+  "warm-creator": "sha256:4f4de0666e57443779a675102a354124bb62ae45fd0c86e1a3f9b3ca5564b199",
 };
 
 function recipe(key: string): Recipe {

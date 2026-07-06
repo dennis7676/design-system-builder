@@ -29,7 +29,10 @@ import {
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_PATHS,
   COMPONENT_P2_ROLLOUT,
+  COMPONENT_P3_PATHS,
+  COMPONENT_P3_ROLLOUT,
   componentCompositeExemptions,
+  componentPatternExemptions,
 } from "./component-registry.js";
 
 export type Severity = "error" | "warn" | "info";
@@ -257,6 +260,7 @@ function checkComponentParity(doc: TokensDocument, findings: Finding[]): void {
   const sets = [
     { name: "P1 registry", rollout: COMPONENT_P1_ROLLOUT, paths: COMPONENT_P1_PATHS },
     { name: "P2 composite registry", rollout: COMPONENT_P2_ROLLOUT, paths: COMPONENT_P2_PATHS },
+    { name: "P3 pattern registry", rollout: COMPONENT_P3_ROLLOUT, paths: COMPONENT_P3_PATHS },
   ] as const;
 
   for (const set of sets) {
@@ -298,24 +302,30 @@ function componentPathRoot(path: string): string {
 }
 
 function checkComponentContrastExemptions(doc: TokensDocument, findings: Finding[]): void {
-  if (!(COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe)) return;
-
   const leaves = flatten(doc.component, "component");
-  for (const exemption of componentCompositeExemptions()) {
-    if (!leaves.has(exemption.path)) continue;
-    findings.push({
-      severity: "info",
-      code: "contrast-exempt",
-      path: exemption.path,
-      message: `component contrast is exempt for decorative content (${exemption.path})`,
-      meta: {
-        exemption: exemption.exemption,
-        reason: exemption.reason,
-        role: "non-text",
-        state: "default",
-        requiredWithoutExemption: MIN_RATIO["non-text"],
-      },
-    });
+  const sets = [
+    { rollout: COMPONENT_P2_ROLLOUT, exemptions: componentCompositeExemptions() },
+    { rollout: COMPONENT_P3_ROLLOUT, exemptions: componentPatternExemptions() },
+  ] as const;
+
+  for (const set of sets) {
+    if (!(set.rollout as readonly string[]).includes(doc.meta.recipe)) continue;
+    for (const exemption of set.exemptions) {
+      if (!leaves.has(exemption.path)) continue;
+      findings.push({
+        severity: "info",
+        code: "contrast-exempt",
+        path: exemption.path,
+        message: `component contrast is exempt for decorative content (${exemption.path})`,
+        meta: {
+          exemption: exemption.exemption,
+          reason: exemption.reason,
+          role: "non-text",
+          state: "default",
+          requiredWithoutExemption: MIN_RATIO["non-text"],
+        },
+      });
+    }
   }
 }
 

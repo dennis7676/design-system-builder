@@ -243,6 +243,61 @@ export const COMPONENT_P2_COMPOSITES = [
   },
 ] as const satisfies readonly ComponentCompositeDefinition[];
 
+export const COMPONENT_P3_ROLLOUT = ["minimal-tech"] as const;
+
+export const COMPONENT_P3_PATTERNS = [
+  {
+    name: "hero",
+    leafPaths: ["background", "foreground", "subForeground", "paddingX", "paddingY", "gap"],
+    contrastTargets: [
+      { fg: "component.hero.foreground", bg: "component.hero.background", role: "text" },
+      { fg: "component.hero.subForeground", bg: "component.hero.background", role: "text" },
+    ],
+    exemptions: [],
+  },
+  {
+    name: "pricing",
+    leafPaths: [
+      "cardBackground",
+      "cardForeground",
+      "cardMutedForeground",
+      "cardBorder",
+      "cardRadius",
+      "featuredBackground",
+      "featuredForeground",
+      "featuredBorder",
+      "cardPadding",
+      "gap",
+    ],
+    contrastTargets: [
+      { fg: "component.pricing.cardForeground", bg: "component.pricing.cardBackground", role: "text" },
+      { fg: "component.pricing.cardMutedForeground", bg: "component.pricing.cardBackground", role: "text" },
+      { fg: "component.pricing.featuredForeground", bg: "component.pricing.featuredBackground", role: "text" },
+      { fg: "component.pricing.featuredBorder", bg: "semantic.color.surface.default", role: "non-text" },
+    ],
+    exemptions: [],
+  },
+  {
+    name: "featureGrid",
+    leafPaths: ["background", "titleForeground", "bodyForeground", "iconForeground", "cellPadding", "gap"],
+    contrastTargets: [
+      { fg: "component.featureGrid.titleForeground", bg: "component.featureGrid.background", role: "text" },
+      { fg: "component.featureGrid.bodyForeground", bg: "component.featureGrid.background", role: "text" },
+      { fg: "component.featureGrid.iconForeground", bg: "component.featureGrid.background", role: "non-text" },
+    ],
+    exemptions: [],
+  },
+  {
+    name: "footer",
+    leafPaths: ["background", "foreground", "mutedForeground", "border", "paddingY", "gap"],
+    contrastTargets: [
+      { fg: "component.footer.foreground", bg: "component.footer.background", role: "text" },
+      { fg: "component.footer.mutedForeground", bg: "component.footer.background", role: "text" },
+    ],
+    exemptions: [],
+  },
+] as const satisfies readonly ComponentCompositeDefinition[];
+
 export function componentPrimitiveNames(
   registry: readonly ComponentPrimitiveDefinition[] = COMPONENT_P1_REGISTRY,
 ): readonly string[] {
@@ -319,6 +374,32 @@ export function componentCompositeExemptions(
 }
 
 export const COMPONENT_P2_PATHS = componentCompositePaths();
+
+export function componentPatternNames(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P3_PATTERNS,
+): readonly string[] {
+  return componentCompositeNames(registry);
+}
+
+export function componentPatternPaths(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P3_PATTERNS,
+): readonly string[] {
+  return componentCompositePaths(registry);
+}
+
+export function componentPatternContrastTargets(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P3_PATTERNS,
+): readonly ComponentCompositeContrastTarget[] {
+  return componentCompositeContrastTargets(registry);
+}
+
+export function componentPatternExemptions(
+  registry: readonly ComponentCompositeDefinition[] = COMPONENT_P3_PATTERNS,
+): readonly ComponentCompositeExemption[] {
+  return componentCompositeExemptions(registry);
+}
+
+export const COMPONENT_P3_PATHS = componentPatternPaths();
 
 function pathsForDefinition(definition: ComponentPrimitiveDefinition): readonly string[] {
   return prefixesForDefinition(definition).flatMap(({ prefix }) => [

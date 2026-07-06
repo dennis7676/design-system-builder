@@ -9,6 +9,7 @@ import {
   COMPONENT_P1_REGISTRY,
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_PATHS,
+  COMPONENT_P3_PATHS,
   componentContrastTargets,
   componentFocusTargets,
   componentPaths,
@@ -30,7 +31,7 @@ import { buildContractJson } from "../src/contract.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const KEYSTONE_HASH = "sha256:78580efe929e6cc86ba395cc5bcfa7c94b0b9667562e873e87527dc8dc991f25";
+const KEYSTONE_HASH = "sha256:eb29826206ce72f927b2a3ebf0f390abae35964879602ddbd4eb28d6d3d13c51";
 
 const NON_ROLLOUT_BUILD_SHA256: Record<string, string> = {
   enterprise: "e2682eadfc7a0aa77372f85adcd7850a32000125f296b03a4280694c6b8d0d26",
@@ -295,7 +296,7 @@ describe("keystone rebaseline", () => {
 
     expect(computeTokenHash(SAMPLE)).toBe(KEYSTONE_HASH);
     expect(computeTokenHash(built)).toBe(KEYSTONE_HASH);
-    expect(SAMPLE.contrastPairs).toHaveLength(67);
-    expect(leafPaths(SAMPLE)).toEqual([...COMPONENT_P1_PATHS, ...COMPONENT_P2_PATHS].sort());
+    expect(SAMPLE.contrastPairs).toHaveLength(78);
+    expect(leafPaths(SAMPLE)).toEqual([...COMPONENT_P1_PATHS, ...COMPONENT_P2_PATHS, ...COMPONENT_P3_PATHS].sort());
   });
 });

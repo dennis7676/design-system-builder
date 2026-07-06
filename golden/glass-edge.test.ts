@@ -10,7 +10,7 @@ import type { ContrastPair, TokensDocument } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
-const GLASS_TOKEN_HASH = "sha256:6fe323021f4a6535be5c863d8bf61e44b24e52ab99eeebea920cede44b517d65";
+const GLASS_TOKEN_HASH = "sha256:3dbdee2dbdbaf1f3832defbccb94e1b4fa6c89b66f381c62de6c04cb0a0a194c";
 
 const minimalTone: ToneVector = {
   static_dynamic: 2,

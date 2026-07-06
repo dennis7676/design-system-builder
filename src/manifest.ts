@@ -12,7 +12,9 @@ import { DEMO_REGIONS } from "./demo-generator.js";
 import {
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_ROLLOUT,
+  COMPONENT_P3_ROLLOUT,
   componentCompositeNames,
+  componentPatternNames,
   componentPrimitiveNames,
 } from "./component-registry.js";
 
@@ -270,6 +272,7 @@ function requiredComponentSpecimens(doc: TokensDocument): readonly string[] {
   return [
     ...((COMPONENT_P1_ROLLOUT as readonly string[]).includes(doc.meta.recipe) ? componentPrimitiveNames() : []),
     ...((COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe) ? componentCompositeNames() : []),
+    ...((COMPONENT_P3_ROLLOUT as readonly string[]).includes(doc.meta.recipe) ? componentPatternNames() : []),
   ];
 }
 

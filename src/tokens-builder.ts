@@ -5,9 +5,11 @@ import { MOTION_EASING_PRESETS, type MotionEasingPreset, type MotionEasingTriple
 import {
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_ROLLOUT,
+  COMPONENT_P3_ROLLOUT,
   componentCompositeContrastTargets,
   componentContrastTargets,
   componentFocusTargets,
+  componentPatternContrastTargets,
 } from "./component-registry.js";
 import type { Recipe } from "./recipe-selection.js";
 import { aliasPath, isAlias, isGradientValue, MIN_RATIO, type ColorOverrideCorrection, type ColorOverrideMeta, type ContrastPair, type CubicBezierValue, type LeafToken, type MotionOverrideMeta, type Philosophy, type TokenGroup, type TokensDocument } from "./tokens-schema.js";
@@ -142,6 +144,17 @@ function applyComponentContrastPairs(base: MutableBase, recipeKey: string): void
   if ((COMPONENT_P2_ROLLOUT as readonly string[]).includes(recipeKey)) {
     derived.push(
       ...componentCompositeContrastTargets().map((target) => ({
+        fg: target.fg,
+        bg: target.bg,
+        role: target.role,
+        state: "default" as const,
+        ...(target.minRatio !== undefined ? { minRatio: target.minRatio } : {}),
+      })),
+    );
+  }
+  if ((COMPONENT_P3_ROLLOUT as readonly string[]).includes(recipeKey)) {
+    derived.push(
+      ...componentPatternContrastTargets().map((target) => ({
         fg: target.fg,
         bg: target.bg,
         role: target.role,

@@ -34,6 +34,8 @@ import {
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_COMPOSITES,
   COMPONENT_P2_ROLLOUT,
+  COMPONENT_P3_PATTERNS,
+  COMPONENT_P3_ROLLOUT,
   COMPONENT_STATES,
   type ComponentCompositeDefinition,
   type ComponentPrimitiveDefinition,
@@ -322,7 +324,8 @@ function components(doc: TokensDocument, ko: boolean, t: ChromeCopy): string {
 function componentSpecimens(doc: TokensDocument): string {
   const primitives = isComponentRollout(doc) ? COMPONENT_P1_REGISTRY.map(specimenFor).join("") : "";
   const composites = isCompositeRollout(doc) ? COMPONENT_P2_COMPOSITES.map(compositeSpecimenFor).join("") : "";
-  return `<div class="component-specimens">${primitives}${composites}</div>`;
+  const patterns = isPatternRollout(doc) ? COMPONENT_P3_PATTERNS.map(patternSpecimenFor).join("") : "";
+  return `<div class="component-specimens">${primitives}${composites}${patterns}</div>`;
 }
 
 function specimenFor(definition: ComponentPrimitiveDefinition): string {
@@ -486,6 +489,88 @@ function formRowCompositeSpecimen(definition: ComponentCompositeDefinition): str
       errorForeground: "composite-form-error-fg",
       errorBorder: "composite-form-error-border",
     })}"><label for="specimen-form-row-input">Workspace name</label><input id="specimen-form-row-input" value="Atlas API" aria-describedby="specimen-form-row-help specimen-form-row-error"><p id="specimen-form-row-help" class="specimen-form-help">Use a public display name.</p><p id="specimen-form-row-error" class="specimen-form-error">Enter a workspace name.</p></div>`,
+  );
+}
+
+function patternSpecimenFor(definition: ComponentCompositeDefinition): string {
+  switch (definition.name) {
+    case "hero":
+      return heroPatternSpecimen(definition);
+    case "pricing":
+      return pricingPatternSpecimen(definition);
+    case "featureGrid":
+      return featureGridPatternSpecimen(definition);
+    case "footer":
+      return footerPatternSpecimen(definition);
+    default:
+      return "";
+  }
+}
+
+function heroPatternSpecimen(definition: ComponentCompositeDefinition): string {
+  const button = COMPONENT_P1_REGISTRY.find((entry) => entry.name === "button");
+  const buttonStyle = button === undefined ? "" : `${specimenStateStyle("component.button.primary", "default")}${specimenBaseStyle("component.button.primary", button)}`;
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-pattern-hero" style="${compositeBaseStyle("hero", {
+      background: "pattern-hero-bg",
+      foreground: "pattern-hero-fg",
+      subForeground: "pattern-hero-sub-fg",
+      paddingX: "pattern-hero-padding-x",
+      paddingY: "pattern-hero-padding-y",
+      gap: "pattern-hero-gap",
+    })}"><div><p class="meta-label">Release plan</p><h4>Launch from one system</h4><p>Keep pages, controls, and docs aligned from the same tokens.</p></div><button class="specimen-control specimen-button" type="button" style="${buttonStyle}">Start build</button></div>`,
+  );
+}
+
+function pricingPatternSpecimen(definition: ComponentCompositeDefinition): string {
+  const button = COMPONENT_P1_REGISTRY.find((entry) => entry.name === "button");
+  const primaryButtonStyle = button === undefined ? "" : `${specimenStateStyle("component.button.primary", "default")}${specimenBaseStyle("component.button.primary", button)}`;
+  const secondaryButtonStyle = button === undefined ? "" : `${specimenStateStyle("component.button.secondary", "default")}${specimenBaseStyle("component.button.secondary", button)}`;
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-pricing" style="${compositeBaseStyle("pricing", {
+      cardBackground: "pattern-pricing-card-bg",
+      cardForeground: "pattern-pricing-card-fg",
+      cardMutedForeground: "pattern-pricing-muted-fg",
+      cardBorder: "pattern-pricing-card-border",
+      cardRadius: "pattern-pricing-card-radius",
+      featuredBackground: "pattern-pricing-featured-bg",
+      featuredForeground: "pattern-pricing-featured-fg",
+      featuredBorder: "pattern-pricing-featured-border",
+      cardPadding: "pattern-pricing-card-padding",
+      gap: "pattern-pricing-gap",
+    })}"><article class="specimen-pricing-card"><p class="meta-label">Starter</p><h4>Core</h4><p>Build a focused system for one product surface.</p><button class="specimen-control specimen-button" type="button" style="${secondaryButtonStyle}">Choose core</button></article><article class="specimen-pricing-card is-featured"><p class="meta-label">Featured</p><h4>Scale</h4><p>Extend shared decisions across teams and channels.</p><button class="specimen-control specimen-button" type="button" style="${primaryButtonStyle}">Choose scale</button></article></div>`,
+  );
+}
+
+function featureGridPatternSpecimen(definition: ComponentCompositeDefinition): string {
+  return specimenShell(
+    definition.name,
+    `<div class="specimen-feature-grid" style="${compositeBaseStyle("featureGrid", {
+      background: "pattern-feature-grid-bg",
+      titleForeground: "pattern-feature-grid-title-fg",
+      bodyForeground: "pattern-feature-grid-body-fg",
+      iconForeground: "pattern-feature-grid-icon-fg",
+      cellPadding: "pattern-feature-grid-cell-padding",
+      gap: "pattern-feature-grid-gap",
+    })}"><article><i aria-hidden="true"></i><h4>Tokens</h4><p>Portable values define the reusable system boundary.</p></article><article><i aria-hidden="true"></i><h4>Surfaces</h4><p>Generated files stay tied to the same source hash.</p></article><article><i aria-hidden="true"></i><h4>Gates</h4><p>Contrast and parity checks run before handoff.</p></article></div>`,
+  );
+}
+
+function footerPatternSpecimen(definition: ComponentCompositeDefinition): string {
+  const link = COMPONENT_P1_REGISTRY.find((entry) => entry.name === "link");
+  const linkStyle = link === undefined ? "" : `${specimenStateStyle("component.link", "default")}${specimenBaseStyle("component.link", link)}`;
+  return specimenShell(
+    definition.name,
+    `<footer class="specimen-footer" style="${compositeBaseStyle("footer", {
+      background: "pattern-footer-bg",
+      foreground: "pattern-footer-fg",
+      mutedForeground: "pattern-footer-muted-fg",
+      border: "pattern-footer-border",
+      paddingY: "pattern-footer-padding-y",
+      gap: "pattern-footer-gap",
+    })}"><div role="navigation" aria-label="Pattern footer"><a class="specimen-link" href="#" style="${linkStyle}">Docs</a><a class="specimen-link" href="#" style="${linkStyle}">Status</a><a class="specimen-link" href="#" style="${linkStyle}">Support</a></div><small>Generated surfaces stay connected to tokens.json.</small></footer>`,
   );
 }
 
@@ -656,8 +741,12 @@ function isCompositeRollout(doc: TokensDocument): boolean {
   return (COMPONENT_P2_ROLLOUT as readonly string[]).includes(doc.meta.recipe);
 }
 
+function isPatternRollout(doc: TokensDocument): boolean {
+  return (COMPONENT_P3_ROLLOUT as readonly string[]).includes(doc.meta.recipe);
+}
+
 function hasComponentSpecimens(doc: TokensDocument): boolean {
-  return isComponentRollout(doc) || isCompositeRollout(doc);
+  return isComponentRollout(doc) || isCompositeRollout(doc) || isPatternRollout(doc);
 }
 
 function baseCss(doc: TokensDocument): string {
@@ -713,7 +802,26 @@ function baseCss(doc: TokensDocument): string {
     .specimen-form-row input { min-width: 0; width: 100%; border: 1px solid var(--composite-form-error-border); border-radius: var(--semantic-shape-control, .5rem); background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); padding: .7rem .8rem; font: inherit; }
     .specimen-form-row p { margin: 0; }
     .specimen-form-help { color: var(--composite-form-help-fg); }
-    .specimen-form-error { color: var(--composite-form-error-fg); }`
+    .specimen-form-error { color: var(--composite-form-error-fg); }
+    .specimen-pattern-hero { min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr)); gap: var(--pattern-hero-gap); align-items: end; background: var(--pattern-hero-bg); color: var(--pattern-hero-fg); padding: var(--pattern-hero-padding-y) var(--pattern-hero-padding-x); }
+    .specimen-pattern-hero div, .specimen-pricing-card, .specimen-feature-grid article, .specimen-footer { min-width: 0; }
+    .specimen-pattern-hero h4, .specimen-pattern-hero p, .specimen-pricing-card h4, .specimen-pricing-card p, .specimen-feature-grid h4, .specimen-feature-grid p, .specimen-footer small { margin: 0; }
+    .specimen-pattern-hero p:not(.meta-label) { color: var(--pattern-hero-sub-fg); }
+    .specimen-pricing { min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr)); gap: var(--pattern-pricing-gap); }
+    .specimen-pricing-card { display: grid; gap: .6rem; align-content: start; background: var(--pattern-pricing-card-bg); color: var(--pattern-pricing-card-fg); border: 1px solid var(--pattern-pricing-card-border); border-radius: var(--pattern-pricing-card-radius); padding: var(--pattern-pricing-card-padding); }
+    .specimen-pricing-card p:not(.meta-label) { color: var(--pattern-pricing-muted-fg); }
+    .specimen-pricing-card.is-featured { background: var(--pattern-pricing-featured-bg); color: var(--pattern-pricing-featured-fg); border-color: var(--pattern-pricing-featured-border); }
+    .specimen-pricing-card.is-featured p:not(.meta-label) { color: inherit; }
+    .specimen-pricing-card .specimen-control { align-self: end; }
+    .specimen-feature-grid { min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr)); gap: var(--pattern-feature-grid-gap); background: var(--pattern-feature-grid-bg); padding: var(--pattern-feature-grid-cell-padding); }
+    .specimen-feature-grid article { display: grid; gap: .45rem; align-content: start; padding: var(--pattern-feature-grid-cell-padding); }
+    .specimen-feature-grid i { width: .75rem; height: .75rem; border-radius: 999px; background: var(--pattern-feature-grid-icon-fg); }
+    .specimen-feature-grid h4 { color: var(--pattern-feature-grid-title-fg); }
+    .specimen-feature-grid p { color: var(--pattern-feature-grid-body-fg); }
+    .specimen-footer { display: grid; gap: var(--pattern-footer-gap); background: var(--pattern-footer-bg); color: var(--pattern-footer-fg); border-top: 1px solid var(--pattern-footer-border); padding-block: var(--pattern-footer-padding-y); font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; }
+    .specimen-footer [role="navigation"] { display: flex; flex-wrap: wrap; gap: var(--pattern-footer-gap); }
+    .specimen-footer .specimen-link { font-family: inherit; text-transform: inherit; letter-spacing: 0; }
+    .specimen-footer small { color: var(--pattern-footer-muted-fg); text-transform: none; }`
     : "";
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }

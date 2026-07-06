@@ -4,6 +4,8 @@ import {
   COMPONENT_P1_ROLLOUT,
   COMPONENT_P2_COMPOSITES,
   COMPONENT_P2_ROLLOUT,
+  COMPONENT_P3_PATTERNS,
+  COMPONENT_P3_ROLLOUT,
   COMPONENT_STATES,
   type ComponentCompositeDefinition,
   type ComponentPrimitiveDefinition,
@@ -122,6 +124,8 @@ export function buildContract(doc: TokensDocument): UsageContract {
       registry: primitiveRegistrySnapshot(COMPONENT_P1_REGISTRY),
       p2RolloutRecipes: [...COMPONENT_P2_ROLLOUT],
       composites: compositeRegistrySnapshot(COMPONENT_P2_COMPOSITES),
+      p3RolloutRecipes: [...COMPONENT_P3_ROLLOUT],
+      patterns: compositeRegistrySnapshot(COMPONENT_P3_PATTERNS),
     },
     gates: gateEntriesFor(doc),
     accessibility: {
@@ -153,7 +157,7 @@ export function buildContract(doc: TokensDocument): UsageContract {
       },
       {
         claim: "The component registry surface follows the code registry.",
-        proof: "src/component-registry.ts COMPONENT_P1_REGISTRY and COMPONENT_P2_COMPOSITES plus golden/contract.test.ts registry flow assertion.",
+        proof: "src/component-registry.ts COMPONENT_P1_REGISTRY, COMPONENT_P2_COMPOSITES, and COMPONENT_P3_PATTERNS plus golden/contract.test.ts registry flow assertion.",
       },
       {
         claim: "Regression safety is enforced by the golden test suite.",

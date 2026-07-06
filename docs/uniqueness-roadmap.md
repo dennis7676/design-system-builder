@@ -18,7 +18,7 @@ the byte-reproducibility seal that defines this tool.
 |---|-------|-----------------|---------------------|
 | 1 | ~~**B3 colour-override**~~ — **SHIPPED 2026-07-02** (`unlock-accent-override`): integer hue 0–359 → coherent chromatic rotation (L fixed, C gamut-clamped) → pair floors re-proven with bounded nearest-fix (±0.06 L). `cold_warm` subsumed. 2880-cell hue probe: zero unrepairable | done |
 | 2 | ~~**Per-recipe skeletons**~~ — **SHIPPED 2026-07-03** (`add-recipe-skeleton-spike` + `skeleton-batch-a/b/c`): 8 recipes each carry their own layout grammar, hash-neutral | Kills the residual "same skeleton, different clothes" reading; combination space gains a structural axis | High authoring cost — 8 skeletons × goldens; ship one recipe at a time |
-| 3 | **Motif tokens** — extend the bold glyph into a small enum of brand motifs (`glyph | geometric | rule-lines | none`) rendered from tokens | Instant signature element per brand | Medium — new `$type` or component token + demo consumption |
+| 3 | ~~**Motif tokens**~~ — **SHIPPED 2026-07-06** (`add-motif-enum`): finite motif enum (`glyph | geometric | rule-lines | none`) with deterministic concept-fit menu (`suggestMotifs`), opt-in `semantic.motif` tokens (kind/ink/scale, new `motif-kind` $type), `motif-ink-floor` non-text 3:1 gate (GATE_CATALOG, contract conditionally derived to keep no-motif builds byte-identical), all five glyph slots consume var-only; no-motif builds byte-identical (golden-proven, 434 tests) | done | done |
 | 4 | **Edge-point HITL step** — **Round 1 SHIPPED 2026-07-04** (`add-edge-points`): finite edges enum + deterministic `suggestEdges()` concept-fit + texture-grain end-to-end (opacity cap 0.06, worst-case blended-background pair-floor gate) + SKILL edge-selection step; no-edge builds byte-identical (golden-proven). ~~glass stays DEFERRED~~ **Round 2 SHIPPED 2026-07-04** (`add-glass-round2`, luminance-interval gate) | done | done |
 | 5 | **Interview exposure** — add expression/edge questions to the SKILL front door (today: zero amplitude questions) | The dials built in code become choosable in the actual flow | Low — docs-only |
 
@@ -126,7 +126,14 @@ Adopted points and order:
    and manifest-drift-checked; README guarantees rewritten with per-claim
    proofs (372 tests). Bonus: demo color-mix foregrounds now build-time
    contrast-gated via mixedText (M5 a11y hole closed).
-5. **Motif enum** — rides the edge infra; after the component layer starts.
+5. ~~**Motif enum**~~ — **SHIPPED 2026-07-06** (`add-motif-enum`): rode the
+   edge concept-fit infra as planned — motif menu + fitness CONFLICTs wired
+   into recipe selection, `semantic.motif` tokens, non-text ink-floor gate,
+   five demo glyph slots render glyph/geometric/rule-lines/none from vars
+   (legacy no-motif path untouched, byte-identical). Note: recipes whose
+   demo template has no glyph slot (e.g. enterprise → briefing) emit motif
+   tokens but no demo visual — extending motif slots to the remaining
+   templates is a follow-up candidate.
 6. **Playground hosting (B4) + M6 publish** — L5, user HITL.
 
 M4 video extension and M5 hardening keep their places after the above;

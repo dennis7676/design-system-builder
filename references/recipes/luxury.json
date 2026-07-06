@@ -2094,6 +2094,157 @@
           "$value": "{semantic.color.primary.default}",
           "$class": "adapter-derived"
         }
+      },
+      "hero": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "subForeground": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "paddingX": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        },
+        "paddingY": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{primitive.space.sm}",
+          "$class": "adapter-derived"
+        }
+      },
+      "pricing": {
+        "cardBackground": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "cardForeground": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "cardMutedForeground": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "cardBorder": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "cardRadius": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "px-base"
+          },
+          "$class": "adapter-derived"
+        },
+        "featuredBackground": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "featuredForeground": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.foreground}",
+          "$class": "adapter-derived"
+        },
+        "featuredBorder": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "cardPadding": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        }
+      },
+      "featureGrid": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "titleForeground": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "bodyForeground": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "iconForeground": {
+          "$type": "color",
+          "$value": "{semantic.color.primary.default}",
+          "$class": "adapter-derived"
+        },
+        "cellPadding": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        }
+      },
+      "footer": {
+        "background": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.default}",
+          "$class": "adapter-derived"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "{semantic.color.surface.foreground}",
+          "$class": "adapter-derived"
+        },
+        "mutedForeground": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$class": "adapter-derived"
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$class": "adapter-derived"
+        },
+        "paddingY": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        },
+        "gap": {
+          "$type": "dimension",
+          "$value": "{primitive.space.lg}",
+          "$class": "adapter-derived"
+        }
       }
     }
   },

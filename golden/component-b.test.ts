@@ -24,7 +24,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 const BATCH = ["luxury", "retro", "warm-creator"] as const;
 const TOKEN_HASHES: Record<(typeof BATCH)[number], string> = {
-  luxury: "sha256:3f28f6ce32244018d257c2799e857ad531258417e23cb80c87efce2ba1277981",
+  luxury: "sha256:5884290d9770395ff0805502e1fee524e347ff660be4edbe76b5997c213093fa",
   retro: "sha256:e040faa61bbf15081d561aaff9f83a39b1dbeb9159929a835019a2c8664c615d",
   "warm-creator": "sha256:32ba7064639ec0f97dc6e847b752e96bc2a81bc19d98a37e8fdb508e3d264139",
 };

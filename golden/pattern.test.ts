@@ -28,12 +28,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const RECIPES = loadRecipes(join(here, "../references/recipes"));
 
 const NON_P3_BUILD_SHA256: Record<string, string> = {
-  enterprise: "d3b14b368438472494a2c76d11d2b5e57ffde9017d425a1d136e37ba4fd3cc96",
   expressive: "3edcb0433bd45d055398259d8ab07e54a4ff940bfb9150f49ab0af81cfbf7caa",
-  "pro-emotive": "e7d5c868a28904fb34b796ff0860df1228a7369058aa90618b6eaf38ab85d1e9",
   "creative-multiscale": "3ae312e5f009dc5bd3fdc39b1ac5635804397bc55cbff592c80a57839edac403",
   "warm-creator": "f00b22f38f403ceb405df341424c6052d161d5bdccf0c9a260fbf8463a29a2de",
-  luxury: "2d16642826e355348c3d6f8bf2168f793b8486ffed80100eb259e7a339cdef2b",
   retro: "0c0b079279864c580b5eb209545b0ead5c0b70e1ec601a57fae12f2e8628d722",
 };
 
@@ -87,9 +84,9 @@ function specimen(html: string, name: string): string {
 }
 
 describe("P3 pattern registry", () => {
-  it("declares the fixed pilot rollout without expanding component states", () => {
+  it("declares the batch-a rollout without expanding component states", () => {
     expect(componentPatternNames()).toEqual(["hero", "pricing", "featureGrid", "footer"]);
-    expect(COMPONENT_P3_ROLLOUT).toEqual(["minimal-tech"]);
+    expect(COMPONENT_P3_ROLLOUT).toEqual(["minimal-tech", "enterprise", "pro-emotive", "luxury"]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P3_PATHS).toContain("component.pricing.featuredBackground");
     expect(COMPONENT_P3_PATHS).toContain("component.footer.mutedForeground");

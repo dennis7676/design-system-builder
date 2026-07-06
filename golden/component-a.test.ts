@@ -25,8 +25,8 @@ const BATCH = ["enterprise", "pro-emotive"] as const;
 type BatchKey = (typeof BATCH)[number];
 
 const TOKEN_HASHES: Record<BatchKey, string> = {
-  enterprise: "sha256:6db24f210b320dabc85df376541504998b82da776b81df9a4fcbbca8e2a38252",
-  "pro-emotive": "sha256:fb15cd36b87d8ac2f8cc16d08b893ea1e194a9594734758be89363c59e91882a",
+  enterprise: "sha256:832623ece673a1fa04e7a071a180b126535c1d15ad231b9fbceeb52ea01ce24d",
+  "pro-emotive": "sha256:0c5f752cae9dcd71c9357f7761d3c942a4ac9255f41636557a010345561f1820",
 };
 
 function recipe(key: BatchKey): Recipe {

@@ -1,11 +1,12 @@
 {
   "name": "design-system-builder",
   "version": "0.1.0",
-  "description": "Interview-driven design system generator — intent token SSOT → multi-target adapters (web M2, video M4)",
+  "description": "Interview-driven design system generator \u2014 intent token SSOT \u2192 multi-target adapters (web M2, video M4)",
   "type": "module",
   "license": "MIT",
   "bin": {
-    "design-system-builder": "./dist/cli.js"
+    "design-system-builder": "./dist/cli.js",
+    "design-system-builder-mcp": "./dist/mcp-server.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,7 +23,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "cli": "tsx src/cli.ts",
     "mcp": "tsx src/mcp-server.ts",
-    "probe:layout": "tsx scripts/layout-probe.ts"
+    "probe:layout": "tsx scripts/layout-probe.ts",
+    "prepublishOnly": "npm run build && npm test"
   },
   "engines": {
     "node": ">=20"
@@ -44,5 +46,13 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^4.4.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dennis7676/design-system-builder.git"
+  },
+  "homepage": "https://dsb-playground.vercel.app",
+  "bugs": {
+    "url": "https://github.com/dennis7676/design-system-builder/issues"
   }
 }

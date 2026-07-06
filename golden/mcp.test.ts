@@ -1,14 +1,20 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { TokensDocument } from "../src/tokens-schema.js";
+import { GENERATED_ARTIFACTS } from "../src/contract.js";
+import { loadRecipes, selectRecipe } from "../src/recipe-selection.js";
+import type { BrandJson } from "../src/brand-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
+const mcpServerPath = join(root, "src/mcp-server.ts");
+const tsxImportPath = join(root, "node_modules/tsx/dist/esm/index.mjs");
 const requestTimeoutMs = 30_000;
+const generatedOutputs = ["tokens.json", ...GENERATED_ARTIFACTS] as const;
 
 interface JsonRpcResponse {
   readonly jsonrpc: "2.0";
@@ -102,30 +108,79 @@ describe("MCP stdio server", () => {
   let client: StdioRpcClient;
 
   beforeAll(async () => {
-    const child = spawn(process.execPath, ["--import", "tsx", "src/mcp-server.ts"], {
-      cwd: root,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-    client = new StdioRpcClient(child);
-    const initialized = await client.request("initialize", {
-      protocolVersion: "2025-11-25",
-      capabilities: {},
-      clientInfo: { name: "vitest", version: "0.0.0" },
-    });
-    expect(initialized.error).toBeUndefined();
-    client.notify("notifications/initialized");
+    client = await startMcpClient(root);
   }, requestTimeoutMs);
 
   afterAll(() => {
     client.close();
   });
 
-  it("lists exactly dsb_build and dsb_validate with input schemas", async () => {
+  it("lists the full pipeline tools with input schemas", async () => {
     const response = await client.request("tools/list");
     expect(response.error).toBeUndefined();
     const result = response.result as ToolListResponse;
-    expect(result.tools.map((tool) => tool.name).sort()).toEqual(["dsb_build", "dsb_validate"]);
+    expect(result.tools.map((tool) => tool.name).sort()).toEqual([
+      "dsb_build",
+      "dsb_generate",
+      "dsb_recipes",
+      "dsb_suggest",
+      "dsb_validate",
+    ]);
     for (const tool of result.tools) expect(tool.inputSchema).toBeDefined();
+  }, requestTimeoutMs);
+
+  it("returns the loaded recipe catalog", async () => {
+    const response = await callTool("dsb_recipes", {});
+    const result = jsonToolResult<{
+      ok: boolean;
+      recipes: readonly {
+        key: string;
+        toneAnchor: unknown;
+        skeleton: string | null;
+        tier: string;
+        expressionTiers: readonly string[];
+        principles: readonly string[];
+      }[];
+    }>(response);
+
+    expect(result.ok).toBe(true);
+    expect(result.recipes.map((recipe) => recipe.key)).toEqual(
+      loadRecipes(join(root, "references/recipes")).map((recipe) => recipe.key),
+    );
+    expect(result.recipes).toHaveLength(8);
+    expect(result.recipes[0]).toEqual(
+      expect.objectContaining({
+        key: "minimal-tech",
+        skeleton: "spec-sheet",
+        tier: "balanced",
+        expressionTiers: ["safe", "balanced", "bold"],
+      }),
+    );
+    expect(result.recipes[0]?.principles.length).toBeGreaterThan(0);
+  }, requestTimeoutMs);
+
+  it("suggests the same recipe as direct dry selection without building tokens", async () => {
+    const brand = JSON.parse(readFileSync(join(root, "golden/sample.brand.json"), "utf8")) as BrandJson;
+    const expected = selectRecipe(brand, loadRecipes(join(root, "references/recipes")));
+
+    const response = await callTool("dsb_suggest", { brand });
+    const result = jsonToolResult<{
+      ok: boolean;
+      dryRun: boolean;
+      recipeKey: string | null;
+      conflicts: readonly unknown[];
+      edges: readonly unknown[];
+      motifs: readonly unknown[];
+      recipe?: { key: string } | null;
+    }>(response);
+
+    expect(result.ok).toBe(true);
+    expect(result.dryRun).toBe(true);
+    expect(result.recipeKey).toBe(expected.recipeKey);
+    expect(result.recipe?.key).toBe(expected.recipeKey);
+    expect(result.conflicts).toEqual(expected.conflicts);
+    expect(result.edges).toEqual(expect.any(Array));
+    expect(result.motifs).toEqual(expect.any(Array));
   }, requestTimeoutMs);
 
   it("builds the golden brand with the same tokenHash as the CLI path", async () => {
@@ -177,6 +232,76 @@ describe("MCP stdio server", () => {
     }
   }, requestTimeoutMs);
 
+  it("generates byte-identical artifacts to CLI generate and writes tokens.json", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dsb-mcp-generate-"));
+    const tokensPath = join(dir, "tokens.json");
+    const cliDir = join(dir, "cli");
+    const mcpDir = join(dir, "mcp");
+    try {
+      const build = await runCli(["src/cli.ts", "build", "examples/atlas/brand.json", "--confirm", "--out", tokensPath]);
+      expect(build.code, build.stderr).toBe(0);
+      const expectedHash = build.stderr.match(/tokenHash: (sha256:[a-f0-9]+)/)?.[1];
+      expect(expectedHash).toBeDefined();
+
+      const cliGenerate = await runCli(["src/cli.ts", "generate", tokensPath, "--out-dir", cliDir]);
+      expect(cliGenerate.code, cliGenerate.stderr).toBe(0);
+
+      const response = await callTool("dsb_generate", { tokensPath, outDir: mcpDir });
+      const result = jsonToolResult<{ ok: boolean; tokenHash?: string; artifacts?: readonly string[] }>(response);
+      expect(result.ok).toBe(true);
+      expect(result.tokenHash).toBe(expectedHash);
+      expect(result.artifacts).toEqual(generatedOutputs.map((file) => join(mcpDir, file)));
+
+      for (const artifact of GENERATED_ARTIFACTS) {
+        expect(readFileSync(join(mcpDir, artifact), "utf8")).toBe(readFileSync(join(cliDir, artifact), "utf8"));
+      }
+      expect(readFileSync(join(mcpDir, "tokens.json"), "utf8")).toBe(readFileSync(tokensPath, "utf8"));
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, requestTimeoutMs);
+
+  it("refuses a non-empty outDir without force before writing artifacts", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dsb-mcp-refuse-"));
+    const outDir = join(dir, "out");
+    const sentinelPath = join(outDir, "sentinel.txt");
+    try {
+      mkdirSync(outDir);
+      writeFileSync(sentinelPath, "keep me\n");
+
+      const response = await callTool("dsb_generate", { tokensPath: "golden/sample.tokens.json", outDir });
+      const result = jsonToolResult<{ ok: boolean; error?: string }>(response);
+      expect(result.ok).toBe(false);
+      expect(result.error).toContain("outDir is non-empty");
+      expect(readFileSync(sentinelPath, "utf8")).toBe("keep me\n");
+      expect(existsSync(join(outDir, "tokens.css"))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, requestTimeoutMs);
+
+  it("works when the MCP server is spawned from a foreign cwd", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "dsb-mcp-cwd-"));
+    const foreignClient = await startMcpClient(dir);
+    try {
+      const recipes = jsonToolResult<{ ok: boolean; recipes: readonly unknown[] }>(
+        await callToolWith(foreignClient, "dsb_recipes", {}),
+      );
+      expect(recipes.ok).toBe(true);
+      expect(recipes.recipes).toHaveLength(8);
+
+      const brand = JSON.parse(readFileSync(join(root, "golden/sample.brand.json"), "utf8")) as BrandJson;
+      const build = jsonToolResult<{ ok: boolean; tokenHash?: string }>(
+        await callToolWith(foreignClient, "dsb_build", { brand, confirm: true }),
+      );
+      expect(build.ok).toBe(true);
+      expect(build.tokenHash).toMatch(/^sha256:[a-f0-9]+$/);
+    } finally {
+      foreignClient.close();
+      rmSync(dir, { recursive: true, force: true });
+    }
+  }, requestTimeoutMs);
+
   it("contains malformed input errors and keeps serving subsequent tool calls", async () => {
     const bad = await callTool("dsb_build", {});
     const badResult = jsonToolResult<{ ok: boolean; error?: string }>(bad);
@@ -191,11 +316,31 @@ describe("MCP stdio server", () => {
   }, requestTimeoutMs);
 
   async function callTool(name: string, args: unknown): Promise<ToolCallResponse> {
-    const response = await client.request("tools/call", { name, arguments: args });
-    expect(response.error).toBeUndefined();
-    return response.result as ToolCallResponse;
+    return callToolWith(client, name, args);
   }
 });
+
+async function startMcpClient(cwd: string): Promise<StdioRpcClient> {
+  const child = spawn(process.execPath, ["--import", tsxImportPath, mcpServerPath], {
+    cwd,
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+  const client = new StdioRpcClient(child);
+  const initialized = await client.request("initialize", {
+    protocolVersion: "2025-11-25",
+    capabilities: {},
+    clientInfo: { name: "vitest", version: "0.0.0" },
+  });
+  expect(initialized.error).toBeUndefined();
+  client.notify("notifications/initialized");
+  return client;
+}
+
+async function callToolWith(client: StdioRpcClient, name: string, args: unknown): Promise<ToolCallResponse> {
+  const response = await client.request("tools/call", { name, arguments: args });
+  expect(response.error).toBeUndefined();
+  return response.result as ToolCallResponse;
+}
 
 function jsonToolResult<T>(response: ToolCallResponse): T {
   expect(response.isError).not.toBe(true);

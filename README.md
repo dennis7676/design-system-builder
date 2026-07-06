@@ -90,19 +90,25 @@ npx tsx src/cli.ts validate <tokens.json> --check-manifest
 
 ## MCP
 
-로컬 MCP 클라이언트에서는 stdio 서버로 등록한다. 현재 스파이크는 `dsb_build`와
-`dsb_validate` 두 도구만 제공한다.
+로컬 MCP 클라이언트에서는 stdio 서버로 등록한다. 전체 파이프라인을 5개
+도구로 제공한다: `dsb_recipes`(카탈로그) / `dsb_suggest`(read-only
+concept-fit 미리보기) / `dsb_build` / `dsb_generate`(산출물 쓰기, `outDir`
+필수·비어있지 않으면 `force` 요구) / `dsb_validate`. recipes 경로는 패키지
+루트 기준으로 해석되므로 어느 cwd에서 띄워도 동작한다.
 
 ```json
 {
   "mcpServers": {
     "design-system-builder": {
       "command": "npx",
-      "args": ["tsx", "src/mcp-server.ts"]
+      "args": ["-y", "-p", "design-system-builder", "design-system-builder-mcp"]
     }
   }
 }
 ```
+
+레포 체크아웃에서는 `"command": "npx", "args": ["tsx", "src/mcp-server.ts"]`,
+npm 설치본에서는 `design-system-builder-mcp` 바이너리를 직접 지정해도 된다.
 
 ## 타이포그래피 시스템
 

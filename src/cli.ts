@@ -20,6 +20,7 @@ import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
 import type { TokensDocument } from "./tokens-schema.js";
 import type { Surfaces } from "./manifest.js";
+import { defaultRecipesDir } from "./package-paths.js";
 
 interface GeneratedArtifacts {
   readonly doc: TokensDocument;
@@ -78,18 +79,25 @@ function generate(argv: string[]): number {
     return 2;
   }
   const doc = loadTokens(file);
-  const css = toCssVars(doc);
-  const styleguideHtml = generateStyleguide(doc);
-  const designMd = generateDesignMd(doc);
-  const demoHtml = generateDemo(doc);
-  const contractJson = buildContractJson(doc);
+  const artifacts = buildGeneratedArtifacts(doc);
   if (outDir === undefined) {
-    console.log(styleguideHtml);
+    console.log(artifacts.styleguideHtml);
     return 0;
   }
-  writeGeneratedArtifacts(outDir, { doc, css, styleguideHtml, designMd, demoHtml, contractJson });
+  writeGeneratedArtifacts(outDir, artifacts);
   console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json`);
   return 0;
+}
+
+export function buildGeneratedArtifacts(doc: TokensDocument): GeneratedArtifacts {
+  return {
+    doc,
+    css: toCssVars(doc),
+    styleguideHtml: generateStyleguide(doc),
+    designMd: generateDesignMd(doc),
+    demoHtml: generateDemo(doc),
+    contractJson: buildContractJson(doc),
+  };
 }
 
 export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArtifacts): void {
@@ -145,7 +153,7 @@ function build(argv: string[]): number {
     console.error("error: brand.json path required");
     return 2;
   }
-  const recipesDir = flagValue(argv, "--recipes") ?? "references/recipes";
+  const recipesDir = flagValue(argv, "--recipes") ?? defaultRecipesDir();
   const outFile = flagValue(argv, "--out");
   const userConfirmed = argv.includes("--confirm");
 

@@ -141,7 +141,13 @@ Adopted points and order:
    demo template has no glyph slot (e.g. enterprise → briefing) emit motif
    tokens but no demo visual — extending motif slots to the remaining
    templates is a follow-up candidate.
-6. **Playground hosting (B4) + M6 publish** — L5, user HITL.
+6. **Playground hosting (B4) + M6 publish** — user-approved 2026-07-06,
+   in flight: playground live at https://dsb-playground.vercel.app (all 8
+   recipes' styleguide/demo/contract, deterministic specimens); repo made
+   public after a clean full-history gitleaks scan; MCP full server
+   SHIPPED (`add-mcp-full-server`: dsb_recipes / dsb_suggest / dsb_build /
+   dsb_generate / dsb_validate, package-root recipes resolution so npm
+   installs work from any cwd, 489 tests); npm publish pending login.
 
 M4 video extension and M5 hardening keep their places after the above;
 hygiene items ride along in any session.

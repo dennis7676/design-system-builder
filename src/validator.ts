@@ -54,6 +54,7 @@ const GLASS_BACKING_OPACITY_CEILING = 1;
 const LUMINANCE_EPSILON = 1e-12;
 const BLACK_RGB: LinearRGB = { r: 0, g: 0, b: 0 };
 const WHITE_RGB: LinearRGB = { r: 1, g: 1, b: 1 };
+const MOTIF_HERO_BACKGROUND_PATH = "semantic.color.surface.default";
 /** Core categories whose tokens must each be covered by a decisionTrace (G-trace). */
 const CORE_CATEGORIES: Record<string, RegExp> = {
   color: /(^|\.)color(\.|$)/,
@@ -202,6 +203,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
   checkContrast(doc, leaves, findings);
   checkTextureOverlay(doc, leaves, findings);
   checkGlassSurface(doc, leaves, findings);
+  checkMotifInkFloor(leaves, findings);
 
   // 4. G-trace coverage
   checkTraceCoverage(doc, leaves, findings);
@@ -350,6 +352,71 @@ function checkGlassSurface(
   const gate = glassSurfaceGate(leaves, findings);
   if (gate === null) return;
   checkGlassContrast(doc, leaves, gate, findings);
+}
+
+function checkMotifInkFloor(
+  leaves: Map<string, LeafToken>,
+  findings: Finding[],
+): void {
+  if (![...leaves.keys()].some((path) => path.startsWith("semantic.motif."))) return;
+
+  const kindLeaf = resolveAlias("semantic.motif.kind", leaves).resolved;
+  const kind = kindLeaf?.$value;
+  if (kind === "none") return;
+  if (kindLeaf?.$type !== "motif-kind" || typeof kind !== "string") {
+    findings.push({
+      severity: "error",
+      code: "motif-ink-floor",
+      path: "semantic.motif.kind",
+      message: "motif kind must be a motif-kind string before ink contrast can be checked",
+    });
+    return;
+  }
+
+  const ink = colorValueOf("semantic.motif.ink", leaves);
+  const bgLeaf = resolveAlias(MOTIF_HERO_BACKGROUND_PATH, leaves).resolved;
+  if (ink === null || bgLeaf === null) {
+    findings.push({
+      severity: "error",
+      code: "motif-ink-floor",
+      path: "semantic.motif.ink",
+      message: `motif ink contrast pair unresolved: semantic.motif.ink on ${MOTIF_HERO_BACKGROUND_PATH}`,
+    });
+    return;
+  }
+
+  const backgrounds = backgroundValues(bgLeaf);
+  const candidates = backgrounds.map((bg) => ({ bg, ratio: contrastRatio(ink, bg) }));
+  if (candidates.length === 0 || candidates.some((candidate) => candidate.ratio === null)) {
+    findings.push({
+      severity: "error",
+      code: "motif-ink-floor",
+      path: "semantic.motif.ink",
+      message: `motif ink contrast colors must parse: semantic.motif.ink on ${MOTIF_HERO_BACKGROUND_PATH}`,
+    });
+    return;
+  }
+
+  const worst = candidates
+    .map((candidate) => ({ bg: candidate.bg, ratio: candidate.ratio as number }))
+    .sort((a, b) => a.ratio - b.ratio)[0];
+  const required = MIN_RATIO["non-text"];
+  if (worst !== undefined && worst.ratio < required) {
+    findings.push({
+      severity: "error",
+      code: "motif-ink-floor",
+      path: "semantic.motif.ink",
+      message: `motif ink contrast below non-text floor ${worst.ratio.toFixed(2)}:1 < ${required}:1 (semantic.motif.ink on ${MOTIF_HERO_BACKGROUND_PATH})`,
+      meta: {
+        ratio: Number(worst.ratio.toFixed(2)),
+        required,
+        fg: "semantic.motif.ink",
+        bg: MOTIF_HERO_BACKGROUND_PATH,
+        background: worst.bg,
+        role: "non-text",
+      },
+    });
+  }
 }
 
 function textureOverlayGate(

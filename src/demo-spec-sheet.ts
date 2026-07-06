@@ -5,6 +5,7 @@ import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
+import { motifKindFromTokens, motifSlotCss, renderMotifSlot } from "./motif.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -23,7 +24,7 @@ export function generateSpecSheetDemo(doc: TokensDocument, tier: DemoTier, ko: b
     "<body>",
     specHeader(brand),
     "<main>",
-    specHero(brand, copy),
+    specHero(brand, copy, doc),
     specFeatures(copy),
     specForm(copy),
     "</main>",
@@ -39,7 +40,11 @@ function specHeader(brand: string): string {
   return `<header data-demo-region="nav" class="spec-nav"><a class="brand spec-wordmark" href="#">${brand}</a><nav class="spec-links" aria-label="Primary">${links}</nav></header>`;
 }
 
-function specHero(brand: string, copy: DemoCopy): string {
+function specHero(brand: string, copy: DemoCopy, doc: TokensDocument): string {
+  const motif = renderMotifSlot(doc, brand);
+  if (motif !== null) {
+    return `<section data-demo-region="hero" class="spec-hero"><p class="spec-index">001 — ${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div><div class="hero-panel" aria-hidden="true">${motif}</div></section>`;
+  }
   return `<section data-demo-region="hero" class="spec-hero"><p class="spec-index">001 — ${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div></section>`;
 }
 
@@ -89,6 +94,11 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
   const radius = "var(--semantic-shape-control, .5rem)";
   const transition = "var(--semantic-motion-transition, 160ms)";
   const easing = "var(--semantic-motion-easing-standard)";
+  const motifCss = motifKindFromTokens(doc) === null
+    ? ""
+    : `
+    .spec-hero .hero-panel { inline-size: min(22rem, 100%); min-block-size: 16rem; display: grid; place-items: center; padding: clamp(1.25rem, 4vw, 2.5rem); border: 1px solid ${hairline}; border-radius: ${radius}; background: ${oklchMix(surface, 94, primary)}; overflow: hidden; }
+${motifSlotCss({ selector: ".spec-hero .hero-panel", min: 2.2, viewport: "12vw", max: 4 })}`;
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -126,7 +136,7 @@ function specSheetDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): str
     .spec-form input { padding: .75rem 0; border: 0; border-bottom: 1px solid ${hairline}; border-radius: 0; background: transparent; color: ${fg}; font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); }
     .spec-footer { border-top: 1px solid ${hairline}; border-bottom: 1px solid ${hairline}; padding: 1.25rem clamp(1rem, 4vw, 3rem); display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
     .fine { max-width: 52ch; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: ${textMix(60, "spec.fine")}; }
-    @media (max-width: 760px) { .spec-nav, .spec-footer { align-items: flex-start; flex-direction: column; } .spec-links { margin-left: 0; flex-wrap: wrap; } .spec-table tr, .spec-table td { display: block; } .spec-form form { grid-template-columns: 1fr; } }${reduce}${specTierCss(tier)}${textureOverlayCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${glassPanelCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${specKoCss(ko)}`;
+    @media (max-width: 760px) { .spec-nav, .spec-footer { align-items: flex-start; flex-direction: column; } .spec-links { margin-left: 0; flex-wrap: wrap; } .spec-table tr, .spec-table td { display: block; } .spec-form form { grid-template-columns: 1fr; } }${reduce}${specTierCss(tier)}${motifCss}${textureOverlayCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${glassPanelCss(doc, [".spec-hero", ".spec-table td", ".spec-form"])}${specKoCss(ko)}`;
 }
 
 function specTierCss(tier: DemoTier): string {

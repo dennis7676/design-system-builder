@@ -5,6 +5,7 @@ import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
+import { motifKindFromTokens, motifSlotCss, renderMotifSlot } from "./motif.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -23,7 +24,7 @@ export function generateMosaicDemo(doc: TokensDocument, tier: DemoTier, ko: bool
     "<body>",
     mosaicHeader(brand),
     "<main>",
-    mosaicHero(brand, copy),
+    mosaicHero(brand, copy, doc),
     mosaicFeatures(copy),
     mosaicForm(copy),
     "</main>",
@@ -39,7 +40,11 @@ function mosaicHeader(brand: string): string {
   return `<header data-demo-region="nav" class="mosaic-nav"><a class="brand" href="#">${brand}</a><nav aria-label="Primary">${links}</nav></header>`;
 }
 
-function mosaicHero(brand: string, copy: DemoCopy): string {
+function mosaicHero(brand: string, copy: DemoCopy, doc: TokensDocument): string {
+  const motif = renderMotifSlot(doc, brand);
+  if (motif !== null) {
+    return `<section data-demo-region="hero" class="mosaic-grid mosaic-hero"><div class="mosaic-tile mosaic-headline"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1></div><div class="mosaic-tile mosaic-lead"><p class="lead">${htmlEscape(copy.lead)}</p></div><div class="mosaic-tile mosaic-action"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button></div><div class="mosaic-tile mosaic-glyph" aria-hidden="true">${motif}</div></section>`;
+  }
   const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
   return `<section data-demo-region="hero" class="mosaic-grid mosaic-hero"><div class="mosaic-tile mosaic-headline"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1></div><div class="mosaic-tile mosaic-lead"><p class="lead">${htmlEscape(copy.lead)}</p></div><div class="mosaic-tile mosaic-action"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button></div><div class="mosaic-tile mosaic-glyph" aria-hidden="true">${glyph}</div></section>`;
 }
@@ -93,6 +98,9 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
   const transition = "var(--semantic-motion-transition, 160ms)";
   const easing = "var(--semantic-motion-easing-standard)";
   const raised = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-raised);" : "";
+  const motifCss = motifKindFromTokens(doc) === null
+    ? ""
+    : motifSlotCss({ selector: ".mosaic-glyph", min: 1.5, viewport: "12vw", max: 3.4 });
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -135,7 +143,7 @@ function mosaicDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string
     .mosaic-footer { display: grid; grid-template-columns: 2fr 1fr; gap: 1px; background: ${hairline}; }
     .mosaic-footer-brand .brand { font: var(--semantic-typography-display-weight) clamp(var(--semantic-typography-display-size), 8vw, calc(var(--semantic-typography-display-size) * 1.45))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .fine { margin: 0; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(62, "mosaic.fine")}; }
-    @media (max-width: 760px) { .mosaic-nav nav { display: none; } .mosaic-grid, .mosaic-feature-row, .mosaic-footer { grid-template-columns: 1fr; } .mosaic-headline, .mosaic-lead { grid-column: auto; grid-row: auto; } }${reduce}${mosaicTierCss(tier)}${textureOverlayCss(doc, [".mosaic-tile"])}${glassPanelCss(doc, [".mosaic-tile"])}${mosaicKoCss(ko)}`;
+    @media (max-width: 760px) { .mosaic-nav nav { display: none; } .mosaic-grid, .mosaic-feature-row, .mosaic-footer { grid-template-columns: 1fr; } .mosaic-headline, .mosaic-lead { grid-column: auto; grid-row: auto; } }${reduce}${mosaicTierCss(tier)}${motifCss}${textureOverlayCss(doc, [".mosaic-tile"])}${glassPanelCss(doc, [".mosaic-tile"])}${mosaicKoCss(ko)}`;
 }
 
 function mosaicTierCss(tier: DemoTier): string {

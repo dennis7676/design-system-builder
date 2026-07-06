@@ -40,6 +40,11 @@ export const EDGE_NAMES = ["texture-grain", "glass"] as const;
 
 export type EdgeName = (typeof EDGE_NAMES)[number];
 
+/** Finite motif enum v1. Free-form motif names are never accepted. */
+export const MOTIF_NAMES = ["glyph", "geometric", "rule-lines", "none"] as const;
+
+export type MotifName = (typeof MOTIF_NAMES)[number];
+
 /**
  * Bounded overrides. Scalar axes mutate dimensions/durations; visual.accent is
  * an integer OKLCH hue that triggers contrast re-derivation in the builder.
@@ -103,6 +108,8 @@ export interface BrandJson {
   readonly expression?: ExpressionTier;
   /** Opt-in high-personality edges. Absent/[] keeps the build byte-identical. */
   readonly edges?: readonly string[];
+  /** Optional signature motif. Absent keeps the legacy glyph path byte-identical. */
+  readonly motif?: MotifName;
 }
 
 export interface BrandFieldError {
@@ -178,6 +185,13 @@ export function validateBrand(brand: unknown): BrandFieldError[] {
           continue;
         }
       }
+    }
+  }
+  if (b.motif !== undefined) {
+    if (typeof b.motif !== "string") {
+      errors.push({ path: "motif", message: `must be a single value of ${MOTIF_NAMES.join("|")}` });
+    } else if (!(MOTIF_NAMES as readonly string[]).includes(b.motif)) {
+      errors.push({ path: "motif", message: `CONFLICT [motif-unknown] motif '${String(b.motif)}' is unknown (valid: ${MOTIF_NAMES.join(", ")})` });
     }
   }
   if (b.overrides !== undefined) {

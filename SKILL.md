@@ -138,7 +138,9 @@ Add `branding.recipe_override` only after the candidate-choice step; otherwise
 omit it. Add top-level `expression` only for safe/bold (balanced = default).
 Add top-level `edges` only after the Edge selection step below. If the user
 chooses no edge, write `edges: []` explicitly before the final dry-run so the
-choice is sealed in `brand.json`.
+choice is sealed in `brand.json`. Add top-level `motif` only after the motif
+choice in that same step. If the user skips motif, omit `motif` entirely so the
+legacy glyph path stays active.
 
 ### Edge selection — before Confirm
 
@@ -159,6 +161,25 @@ Ask the user to choose zero or more selectable edges. Write the result to
 or both selected edges, then rerun the dry-run gate before asking for final
 confirmation. If the dry-run returns an edge conflict, resolve it with the user
 instead of forcing the build.
+
+Before final confirmation, ask the motif question in this same step. Use
+`suggestMotifs(brand, selectedRecipe)` from the deterministic engine; do not
+invent motif names or free-form marks.
+
+Show only fitting motifs, each with its one-line rationale:
+
+- `glyph` — the current first-letter signature element.
+- `geometric` — selectable only when the selected recipe or tone vector fits a
+  constructed mark.
+- `rule-lines` — selectable only when the selected recipe or tone vector fits a
+  composed editorial rule motif.
+- `none` — selectable because opting out of a signature element is always safe.
+
+Ask the user to pick exactly one motif or skip. If they pick one, write
+`motif: "glyph"`, `motif: "geometric"`, `motif: "rule-lines"`, or
+`motif: "none"` to `brand.json`; if they skip, leave `motif` absent. Rerun the
+dry-run gate before asking for final confirmation. If the dry-run returns a
+motif conflict, resolve it with the user instead of forcing the build.
 
 ---
 
@@ -184,6 +205,7 @@ instead of forcing the build.
    | `recipe-override-unknown` | chosen recipe key is not known | use one of the valid keys printed by the CLI |
    | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
+   | `motif-fit-rejected` | chosen motif does not fit the selected recipe/tone | pick one of the suggested motifs or skip motif |
    | `BRAND [overrides.<axis>] unknown override axis` line | used an unsupported axis | remove it. `tone_vector.cold_warm` → use `visual.accent` hue instead |
 4. **Build with confirmation** → writes the intent-token SSOT:
    ```

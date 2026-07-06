@@ -45,7 +45,8 @@ export function buildTokens(brand: BrandJson, recipe: Recipe, opts: BuildOptions
   applyComponentContrastPairs(base, recipe.key);
   const overrideMeta = applyOverrides(base, brand.overrides ?? {});
   applyLocaleFonts(base, brand, recipe);
-  const philosophy = applyEdges(base, brand, recipe.philosophy as Philosophy);
+  const edgePhilosophy = applyEdges(base, brand, recipe.philosophy as Philosophy);
+  const philosophy = applyMotif(base, brand, edgePhilosophy);
 
   return {
     version: "1.0.0",
@@ -79,6 +80,44 @@ function applyEdges(base: MutableBase, brand: BrandJson, philosophy: Philosophy)
   if (edges.includes("texture-grain")) next = applyTextureGrainEdge(base, next);
   if (edges.includes("glass")) next = applyGlassEdge(base, next);
   return next;
+}
+
+function applyMotif(base: MutableBase, brand: BrandJson, philosophy: Philosophy): Philosophy {
+  if (brand.motif === undefined) return philosophy;
+
+  const motif = tokenGroupAt(base.semantic, "motif");
+  motif.kind = {
+    $type: "motif-kind",
+    $value: brand.motif,
+    $class: "portable",
+    $description: "Selected signature motif enum value.",
+  };
+  motif.ink = {
+    $type: "color",
+    $value: "{semantic.color.primary.default}",
+    $class: "portable",
+    $description: "Motif ink aliases the primary used by the legacy hero glyph.",
+  };
+  motif.scale = {
+    $type: "dimension",
+    $value: "{semantic.typography.display.size}",
+    $class: "adapter-derived",
+    $description: "Motif scale aliases the display-size basis used by the legacy glyph clamp.",
+  };
+
+  return {
+    ...philosophy,
+    principles: [...philosophy.principles, "Signature motif stays token-driven and contrast-gated"],
+    decisionTrace: [
+      ...philosophy.decisionTrace,
+      {
+        axis: "motif",
+        value: `${brand.motif}.v1`,
+        rationale: "The chosen motif rides the existing glyph slot only after concept-fit and contrast gates pass.",
+        coversTokenPath: ["semantic.motif.*"],
+      },
+    ],
+  };
 }
 
 function applyComponentContrastPairs(base: MutableBase, recipeKey: string): void {

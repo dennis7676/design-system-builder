@@ -36,8 +36,8 @@ export interface RealizedVideo {
   skipped: string[];
 }
 
-/** $types the video spike deliberately does not realize (shadow/gradient/string = full M4). */
-const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "string"]);
+/** $types the video spike deliberately does not realize (full M4 or no consumer yet). */
+const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "string", "motif-kind"]);
 
 export function toRealizedVideo(doc: TokensDocument): RealizedVideo {
   const leaves = tokenMap(doc);
@@ -94,6 +94,8 @@ function realizeVideo(type: LeafType, value: LeafToken["$value"], base: number):
       return value;
     case "string":
       throw new TokenSurfaceError("string is not video-realizable in the spike");
+    case "motif-kind":
+      throw new TokenSurfaceError("motif-kind is not video-realizable in the spike");
     case "cubicBezier":
       return requireCubicBezier(value);
     case "shadow":
@@ -120,6 +122,9 @@ function realize(type: LeafType, value: LeafToken["$value"], base: number): stri
       return String(value);
     case "string":
       if (typeof value !== "string") throw new TokenSurfaceError("string value expected");
+      return value;
+    case "motif-kind":
+      if (typeof value !== "string") throw new TokenSurfaceError("motif-kind value expected");
       return value;
     case "cubicBezier":
       return realizeCubicBezier(value);

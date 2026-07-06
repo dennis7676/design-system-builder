@@ -50,6 +50,7 @@ export const LEAF_TYPES = [
   "shadow",
   "gradient",
   "cubicBezier",
+  "motif-kind",
 ] as const;
 
 export type LeafType = (typeof LEAF_TYPES)[number];
@@ -60,6 +61,7 @@ export type LeafType = (typeof LEAF_TYPES)[number];
  *  - dimension/duration → DimensionIntent
  *  - fontFamily → string[] (portable)
  *  - string → portable keyword/asset strings for CSS-var consumers
+ *  - motif-kind → selected finite motif enum value
  *  - alias   → "{semantic.color.primary.default}"
  */
 export interface LeafToken {

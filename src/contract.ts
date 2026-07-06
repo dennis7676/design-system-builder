@@ -56,6 +56,7 @@ export const GATE_CATALOG = {
   "glass-contrast-unparseable": "Glass contrast colors must parse.",
   "glass-contrast-collapse": "Glass foreground luminance cannot collapse inside the reachable background interval.",
   "glass-contrast-fail": "Glass worst-case interval contrast meets role floors.",
+  "motif-ink-floor": "Motif ink stays visible against the hero-panel background at the non-text floor.",
   "contrast-unresolved": "Every contrastPair foreground and background resolves to a color.",
   "contrast-unparseable": "Every contrastPair color can be parsed for WCAG math.",
   "contrast-fail": "Every non-disabled contrastPair meets its role floor.",
@@ -111,7 +112,7 @@ export function buildContract(doc: TokensDocument): UsageContract {
       internalPrefixes: ["--primitive-"],
       classes: [...TOKEN_CLASS_PATTERNS],
       units: [...DIMENSION_UNITS],
-      leafTypes: [...LEAF_TYPES],
+      leafTypes: leafTypesFor(doc),
       contrastRoles: [...CONTRAST_ROLES],
       contrastStates: [...CONTRAST_STATES],
     },
@@ -122,7 +123,7 @@ export function buildContract(doc: TokensDocument): UsageContract {
       p2RolloutRecipes: [...COMPONENT_P2_ROLLOUT],
       composites: compositeRegistrySnapshot(COMPONENT_P2_COMPOSITES),
     },
-    gates: Object.entries(GATE_CATALOG).map(([code, purpose]) => ({ code, purpose })),
+    gates: gateEntriesFor(doc),
     accessibility: {
       minRatio: { ...MIN_RATIO },
       disabledExemption: "Disabled controls are exempt from WCAG 1.4.3 text floors and are recorded as contrast-exempt.",
@@ -160,6 +161,22 @@ export function buildContract(doc: TokensDocument): UsageContract {
       },
     ],
   };
+}
+
+function leafTypesFor(doc: TokensDocument): readonly string[] {
+  if (hasMotifTokens(doc)) return [...LEAF_TYPES];
+  return LEAF_TYPES.filter((type) => type !== "motif-kind");
+}
+
+function gateEntriesFor(doc: TokensDocument): ReadonlyArray<{ readonly code: string; readonly purpose: string }> {
+  const motif = hasMotifTokens(doc);
+  return Object.entries(GATE_CATALOG)
+    .filter(([code]) => motif || code !== "motif-ink-floor")
+    .map(([code, purpose]) => ({ code, purpose }));
+}
+
+function hasMotifTokens(doc: TokensDocument): boolean {
+  return Object.hasOwn(doc.semantic, "motif");
 }
 
 function primitiveRegistrySnapshot(

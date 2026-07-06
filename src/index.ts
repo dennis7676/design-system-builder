@@ -14,6 +14,7 @@ export * from "./tokens-builder.js";
 export * from "./gate.js";
 export * from "./font-sources.js";
 export * from "./edge-point.js";
+export * from "./motif.js";
 export * from "./component-registry.js";
 export * from "./contract.js";
 

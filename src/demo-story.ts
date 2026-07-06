@@ -5,6 +5,7 @@ import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
+import { motifKindFromTokens, motifSlotCss, renderMotifSlot } from "./motif.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -23,7 +24,7 @@ export function generateStoryDemo(doc: TokensDocument, tier: DemoTier, ko: boole
     "<body>",
     "<div class=\"story-field\">",
     storyHeader(brand, copy),
-    storyHero(brand, copy),
+    storyHero(brand, copy, doc),
     "</div>",
     "<main>",
     storyFeatures(copy),
@@ -43,7 +44,11 @@ function storyHeader(brand: string, copy: DemoCopy): string {
   return `<header data-demo-region="nav" class="story-nav"><a class="brand" href="#">${brand}</a><nav aria-label="Primary">${links}</nav><button class="btn btn-primary">${htmlEscape(copy.navCta)}</button></header>`;
 }
 
-function storyHero(brand: string, copy: DemoCopy): string {
+function storyHero(brand: string, copy: DemoCopy, doc: TokensDocument): string {
+  const motif = renderMotifSlot(doc, brand);
+  if (motif !== null) {
+    return `<section data-demo-region="hero" class="story-hero"><div class="story-copy"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div></div><div class="story-panel story-hero-panel" aria-hidden="true">${motif}</div></section>`;
+  }
   const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
   return `<section data-demo-region="hero" class="story-hero"><div class="story-copy"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div></div><div class="story-panel story-hero-panel" aria-hidden="true"><span class="glyph">${glyph}</span></div></section>`;
 }
@@ -114,6 +119,9 @@ function storyDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string 
   const panelBg = hasGradient(doc) ? "var(--semantic-gradient-hero)" : primary;
   const raised = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-raised);" : "";
   const overlay = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
+  const motifCss = motifKindFromTokens(doc) === null
+    ? ""
+    : motifSlotCss({ selector: ".story-hero-panel", min: 2.2, viewport: "14vw", max: 4.2 });
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -163,7 +171,7 @@ function storyDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): string 
     .story-footer-cols a { text-decoration: none; color: ${textMix(72, "story.footer-link")}; }
     .story-footer-cols a:hover { color: ${primary}; }
     .fine { width: min(76rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "story.fine")}; }
-    @media (max-width: 760px) { .story-nav nav { display: none; } .story-hero, .story-band { grid-template-columns: 1fr; } .story-alt .story-band-copy, .story-alt .story-panel { grid-column: auto; grid-row: auto; } .story-footer-cols { grid-template-columns: 1fr; } }${reduce}${storyTierCss(tier)}${textureOverlayCss(doc, [".story-panel", ".story-form-card"])}${glassPanelCss(doc, [".story-panel", ".story-form-card"])}${storyKoCss(ko)}`;
+    @media (max-width: 760px) { .story-nav nav { display: none; } .story-hero, .story-band { grid-template-columns: 1fr; } .story-alt .story-band-copy, .story-alt .story-panel { grid-column: auto; grid-row: auto; } .story-footer-cols { grid-template-columns: 1fr; } }${reduce}${storyTierCss(tier)}${motifCss}${textureOverlayCss(doc, [".story-panel", ".story-form-card"])}${glassPanelCss(doc, [".story-panel", ".story-form-card"])}${storyKoCss(ko)}`;
 }
 
 function storyTierCss(tier: DemoTier): string {

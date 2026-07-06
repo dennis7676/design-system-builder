@@ -5,6 +5,7 @@ import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { hasTokenPath } from "./surface-data.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
+import { motifKindFromTokens, motifSlotCss, renderMotifSlot } from "./motif.js";
 import type { TokensDocument } from "./tokens-schema.js";
 
 type DemoTier = "safe" | "balanced" | "bold";
@@ -23,7 +24,7 @@ export function generateCollageDemo(doc: TokensDocument, tier: DemoTier, ko: boo
     "<body>",
     collageHeader(brand),
     "<main>",
-    collageHero(brand, copy, tier),
+    collageHero(brand, copy, tier, doc),
     collageFeatures(copy),
     collageForm(copy),
     "</main>",
@@ -39,7 +40,11 @@ function collageHeader(brand: string): string {
   return `<header data-demo-region="nav" class="collage-nav"><a class="brand" href="#">${brand}</a><nav aria-label="Primary">${links}</nav></header>`;
 }
 
-function collageHero(brand: string, copy: DemoCopy, tier: DemoTier): string {
+function collageHero(brand: string, copy: DemoCopy, tier: DemoTier, doc: TokensDocument): string {
+  const motif = renderMotifSlot(doc, brand);
+  if (motif !== null) {
+    return `<section data-demo-region="hero" class="collage-hero"><div class="collage-copy"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div></div><div class="collage-panel" aria-hidden="true">${motif}</div></section>`;
+  }
   const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
   const glyphSpan = tier === "bold" ? `<span class="hero-panel">${glyph}</span>` : `<span>${glyph}</span>`;
   return `<section data-demo-region="hero" class="collage-hero"><div class="collage-copy"><p class="eyebrow">${copy.eyebrow(brand)}</p><h1>${htmlEscape(copy.headline)}</h1><p class="lead">${htmlEscape(copy.lead)}</p><div class="cta-row"><button class="btn btn-primary">${htmlEscape(copy.ctaPrimary)}</button><button class="btn btn-ghost">${htmlEscape(copy.ctaGhost)}</button></div></div><div class="collage-panel" aria-hidden="true">${glyphSpan}</div></section>`;
@@ -97,6 +102,9 @@ function collageDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
   const raised = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-raised);" : "";
   const overlay = hasElevation(doc) ? " box-shadow: var(--semantic-elevation-overlay);" : "";
   const panelImage = hasGradient(doc) ? " background-image: var(--semantic-gradient-hero);" : "";
+  const motifCss = motifKindFromTokens(doc) === null
+    ? ""
+    : motifSlotCss({ selector: ".collage-panel", min: 3, viewport: "18vw", max: 5.6 });
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -141,7 +149,7 @@ function collageDemoCss(doc: TokensDocument, tier: DemoTier, ko: boolean): strin
     .collage-footer .brand { max-width: 20ch; font: var(--semantic-typography-display-weight) clamp(var(--semantic-typography-display-size), 8vw, calc(var(--semantic-typography-display-size) * 1.4))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
     .collage-footer nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; }
     .fine { max-width: 52ch; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "collage.fine")}; }
-    @media (max-width: 760px) { .collage-nav nav { display: none; } .collage-hero { grid-template-columns: 1fr; gap: 1rem; } .collage-copy { margin-right: 0; } .collage-panel { min-height: 14rem; } .collage-stagger { grid-template-columns: 1fr; } .collage-card:nth-child(2), .collage-card:nth-child(3) { transform: none; } }${reduce}${collageTierCss(tier)}${textureOverlayCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${glassPanelCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${collageKoCss(ko)}`;
+    @media (max-width: 760px) { .collage-nav nav { display: none; } .collage-hero { grid-template-columns: 1fr; gap: 1rem; } .collage-copy { margin-right: 0; } .collage-panel { min-height: 14rem; } .collage-stagger { grid-template-columns: 1fr; } .collage-card:nth-child(2), .collage-card:nth-child(3) { transform: none; } }${reduce}${collageTierCss(tier)}${motifCss}${textureOverlayCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${glassPanelCss(doc, [".collage-panel", ".collage-card", ".collage-form-card"])}${collageKoCss(ko)}`;
 }
 
 function collageTierCss(tier: DemoTier): string {

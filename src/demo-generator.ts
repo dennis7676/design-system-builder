@@ -15,6 +15,7 @@ import { hasTokenPath } from "./surface-data.js";
 import { htmlEscape, mixedText, oklchMix } from "./render-utils.js";
 import { textureOverlayCss } from "./texture-overlay.js";
 import { glassPanelCss } from "./glass-surface.js";
+import { motifKindFromTokens, motifSlotCss, renderMotifSlot } from "./motif.js";
 import { generateBriefingDemo } from "./demo-briefing.js";
 import { generateCollageDemo } from "./demo-collage.js";
 import { generateEditorialDemo } from "./demo-editorial.js";
@@ -78,7 +79,7 @@ export function generateDemo(doc: TokensDocument): string {
     "<body>",
     header(brand, copy),
     "<main>",
-    tier === "bold" ? heroBold(brand, copy) : hero(brand, copy),
+    tier === "bold" ? heroBold(brand, copy, doc) : hero(brand, copy),
     features(copy),
     form(copy),
     "</main>",
@@ -107,7 +108,11 @@ function hero(brand: string, copy: DemoCopy): string {
 
 /** Bold tier: split hero — copy column ↔ brand panel with a display glyph.
  * Same region contract; the glyph is the brand's first letter (deterministic). */
-function heroBold(brand: string, copy: DemoCopy): string {
+function heroBold(brand: string, copy: DemoCopy, doc: TokensDocument): string {
+  const motif = renderMotifSlot(doc, brand);
+  if (motif !== null) {
+    return `<section data-demo-region="hero" class="hero"><div class="hero-copy">${heroInner(brand, copy)}</div><div class="hero-panel" aria-hidden="true">${motif}</div></section>`;
+  }
   const glyph = htmlEscape((brand[0] ?? "A").toUpperCase());
   return `<section data-demo-region="hero" class="hero"><div class="hero-copy">${heroInner(brand, copy)}</div><div class="hero-panel" aria-hidden="true"><span class="glyph">${glyph}</span></div></section>`;
 }
@@ -179,6 +184,9 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
   const heroBg = tier !== "bold" && hasGradient(doc)
     ? ` background: var(--semantic-gradient-hero); border-radius: ${radius}; padding-inline: clamp(1.5rem, 4vw, 3rem); margin-top: 1.5rem;`
     : "";
+  const motifCss = motifKindFromTokens(doc) === null
+    ? ""
+    : motifSlotCss({ selector: ".hero-panel", min: 2.2, viewport: "12vw", max: 4 });
   return `${toCssVars(doc)}
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -221,7 +229,7 @@ function demoCss(doc: TokensDocument, tier: Tier = "balanced", ko = false): stri
     .footer-cols a { text-decoration: none; color: ${textMix(72, "standard.footer-link")}; }
     .footer-cols a:hover { color: ${primary}; }
     .fine { width: min(72rem, 100%); margin: 0 auto; font: var(--semantic-typography-caption-weight) var(--semantic-typography-caption-size)/var(--semantic-typography-caption-lineHeight) var(--semantic-typography-caption-family); letter-spacing: calc(var(--semantic-typography-caption-tracking) * 1em); color: ${textMix(60, "standard.fine")}; }
-    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${textureOverlayCss(doc, [".hero", ".hero-panel", ".card", ".signup-card"])}${glassPanelCss(doc, [".hero-panel", ".card", ".signup-card"])}${koCss(ko)}`;
+    @media (max-width: 640px) { .topbar nav { display: none; } }${reduce}${tierCss(tier, doc)}${motifCss}${textureOverlayCss(doc, [".hero", ".hero-panel", ".card", ".signup-card"])}${glassPanelCss(doc, [".hero-panel", ".card", ".signup-card"])}${koCss(ko)}`;
 }
 
 /** Korean rendering rules (spec: locale-typography). Appended last so they

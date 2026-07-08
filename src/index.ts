@@ -4,6 +4,7 @@ export * from "./validator.js";
 export * from "./transformer.js";
 export * from "./adapters/css-adapter.js";
 export * from "./adapters/video-adapter.js";
+export * from "./adapters/video-fonts.js";
 export * from "./styleguide-generator.js";
 export * from "./design-md-generator.js";
 export * from "./demo-generator.js";

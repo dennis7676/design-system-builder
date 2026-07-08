@@ -10,6 +10,7 @@ import {
   generateStyleguide,
   loadTokens,
   toCssVars,
+  toFontsTs,
   toTokensTs,
   webfontImportCss,
 } from "./index.js";
@@ -85,7 +86,7 @@ function generate(argv: string[]): number {
     return 0;
   }
   writeGeneratedArtifacts(outDir, artifacts);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json`);
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/fonts.video.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json`);
   return 0;
 }
 
@@ -105,6 +106,7 @@ export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArti
   writeFileSync(`${outDir}/tokens.css`, `${artifacts.css}\n`);
   writeFileSync(`${outDir}/fonts.css`, withTrailingNewline(webfontImportCss(artifacts.doc)));
   writeFileSync(`${outDir}/tokens.ts`, toTokensTs(artifacts.doc));
+  writeFileSync(`${outDir}/fonts.video.ts`, toFontsTs(artifacts.doc));
   writeFileSync(`${outDir}/styleguide.html`, artifacts.styleguideHtml);
   writeFileSync(`${outDir}/DESIGN.md`, artifacts.designMd);
   writeFileSync(`${outDir}/demo.html`, artifacts.demoHtml);

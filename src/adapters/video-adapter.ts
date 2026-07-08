@@ -153,7 +153,7 @@ function emitStringArray(items: readonly string[], depth: number): string {
 }
 
 /** Unique families across fontFamily leaves — primary (index 0) entries first. */
-function fontAssets(values: Map<string, VideoRealizedValue>): string[] {
+export function fontAssets(values: Map<string, VideoRealizedValue>): string[] {
   const primary: string[] = [];
   const fallback: string[] = [];
   for (const value of values.values()) {

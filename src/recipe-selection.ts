@@ -25,6 +25,8 @@ export const RECIPE_ORDER = [
   "retro",
 ] as const;
 
+export type RecipeKey = (typeof RECIPE_ORDER)[number];
+
 /** Empty while all recognized override axes are implemented. */
 export const DEFERRED_OVERRIDES = [] as const;
 

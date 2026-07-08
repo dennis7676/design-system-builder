@@ -34,6 +34,7 @@ import {
   componentCompositeExemptions,
   componentPatternExemptions,
 } from "./component-registry.js";
+import { VIDEO_CONTRACT, realizedVideoPaths } from "./video-contract.js";
 
 export type Severity = "error" | "warn" | "info";
 
@@ -202,6 +203,7 @@ export function validateTokens(doc: TokensDocument): ValidationResult {
 
   // 3. WCAG contrast over contrastPairs + foreground pairing
   checkComponentParity(doc, findings);
+  checkVideoContractParity(doc, findings);
   checkComponentContrastExemptions(doc, findings);
   checkContrast(doc, leaves, findings);
   checkTextureOverlay(doc, leaves, findings);
@@ -299,6 +301,27 @@ function checkComponentParitySet(
 function componentPathRoot(path: string): string {
   const [namespace, name] = path.split(".");
   return `${namespace ?? ""}.${name ?? ""}`;
+}
+
+function checkVideoContractParity(doc: TokensDocument, findings: Finding[]): void {
+  if (findings.some((finding) => finding.severity === "error")) return;
+  if (!isVideoContractRecipe(doc.meta.recipe)) return;
+  const expected = VIDEO_CONTRACT[doc.meta.recipe];
+  const actual = new Set(realizedVideoPaths(doc));
+  const missing = expected.filter((path) => !actual.has(path)).sort();
+  if (missing.length === 0) return;
+
+  findings.push({
+    severity: "error",
+    code: "video-contract-parity",
+    path: "video",
+    message: `video path parity mismatch for video contract '${doc.meta.recipe}' (missing: ${missing.join(", ")})`,
+    meta: { recipe: doc.meta.recipe, missing },
+  });
+}
+
+function isVideoContractRecipe(recipe: string): recipe is keyof typeof VIDEO_CONTRACT {
+  return Object.hasOwn(VIDEO_CONTRACT, recipe);
 }
 
 function checkComponentContrastExemptions(doc: TokensDocument, findings: Finding[]): void {

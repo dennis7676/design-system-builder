@@ -1,8 +1,7 @@
-# usage-contract Specification
+# usage-contract
 
-## Purpose
-TBD - created by archiving change 2026-07-05-add-usage-contract. Update Purpose after archive.
-## Requirements
+## MODIFIED Requirements
+
 ### Requirement: contract.json emission
 
 `generate` SHALL emit a deterministic `contract.json` alongside the other
@@ -60,30 +59,7 @@ validator/gate/manifest cannot emit.
   `GATE_CATALOG` entry
 - **THEN** the parity test fails naming the missing code
 
-### Requirement: manifest covers the contract
-
-`validate --check-manifest` SHALL treat contract.json as a surface: a
-missing file, unparseable JSON, or a `builtFromTokenHash` mismatch fails
-the manifest check naming contract.json.
-
-#### Scenario: drifted contract caught
-
-- **WHEN** contract.json carries a stale hash after tokens.json changed
-- **THEN** the manifest check fails naming contract.json
-
-### Requirement: README guarantees carry proofs
-
-The README guarantees section SHALL state each guarantee
-(byte-reproducibility, WCAG gating including demo derived colors,
-cross-surface consistency, golden regression safety, machine-readable
-contract) followed by its proof pointer — the gate code symbol, golden
-test file, or verification command — and SHALL cite the actual golden
-count at landing time.
-
-#### Scenario: no unproven claim
-
-- **WHEN** the guarantees section is read
-- **THEN** every claim names where its proof lives
+## ADDED Requirements
 
 ### Requirement: video contract parity gate
 
@@ -108,4 +84,3 @@ semantic, component, transformContract, or contrastPairs token intent.
 
 - **WHEN** all 8 recipes are built after adding the video contract
 - **THEN** each `computeTokenHash(doc)` equals its pre-change value
-

@@ -37,7 +37,7 @@ export interface RealizedVideo {
 }
 
 /** $types the video spike deliberately does not realize (full M4 or no consumer yet). */
-const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "string", "motif-kind"]);
+export const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "string", "motif-kind"]);
 
 export function toRealizedVideo(doc: TokensDocument): RealizedVideo {
   const leaves = tokenMap(doc);

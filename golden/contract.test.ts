@@ -9,6 +9,7 @@ import {
   COMPONENT_P2_ROLLOUT,
   COMPONENT_P3_PATTERNS,
   COMPONENT_P3_ROLLOUT,
+  VIDEO_CONTRACT,
   buildContractJson,
   checkManifest,
   computeTokenHash,
@@ -23,7 +24,7 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const CONTRACT_SHA256 = "c21c79b8d9da348a73f33989d8663f7f0177b171c99c5c7cb61bae9f8e9605f9";
+const CONTRACT_SHA256 = "d459eb3e64facfb96f4f6f4da082475220c46b04d64a7b70441a060aceaa0569";
 
 const sha256 = (value: string): string => createHash("sha256").update(value).digest("hex");
 
@@ -68,6 +69,11 @@ describe("usage contract", () => {
         readonly p3RolloutRecipes: readonly string[];
         readonly patterns: ReadonlyArray<{ readonly name: string }>;
       };
+      readonly video: {
+        readonly realizablePaths: readonly string[];
+        readonly skippedTypes: readonly string[];
+        readonly gate: string;
+      };
     };
     expect(contract.components.registry.map((entry) => entry.name)).toEqual(
       COMPONENT_P1_REGISTRY.map((entry) => entry.name),
@@ -80,6 +86,11 @@ describe("usage contract", () => {
     expect(contract.components.patterns.map((entry) => entry.name)).toEqual(
       COMPONENT_P3_PATTERNS.map((entry) => entry.name),
     );
+    expect(contract.video).toEqual({
+      realizablePaths: [...VIDEO_CONTRACT["minimal-tech"]],
+      skippedTypes: ["shadow", "gradient", "string", "motif-kind"],
+      gate: "video-contract-parity",
+    });
   });
 
   it("manifest drift catches a stale contract hash", () => {

@@ -17,6 +17,7 @@ export * from "./edge-point.js";
 export * from "./motif.js";
 export * from "./component-registry.js";
 export * from "./contract.js";
+export * from "./video-contract.js";
 
 import { readFileSync } from "node:fs";
 import type { TokensDocument } from "./tokens-schema.js";

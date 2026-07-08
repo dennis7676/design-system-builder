@@ -13,6 +13,7 @@ import {
 import { EXPORT_GATE_CODES } from "./gate.js";
 import { MOTION_EASING_PRESETS } from "./motion-easing.js";
 import { RECIPE_ORDER } from "./recipe-selection.js";
+import { VIDEO_SKIPPED_TYPES } from "./transformer.js";
 import {
   CONTRAST_ROLES,
   CONTRAST_STATES,
@@ -24,6 +25,7 @@ import {
   type TokensDocument,
 } from "./tokens-schema.js";
 import { computeTokenHash } from "./validator.js";
+import { VIDEO_CONTRACT } from "./video-contract.js";
 
 export const GENERATED_ARTIFACTS = [
   "tokens.css",
@@ -50,6 +52,7 @@ export const GATE_CATALOG = {
   "cubic-bezier-invalid": "Motion easing leaves use finite four-point cubic-bezier tuples.",
   "orphan-token": "Portable primitive leaves should be consumed by semantic or component aliases.",
   "component-parity": "Rolled-out recipes expose the exact component path registry for each rollout set.",
+  "video-contract-parity": "Rolled-out recipes realize every path declared by the static video contract manifest.",
   "texture-opacity-invalid": "Texture overlay opacity is a numeric token.",
   "texture-opacity-cap": "Texture overlay opacity stays below the shipped cap.",
   "texture-contrast-unparseable": "Texture worst-case blended contrast colors must parse.",
@@ -84,6 +87,11 @@ export interface UsageContract {
   };
   readonly tokens: Record<string, unknown>;
   readonly components: Record<string, unknown>;
+  readonly video: {
+    readonly realizablePaths: readonly string[];
+    readonly skippedTypes: readonly string[];
+    readonly gate: "video-contract-parity";
+  };
   readonly gates: ReadonlyArray<{ readonly code: string; readonly purpose: string }>;
   readonly accessibility: Record<string, unknown>;
   readonly enums: Record<string, unknown>;
@@ -127,6 +135,11 @@ export function buildContract(doc: TokensDocument): UsageContract {
       p3RolloutRecipes: [...COMPONENT_P3_ROLLOUT],
       patterns: compositeRegistrySnapshot(COMPONENT_P3_PATTERNS),
     },
+    video: {
+      realizablePaths: [...videoContractPaths(doc.meta.recipe)],
+      skippedTypes: [...VIDEO_SKIPPED_TYPES],
+      gate: "video-contract-parity",
+    },
     gates: gateEntriesFor(doc),
     accessibility: {
       minRatio: { ...MIN_RATIO },
@@ -160,6 +173,10 @@ export function buildContract(doc: TokensDocument): UsageContract {
         proof: "src/component-registry.ts COMPONENT_P1_REGISTRY, COMPONENT_P2_COMPOSITES, and COMPONENT_P3_PATTERNS plus golden/contract.test.ts registry flow assertion.",
       },
       {
+        claim: "The video-realizable token surface follows the static per-recipe video contract without mutating tokens.json.",
+        proof: "src/video-contract.ts VIDEO_CONTRACT plus golden/video-contract.test.ts parity, seal, and deterministic contract assertions.",
+      },
+      {
         claim: "Regression safety is enforced by the golden test suite.",
         proof: "Run npm test.",
       },
@@ -181,6 +198,15 @@ function gateEntriesFor(doc: TokensDocument): ReadonlyArray<{ readonly code: str
 
 function hasMotifTokens(doc: TokensDocument): boolean {
   return Object.hasOwn(doc.semantic, "motif");
+}
+
+function videoContractPaths(recipe: string): readonly string[] {
+  if (!isVideoContractRecipe(recipe)) return [];
+  return VIDEO_CONTRACT[recipe];
+}
+
+function isVideoContractRecipe(recipe: string): recipe is keyof typeof VIDEO_CONTRACT {
+  return Object.hasOwn(VIDEO_CONTRACT, recipe);
 }
 
 function primitiveRegistrySnapshot(

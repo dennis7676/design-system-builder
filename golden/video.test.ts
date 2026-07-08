@@ -11,16 +11,20 @@
  * nothing is silently dropped (G-V6).
  */
 import { describe, it, expect } from "vitest";
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { computeTokenHash, parseColor, relativeLuminance } from "../src/index.js";
+import { resolveToken, tokenMap } from "../src/surface-data.js";
 import { toRealizedVideo, toRealizedWeb } from "../src/transformer.js";
+import type { VideoGradientValue, VideoShadowValue } from "../src/transformer.js";
 import { toTokensTs, toFrames, TO_FRAMES_SOURCE } from "../src/adapters/video-adapter.js";
 import { loadRecipes, type Recipe } from "../src/recipe-selection.js";
 import { buildTokens } from "../src/tokens-builder.js";
 import type { BrandJson } from "../src/brand-schema.js";
 import type { LeafToken, TokensDocument } from "../src/tokens-schema.js";
+import { isGradientValue } from "../src/tokens-schema.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
@@ -35,6 +39,32 @@ const brandFor = (key: string): BrandJson =>
   }) as BrandJson;
 
 const buildFor = (key: string): TokensDocument => buildTokens(brandFor(key), recipe(key));
+
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+function requireVideoGradient(value: unknown): VideoGradientValue {
+  if (
+    typeof value !== "object" ||
+    value === null ||
+    !("kind" in value) ||
+    !("angle" in value) ||
+    !("stops" in value)
+  ) {
+    throw new Error("video gradient expected");
+  }
+  return value as VideoGradientValue;
+}
+
+function requireVideoShadow(value: unknown): VideoShadowValue {
+  if (!Array.isArray(value)) throw new Error("video shadow array expected");
+  return value as VideoShadowValue;
+}
+
+function sourceStopColor(stop: string): string {
+  return stop.replace(/\s+[+-]?(?:\d+|\d*\.\d+)%\s*$/, "");
+}
 
 describe("G-V0 — video generation is hash-neutral", () => {
   it("toTokensTs embeds but does not mutate the current build hash", () => {
@@ -118,11 +148,32 @@ describe("G-V3 — target filtering + explicit skip accounting (synthetic)", () 
       $value: { kind: "linear", angle: "135deg", stops: ["oklch(0.6 0.1 250) 0%", "oklch(0.8 0.05 250) 100%"] },
     },
   };
+  (doc.primitive as Record<string, unknown>).float = {
+    shadow: {
+      $type: "shadow",
+      $class: "adapter-derived",
+      $value: "inset 0 1px 2px oklch(0 0 0 / 0.12), 4px 8px 16px 2px #112233",
+    },
+  };
   (doc.primitive as Record<string, unknown>).curve = {
     ease: {
       $type: "cubicBezier",
       $class: "adapter-derived",
       $value: [0.2, 0, 0, 1],
+    },
+  };
+  (doc.primitive as Record<string, unknown>).copy = {
+    label: {
+      $type: "string",
+      $class: "portable",
+      $value: "Start",
+    },
+  };
+  (doc.semantic as Record<string, unknown>).motif = {
+    kind: {
+      $type: "motif-kind",
+      $class: "adapter-derived",
+      $value: "none",
     },
   };
   const { values, skipped } = toRealizedVideo(doc);
@@ -132,9 +183,40 @@ describe("G-V3 — target filtering + explicit skip accounting (synthetic)", () 
     expect(values.get("primitive.space.videoOnly")).toBe(32);
   });
 
-  it("gradient path lands in skipped, not in values", () => {
-    expect(values.has("primitive.glow.hero")).toBe(false);
-    expect(skipped).toContain("primitive.glow.hero");
+  it("gradient path lands in values as a structured Remotion object", () => {
+    const gradient = requireVideoGradient(values.get("primitive.glow.hero"));
+    expect(gradient).toEqual({
+      kind: "linear",
+      angle: 135,
+      stops: [
+        { color: expect.stringMatching(/^#[0-9a-f]{6}$/), position: 0 },
+        { color: expect.stringMatching(/^#[0-9a-f]{6}$/), position: 1 },
+      ],
+    });
+    expect(skipped).not.toContain("primitive.glow.hero");
+  });
+
+  it("shadow path lands in values as structured shadow layers", () => {
+    const shadow = requireVideoShadow(values.get("primitive.float.shadow"));
+    expect(shadow).toEqual([
+      {
+        offsetX: 0,
+        offsetY: 1,
+        blur: 2,
+        spread: 0,
+        color: expect.stringMatching(/^#[0-9a-f]{6}$/),
+        inset: true,
+      },
+      {
+        offsetX: 4,
+        offsetY: 8,
+        blur: 16,
+        spread: 2,
+        color: "#112233",
+        inset: false,
+      },
+    ]);
+    expect(skipped).not.toContain("primitive.float.shadow");
   });
 
   it("cubicBezier path lands in values, not skipped", () => {
@@ -142,11 +224,73 @@ describe("G-V3 — target filtering + explicit skip accounting (synthetic)", () 
     expect(skipped).not.toContain("primitive.curve.ease");
   });
 
+  it("skipped paths are now only string and motif-kind leaves", () => {
+    const leaves = tokenMap(doc);
+    expect(skipped).toContain("primitive.copy.label");
+    expect(skipped).toContain("semantic.motif.kind");
+    for (const path of skipped) {
+      expect(["string", "motif-kind"], path).toContain(resolveToken(path, leaves).$type);
+    }
+  });
+
   it("generated header echoes the skip accounting", () => {
     const ts = toTokensTs(doc);
-    expect(ts).toContain("primitive.glow.hero");
+    expect(ts).not.toContain("primitive.glow.hero");
+    expect(ts).not.toContain("primitive.float.shadow");
     expect(ts).not.toContain("primitive.curve.ease");
+    expect(ts).toContain("primitive.copy.label");
+    expect(ts).toContain("semantic.motif.kind");
     expect(ts).toContain("skipped");
+  });
+});
+
+describe("G-V3b — gradient/shadow realization on real recipe data", () => {
+  const doc = buildFor("creative-multiscale");
+  const { values, skipped } = toRealizedVideo(doc);
+  const leaves = tokenMap(doc);
+
+  it("realizes hero gradient stops to #rrggbb with luminance parity", () => {
+    const resolved = resolveToken("semantic.gradient.hero", leaves);
+    if (!isGradientValue(resolved.$value)) throw new Error("semantic.gradient.hero fixture must be a gradient");
+    const gradient = requireVideoGradient(values.get("semantic.gradient.hero"));
+
+    expect(gradient.kind).toBe("linear");
+    expect(gradient.angle).toBe(Number(resolved.$value.angle?.replace("deg", "")));
+    expect(gradient.stops).toHaveLength(resolved.$value.stops.length);
+
+    for (const [index, stop] of gradient.stops.entries()) {
+      expect(stop.color).toMatch(/^#[0-9a-f]{6}$/);
+      const src = parseColor(sourceStopColor(resolved.$value.stops[index]!));
+      const out = parseColor(stop.color);
+      expect(src, `stop ${index}`).not.toBeNull();
+      expect(out, `stop ${index}`).not.toBeNull();
+      expect(Math.abs(relativeLuminance(src!) - relativeLuminance(out!)), `stop ${index}`).toBeLessThan(0.01);
+    }
+    expect(skipped).not.toContain("semantic.gradient.hero");
+  });
+
+  it("realizes elevation shadows to numeric layers with hex colors", () => {
+    const shadow = requireVideoShadow(values.get("semantic.elevation.raised"));
+    expect(shadow.length).toBeGreaterThan(0);
+    for (const layer of shadow) {
+      expect(typeof layer.offsetX).toBe("number");
+      expect(typeof layer.offsetY).toBe("number");
+      expect(typeof layer.blur).toBe("number");
+      expect(typeof layer.spread).toBe("number");
+      expect(layer.color).toMatch(/^#[0-9a-f]{6}$/);
+      expect(typeof layer.inset).toBe("boolean");
+    }
+    expect(skipped).not.toContain("semantic.elevation.raised");
+  });
+});
+
+describe("G-V3c — no-gradient/no-shadow video output is additive-stable", () => {
+  it("keeps the frozen tokens.ts bytes for the no-gradient/no-shadow sample", () => {
+    const ts = toTokensTs(SAMPLE);
+    expect(ts).not.toContain("gradient");
+    expect(ts).not.toContain("shadow");
+    expect(sha256(ts)).toBe("2c6ebbb251a1963cf21b105ba43efe2888727ce6b1bc06165d9a0819ad2954ec");
+    expect(toTokensTs(SAMPLE)).toBe(ts);
   });
 });
 

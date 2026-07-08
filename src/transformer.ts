@@ -9,6 +9,19 @@ import {
 } from "./tokens-schema.js";
 import { resolveToken, tokenEntries, tokenMap, TokenSurfaceError } from "./surface-data.js";
 import { toHexColor } from "./color.js";
+import {
+  realizeVideoGradient,
+  realizeVideoShadow,
+  type VideoGradientValue,
+  type VideoShadowValue,
+} from "./video-realization.js";
+
+export type {
+  VideoGradientStop,
+  VideoGradientValue,
+  VideoShadowLayer,
+  VideoShadowValue,
+} from "./video-realization.js";
 
 export function toRealizedWeb(doc: TokensDocument): Map<string, string> {
   const leaves = tokenMap(doc);
@@ -27,7 +40,13 @@ function isWebExportable(leaf: LeafToken): boolean {
   return leaf.$class === "target-only:web";
 }
 
-export type VideoRealizedValue = string | number | readonly string[] | readonly number[];
+export type VideoRealizedValue =
+  | string
+  | number
+  | readonly string[]
+  | readonly number[]
+  | VideoGradientValue
+  | VideoShadowValue;
 
 export interface RealizedVideo {
   /** path → Remotion-consumable value (hex string, px/ms number, family array). */
@@ -37,7 +56,7 @@ export interface RealizedVideo {
 }
 
 /** $types the video spike deliberately does not realize (full M4 or no consumer yet). */
-export const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["shadow", "gradient", "string", "motif-kind"]);
+export const VIDEO_SKIPPED_TYPES: ReadonlySet<LeafType> = new Set(["string", "motif-kind"]);
 
 export function toRealizedVideo(doc: TokensDocument): RealizedVideo {
   const leaves = tokenMap(doc);
@@ -98,9 +117,10 @@ function realizeVideo(type: LeafType, value: LeafToken["$value"], base: number):
       throw new TokenSurfaceError("motif-kind is not video-realizable in the spike");
     case "cubicBezier":
       return requireCubicBezier(value);
-    case "shadow":
     case "gradient":
-      throw new TokenSurfaceError(`${type} is not video-realizable in the spike`);
+      return realizeVideoGradient(value);
+    case "shadow":
+      return realizeVideoShadow(value);
   }
 }
 

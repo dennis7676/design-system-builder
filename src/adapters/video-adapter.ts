@@ -6,7 +6,7 @@
  * is deliberately avoided (Remotion renders via SSR).
  */
 import type { TokensDocument } from "../tokens-schema.js";
-import { toRealizedVideo, type VideoRealizedValue } from "../transformer.js";
+import { toRealizedVideo, type VideoGradientValue, type VideoRealizedValue } from "../transformer.js";
 import { computeTokenHash } from "../validator.js";
 
 /**
@@ -84,11 +84,11 @@ function nest(values: Map<string, VideoRealizedValue>): Tree {
 }
 
 function isTree(v: Tree | VideoRealizedValue): v is Tree {
-  return typeof v === "object" && v !== null && !Array.isArray(v);
+  return typeof v === "object" && v !== null && !Array.isArray(v) && !isVideoGradientValue(v);
 }
 
 function emit(node: Tree | VideoRealizedValue, depth: number): string {
-  if (!isTree(node)) return emitLeaf(node);
+  if (!isTree(node)) return emitLeaf(node, depth);
   const pad = "  ".repeat(depth + 1);
   const entries = Object.entries(node).map(
     ([key, child]) => `${pad}${emitKey(key)}: ${emit(child, depth + 1)},`,
@@ -96,11 +96,50 @@ function emit(node: Tree | VideoRealizedValue, depth: number): string {
   return `{\n${entries.join("\n")}\n${"  ".repeat(depth)}}`;
 }
 
-function emitLeaf(value: VideoRealizedValue): string {
+function emitLeaf(value: VideoRealizedValue, depth: number): string {
   if (typeof value === "number") return String(value);
   if (typeof value === "string") return JSON.stringify(value);
-  const items = value.map((v) => JSON.stringify(v)).join(", ");
-  return typeof value[0] === "number" ? `[${items}] as const` : `[${items}]`;
+  if (Array.isArray(value)) return emitArray(value, depth);
+  return emitObject(value, depth);
+}
+
+function emitArray(value: readonly (string | number | object)[], depth: number): string {
+  if (value.every((item) => typeof item === "number")) {
+    return `[${value.map((item) => JSON.stringify(item)).join(", ")}] as const`;
+  }
+  if (value.every((item) => typeof item === "string")) {
+    return `[${value.map((item) => JSON.stringify(item)).join(", ")}]`;
+  }
+  if (value.length === 0) return "[]";
+  const pad = "  ".repeat(depth + 1);
+  return `[\n${value.map((item) => `${pad}${emitArrayItem(item, depth + 1)},`).join("\n")}\n${"  ".repeat(depth)}]`;
+}
+
+function emitArrayItem(value: string | number | object, depth: number): string {
+  if (typeof value === "number" || typeof value === "string") return JSON.stringify(value);
+  return emitStructured(value, depth);
+}
+
+function emitStructured(value: object, depth: number): string {
+  if (Array.isArray(value)) return emitArray(value, depth);
+  return emitObject(value, depth);
+}
+
+function emitObject(value: object, depth: number): string {
+  const pad = "  ".repeat(depth + 1);
+  const entries = Object.entries(value).map(([key, child]) => {
+    if (typeof child === "number" || typeof child === "string" || typeof child === "boolean") {
+      return `${pad}${emitKey(key)}: ${JSON.stringify(child)},`;
+    }
+    if (child === null) return `${pad}${emitKey(key)}: null,`;
+    if (Array.isArray(child)) return `${pad}${emitKey(key)}: ${emitArray(child, depth + 1)},`;
+    return `${pad}${emitKey(key)}: ${emitObject(child, depth + 1)},`;
+  });
+  return `{\n${entries.join("\n")}\n${"  ".repeat(depth)}}`;
+}
+
+function isVideoGradientValue(value: object): value is VideoGradientValue {
+  return "kind" in value && "angle" in value && "stops" in value;
 }
 
 function emitKey(key: string): string {

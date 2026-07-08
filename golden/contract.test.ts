@@ -24,7 +24,7 @@ import type { TokensDocument } from "../src/tokens-schema.js";
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const SAMPLE = JSON.parse(readFileSync(join(here, "sample.tokens.json"), "utf8")) as TokensDocument;
-const CONTRACT_SHA256 = "d459eb3e64facfb96f4f6f4da082475220c46b04d64a7b70441a060aceaa0569";
+const CONTRACT_SHA256 = "1ceda006b0b9214e5e1b19a4cd03d44e6de757aa27ce365bd425cda701475246";
 
 const sha256 = (value: string): string => createHash("sha256").update(value).digest("hex");
 
@@ -88,7 +88,7 @@ describe("usage contract", () => {
     );
     expect(contract.video).toEqual({
       realizablePaths: [...VIDEO_CONTRACT["minimal-tech"]],
-      skippedTypes: ["shadow", "gradient", "string", "motif-kind"],
+      skippedTypes: ["string", "motif-kind"],
       gate: "video-contract-parity",
     });
   });

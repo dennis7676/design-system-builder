@@ -208,7 +208,7 @@ motif conflict, resolve it with the user instead of forcing the build.
    | `no-recipe-satisfies-hard-constraints` | constraints/medium exclude all recipes | relax a `constraints[]` tag or change medium; re-ask Phase 4 |
    | `recipe-override-rejected` | chosen recipe fails hard constraints | pick a shown OK recipe or relax the named constraint |
    | `recipe-override-unknown` | chosen recipe key is not known | use one of the valid keys printed by the CLI |
-   | `recipe-deferred` | nearest recipe is a stub (expressive / pro-emotive) | pick a different tone or tell the user that recipe's tokens aren't authored yet |
+   | `recipe-deferred` | selected recipe has no base token tree (defensive — all 8 recipes are currently authored, so this should not fire) | if it ever fires, author the recipe's base or pick a different tone |
    | `too-many-overrides` | > 3 override axes | drop the least-important override |
    | `motif-fit-rejected` | chosen motif does not fit the selected recipe/tone | pick one of the suggested motifs or skip motif |
    | `BRAND [overrides.<axis>] unknown override axis` line | used an unsupported axis | remove it. `tone_vector.cold_warm` → use `visual.accent` hue instead |

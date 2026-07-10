@@ -1,7 +1,16 @@
 # Differentiation improvement plan
 
-> Status: PLAN (not yet implemented). Built after the "two outputs look alike"
-> feedback. Diagnosis pressure-tested with advisor.
+> **Status: SHIPPED (2026-07-10 verified).** P1–P3 are all implemented:
+> P1 pro-emotive authored (batch A rollout), P2 recipes pushed apart (all 8
+> recipes now full-authored with distinct skeletons + hue families), P3 applied
+> demo page shipped as surface #3 (`feat(demo): P3`). The diagnosis below is
+> **historical** — it describes the pre-fix state. No recipe is a stub anymore
+> (`references/recipes/*.json` are all ~63–65 KB full trees), so the "force-fit
+> onto clean-tech" failure mode no longer occurs. A brand's warm/rich tone now
+> selects warm-creator / pro-emotive rather than being crammed into minimal-tech.
+>
+> Original header (kept for provenance): PLAN (not yet implemented). Built after
+> the "two outputs look alike" feedback. Diagnosis pressure-tested with advisor.
 
 ## Diagnosis — root cause is the recipe LIBRARY, not a philosophy→token mapping
 
@@ -39,7 +48,7 @@ interpolation (`보간 폐기`) as non-deterministic / incoherent.
 |-----------|------------------------------------------|----------|-----|
 | In-context / applied examples | full demo pages/apps | token catalog + 1 button playground | **HIGH** |
 | Distinct personality per system | serif vs grotesque, coral vs blue, sharp vs pill | 2 built recipes, all clean-blue-sans | **HIGH** |
-| Built recipe coverage | n/a | 2 of 4 (expressive / pro-emotive are stubs) | **HIGH** |
+| Built recipe coverage | n/a | ~~2 of 4 (expressive / pro-emotive are stubs)~~ → **8 of 8 authored (RESOLVED 2026-07-10)** | ~~HIGH~~ done |
 | Depth / elevation | shadow systems | none in built recipes | MED |
 | Usage guidance (do/don't) | explicit | usage hints only | MED |
 | Icon / illustration | yes | none | LOW (defer) |

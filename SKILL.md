@@ -56,6 +56,12 @@ inference — that is what keeps `brand.json` reproducible.
 Ask, conversationally: **medium?** (web / app / video — pilot supports `web`),
 **target audience & expertise?**, **one-word first impression?**
 - `medium` → `product.medium`. Expertise/audience → `audience[]` and density prior.
+- **Locale — Korean is the default.** Set `product.locales: ["ko"]` unless the
+  product is explicitly English-only or the user asks in English for an English
+  build (then omit `locales` for the Latin-only path). `ko` activates Korean
+  font pairing (Pretendard/SUIT) and Korean specimen/demo copy; without it the
+  surfaces render Latin-only fonts and English copy, which is wrong for Korean
+  services. When in doubt, ask — but default to `["ko"]`.
 - Optional mood-image intake: ask for 3+ references (Pinterest captures, logo,
   current brand material). Read them into a 5-axis tone prior, each axis with a
   one-line visual reason, plus a recipe prior. Use priors only to narrow later
@@ -123,7 +129,7 @@ Build this object from the answers (see `src/brand-schema.ts` for the type):
 ```json
 {
   "schemaVersion": "2026-06-30",
-  "product": { "name": "<name>", "medium": "web" },
+  "product": { "name": "<name>", "medium": "web", "locales": ["ko"] },
   "audience": ["<who>"],
   "accessibility": { "minContrast": "AA" },
   "constraints": [],

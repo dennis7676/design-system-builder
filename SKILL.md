@@ -96,6 +96,11 @@ feel, density, **corner radius feel** (tight ↔ rounded), **brand colour**.
 - **Expression amplitude** → "레이아웃 표현 강도는?" quiet/standard/statement →
   `expression` = `safe` | `balanced`(default, omit) | `bold`.
 - Accessibility need → `accessibility.minContrast` = `AA` (default) | `AAA`.
+- **Industry seed (optional)** → if the product type is known, consult
+  `references/industry/` (colors/products/typography/styles lookups, ~160 industries)
+  to *propose* a starting accent hue, style direction, or font feel. These only seed
+  the conversation — the build gate re-proves WCAG floors and can override any seeded
+  hex, so never hand-bind a CSV value past `brand.json` confirmation.
 
 ### Phase 3 — Motion (→ override)
 Snappy ↔ smooth, reduce-motion respect.

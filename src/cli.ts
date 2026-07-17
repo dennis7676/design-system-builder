@@ -2,6 +2,7 @@
 import { existsSync, writeFileSync, mkdirSync, readFileSync, realpathSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { formatHeroAdvisory } from "./hero-advisory.js";
 import {
   buildContractJson,
   checkManifest,
@@ -199,6 +200,9 @@ function build(argv: string[]): number {
     return 1;
   }
   console.error(`tokenHash: ${validation.tokenHash}`);
+
+  const advisory = formatHeroAdvisory(doc);
+  if (advisory !== null) console.error(advisory);
 
   const json = JSON.stringify(doc, null, 2) + "\n";
   if (outFile === undefined) {

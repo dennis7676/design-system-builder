@@ -13,7 +13,9 @@ import { TONE_AXES, type BrandJson, type ToneVector } from "./brand-schema.js";
 import { validateEdgeFitness } from "./edge-point.js";
 import { validateMotifFitness } from "./motif.js";
 
-/** Stable load + tie-break order. B1 (d8): +4 structural recipes (7-family ceiling). */
+/** Stable load + tie-break order. B1 (d8): +4 structural recipes (7-family ceiling).
+ *  d10: +medical-clinical (industry-seed promotion — teal clinical tone gap).
+ *  d11: +blueprint (cyanotype/drafting look — white paper, navy ink, ultramarine rules). */
 export const RECIPE_ORDER = [
   "minimal-tech",
   "enterprise",
@@ -23,6 +25,8 @@ export const RECIPE_ORDER = [
   "warm-creator",
   "luxury",
   "retro",
+  "medical-clinical",
+  "blueprint",
 ] as const;
 
 export type RecipeKey = (typeof RECIPE_ORDER)[number];

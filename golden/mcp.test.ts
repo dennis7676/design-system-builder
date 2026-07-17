@@ -147,7 +147,7 @@ describe("MCP stdio server", () => {
     expect(result.recipes.map((recipe) => recipe.key)).toEqual(
       loadRecipes(join(root, "references/recipes")).map((recipe) => recipe.key),
     );
-    expect(result.recipes).toHaveLength(8);
+    expect(result.recipes).toHaveLength(10);
     expect(result.recipes[0]).toEqual(
       expect.objectContaining({
         key: "minimal-tech",
@@ -288,7 +288,7 @@ describe("MCP stdio server", () => {
         await callToolWith(foreignClient, "dsb_recipes", {}),
       );
       expect(recipes.ok).toBe(true);
-      expect(recipes.recipes).toHaveLength(8);
+      expect(recipes.recipes).toHaveLength(10);
 
       const brand = JSON.parse(readFileSync(join(root, "golden/sample.brand.json"), "utf8")) as BrandJson;
       const build = jsonToolResult<{ ok: boolean; tokenHash?: string }>(

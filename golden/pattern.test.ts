@@ -84,6 +84,7 @@ describe("P3 pattern registry", () => {
       "expressive",
       "creative-multiscale",
       "medical-clinical",
+      "blueprint",
     ]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P3_PATHS).toContain("component.pricing.featuredBackground");

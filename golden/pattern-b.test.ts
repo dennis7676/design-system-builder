@@ -79,7 +79,7 @@ function patternPairKey(pair: Pick<ContrastPair, "fg" | "bg" | "role" | "state" 
 
 describe("pattern batch b rollout", () => {
   it("appends the final four recipes to the P3 rollout set", () => {
-    expect(COMPONENT_P3_ROLLOUT).toEqual([...PREVIOUS, ...BATCH, "medical-clinical"]);
+    expect(COMPONENT_P3_ROLLOUT).toEqual([...PREVIOUS, ...BATCH, "medical-clinical", "blueprint"]);
   });
 
   it("rolls out every catalog recipe to P3 pattern parity", () => {
@@ -139,7 +139,7 @@ describe("pattern batch b rollout", () => {
       readonly components: { readonly p3RolloutRecipes: readonly string[] };
     };
 
-    expect(contract.components.p3RolloutRecipes).toEqual([...PREVIOUS, ...BATCH, "medical-clinical"]);
+    expect(contract.components.p3RolloutRecipes).toEqual([...PREVIOUS, ...BATCH, "medical-clinical", "blueprint"]);
   });
 
   it("carries retro poster-rhythm pattern deltas", () => {

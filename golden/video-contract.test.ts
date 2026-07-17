@@ -19,6 +19,7 @@ const TOKEN_HASHES: Record<RecipeKey, string> = {
   enterprise: "sha256:832623ece673a1fa04e7a071a180b126535c1d15ad231b9fbceeb52ea01ce24d",
   expressive: "sha256:f36a9d63ca675514f48a361b190ad4e0e8e7efb23c0c70372e16e3424e0904fc",
   luxury: "sha256:5884290d9770395ff0805502e1fee524e347ff660be4edbe76b5997c213093fa",
+  "blueprint": "sha256:b60432eda09fac95a6e25c14e9fbadbf2141280e70f93b78938c984fb71323f2",
   "medical-clinical": "sha256:d4e3a4b6409fedd03fa214876d06f4dcc34449af8504a549977181f6127a9b90",
   "minimal-tech": "sha256:eb29826206ce72f927b2a3ebf0f390abae35964879602ddbd4eb28d6d3d13c51",
   "pro-emotive": "sha256:0c5f752cae9dcd71c9357f7761d3c942a4ac9255f41636557a010345561f1820",

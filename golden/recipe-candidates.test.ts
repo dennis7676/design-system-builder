@@ -51,8 +51,8 @@ describe("recipe candidate affordances", () => {
     expect(table).toBe([
       "recipe candidates (tone distance, hard constraints):",
       "  1. minimal-tech         d=0.000  OK  ← selected",
-      "  2. medical-clinical     d=2.236  OK",
-      "  3. pro-emotive          d=2.449  OK",
+      "  2. blueprint            d=1.732  OK",
+      "  3. medical-clinical     d=2.236  OK",
     ].join("\n"));
   });
 
@@ -74,7 +74,7 @@ describe("recipe candidate affordances", () => {
 
   it("rejects unknown recipe_override keys with the valid recipe list", () => {
     expect(() => selectRecipe(brand({ recipeOverride: "unknown-family" }), RECIPES))
-      .toThrowError(/valid: creative-multiscale, enterprise, expressive, luxury, medical-clinical, minimal-tech, pro-emotive, retro, warm-creator/);
+      .toThrowError(/valid: blueprint, creative-multiscale, enterprise, expressive, luxury, medical-clinical, minimal-tech, pro-emotive, retro, warm-creator/);
   });
 
   it("builds byte-identical tokens for the same brand.json with recipe_override", () => {

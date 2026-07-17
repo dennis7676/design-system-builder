@@ -79,7 +79,7 @@ function compositePairKey(pair: Pick<ContrastPair, "fg" | "bg" | "role" | "state
 
 describe("composite batch b rollout", () => {
   it("appends the final four recipes to the P2 rollout set", () => {
-    expect(COMPONENT_P2_ROLLOUT).toEqual([...PREVIOUS, ...BATCH, "medical-clinical"]);
+    expect(COMPONENT_P2_ROLLOUT).toEqual([...PREVIOUS, ...BATCH, "medical-clinical", "blueprint"]);
   });
 
   it("rolls out every catalog recipe to P2 composite parity", () => {
@@ -139,7 +139,7 @@ describe("composite batch b rollout", () => {
       readonly components: { readonly p2RolloutRecipes: readonly string[] };
     };
 
-    expect(contract.components.p2RolloutRecipes).toEqual([...PREVIOUS, ...BATCH, "medical-clinical"]);
+    expect(contract.components.p2RolloutRecipes).toEqual([...PREVIOUS, ...BATCH, "medical-clinical", "blueprint"]);
   });
 
   it("carries retro poster-rhythm composite deltas", () => {

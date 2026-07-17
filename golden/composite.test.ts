@@ -85,6 +85,7 @@ describe("P2 composite registry", () => {
       "expressive",
       "creative-multiscale",
       "medical-clinical",
+      "blueprint",
     ]);
     expect(COMPONENT_STATES).toEqual(["default", "hover", "focus", "active", "disabled"]);
     expect(COMPONENT_P2_PATHS).toContain("component.table.rowHoverBackground");

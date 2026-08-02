@@ -1,6 +1,6 @@
 {
   "name": "design-system-builder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Interview-driven design system generator — intent token SSOT → multi-target adapters (web M2, video M4)",
   "type": "module",
   "license": "MIT",

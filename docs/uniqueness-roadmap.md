@@ -155,15 +155,29 @@ Adopted points and order:
 M4 video extension and M5 hardening keep their places after the above;
 hygiene items ride along in any session.
 
-## Open after M6
+## Releases
 
-- **Registry lag** — npm sits at 0.1.0 (2026-07-08). Ten commits landed
-  after it (M4-c/M4-d video codegen + Remotion example, ko-locale default,
-  industry reference lookups, medical-clinical + blueprint recipes, hero
-  advisory). A 0.2.0 cut is the next publish; releases need an
-  interactive `npm login` first.
-- **PR #1 unmerged** — `feat/blueprint-recipe-hero-advisory` (3 commits,
-  0 behind main, 532 tests + `tsc --noEmit` green as of 2026-08-02) has
-  been open since 2026-07-17. main is what playground and npm ship from,
-  so recipes d10/d11 and the hero advisory reach no consumer until it
-  merges.
+`0.1.0` — 2026-07-08. First public cut: M6 (playground + public repo +
+full MCP server).
+
+`0.2.0` — the eight commits that landed after 0.1.0, all on main as of
+2026-08-02:
+
+- **M4 video adapter completed** — `M4-a` per-recipe video-contract parity
+  gate, `M4-b` gradient + shadow realization, `M4-c` `loadFont` codegen
+  (`fonts.video.ts`), `M4-d` Remotion example proving the
+  brand → tokens → video-adapter → render chain end to end.
+- **Two recipes** — `medical-clinical` (d10, teal clinical tone gap) and
+  `blueprint` (d11, cyanotype/drafting look). Recipe count 8 → 10.
+- **Hero imagery advisory** — build tells the operator when a hero image
+  is likely to carry the design.
+- **Interview seeding** — industry reference lookups
+  (`references/industry/`).
+- **`product.locales` defaults to `["ko"]`** — Korean-first surfaces.
+- **Docs** — stale differentiation-plan and SKILL.md stub claims
+  corrected.
+
+Gates at cut time: 532 tests + `tsc --noEmit` clean on main;
+`prepublishOnly` re-runs both. Releases need an interactive `npm login`
+first — it prompts for a username, so it cannot run inside an agent
+session.

@@ -72,7 +72,7 @@ function surfacesFor(doc: TokensDocument) {
 
 describe("component batch b rollout", () => {
   it("appends luxury, retro, and warm-creator to the P1 rollout set", () => {
-    expect(COMPONENT_P1_ROLLOUT.slice(-BATCH.length)).toEqual(BATCH);
+    expect(COMPONENT_P1_ROLLOUT.slice(-BATCH.length - 2)).toEqual([...BATCH, "medical-clinical", "blueprint"]);
   });
 
   for (const key of BATCH) {

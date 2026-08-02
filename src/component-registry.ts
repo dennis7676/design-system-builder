@@ -1,6 +1,6 @@
 import type { ContrastRole, ContrastState } from "./tokens-schema.js";
 
-export const COMPONENT_P1_ROLLOUT = ["minimal-tech", "enterprise", "pro-emotive", "expressive", "creative-multiscale", "luxury", "retro", "warm-creator"] as const;
+export const COMPONENT_P1_ROLLOUT = ["minimal-tech", "enterprise", "pro-emotive", "expressive", "creative-multiscale", "luxury", "retro", "warm-creator", "medical-clinical", "blueprint"] as const;
 
 export const COMPONENT_STATES = [
   "default",
@@ -176,6 +176,8 @@ export const COMPONENT_P2_ROLLOUT = [
   "warm-creator",
   "expressive",
   "creative-multiscale",
+  "medical-clinical",
+  "blueprint",
 ] as const;
 
 export const COMPONENT_P2_COMPOSITES = [
@@ -252,6 +254,8 @@ export const COMPONENT_P3_ROLLOUT = [
   "warm-creator",
   "expressive",
   "creative-multiscale",
+  "medical-clinical",
+  "blueprint",
 ] as const;
 
 export const COMPONENT_P3_PATTERNS = [

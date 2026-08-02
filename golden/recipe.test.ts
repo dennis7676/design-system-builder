@@ -54,7 +54,7 @@ describe("R1 — minimal-tech reproduces the sample intent hash (no fork)", () =
 });
 
 describe("R2 — built docs pass the validator", () => {
-  for (const key of ["minimal-tech", "enterprise"]) {
+  for (const key of ["minimal-tech", "enterprise", "medical-clinical"]) {
     it(`${key} build passes export gate (0 errors)`, () => {
       const built = buildTokens(brand(), recipe(key));
       const errs = validateTokens(built).findings.filter((f) => f.severity === "error");
@@ -212,5 +212,30 @@ describe("R10 — B1 structural recipes (d8: 4→8, family ceiling)", () => {
     for (const key of NEW) {
       expect([...recipe(key).hardConstraintRules.requires.mediums]).toEqual(["web"]);
     }
+  });
+});
+
+describe("R11 — medical-clinical (d10: industry-seed promotion, teal clinical gap)", () => {
+  // Additive: teal clinical tone family seeded from references/industry/colors.csv.
+  // Same invariants as R10 (web-only, no 'dense-data', anchor distinct from test
+  // vectors) so the R1–R10 net stays green — this ADDS a 9th family.
+  const KEY = "medical-clinical";
+
+  it("is loaded and selected at its own tone anchor", () => {
+    const r = recipe(KEY);
+    expect(r).toBeDefined();
+    const b = brand({ tone: r.toneAnchor });
+    expect(selectRecipe(b, RECIPES).recipeKey).toBe(KEY);
+  });
+  it("builds and passes the export gate (0 errors, WCAG incl.)", () => {
+    const built = buildTokens(brand({ tone: recipe(KEY).toneAnchor }), recipe(KEY));
+    const errs = validateTokens(built).findings.filter((f) => f.severity === "error");
+    expect(errs).toEqual([]);
+  });
+  it("never declares 'dense-data' (keeps R4 dense-data → enterprise)", () => {
+    expect(recipe(KEY).hardConstraintRules.tags).not.toContain("dense-data");
+  });
+  it("is web-only (keeps R4 medium=video → no recipe)", () => {
+    expect([...recipe(KEY).hardConstraintRules.requires.mediums]).toEqual(["web"]);
   });
 });

@@ -10,3 +10,7 @@ examples/*/tokens.css
 examples/*/styleguide.html
 examples/*/DESIGN.md
 .playwright-cli/
+
+# local build outputs and scratch probes — derived, never SSOT
+out/
+work/

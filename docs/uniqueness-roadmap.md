@@ -141,13 +141,29 @@ Adopted points and order:
    demo template has no glyph slot (e.g. enterprise → briefing) emit motif
    tokens but no demo visual — extending motif slots to the remaining
    templates is a follow-up candidate.
-6. **Playground hosting (B4) + M6 publish** — user-approved 2026-07-06,
-   in flight: playground live at https://dsb-playground.vercel.app (all 8
-   recipes' styleguide/demo/contract, deterministic specimens); repo made
-   public after a clean full-history gitleaks scan; MCP full server
+6. ~~**Playground hosting (B4) + M6 publish**~~ — **SHIPPED 2026-07-08**,
+   user-approved 2026-07-06: playground live at
+   https://dsb-playground.vercel.app (all 8 recipes' styleguide/demo/
+   contract, deterministic specimens, HTTP 200 verified 2026-08-02); repo
+   made public after a clean full-history gitleaks scan; MCP full server
    SHIPPED (`add-mcp-full-server`: dsb_recipes / dsb_suggest / dsb_build /
    dsb_generate / dsb_validate, package-root recipes resolution so npm
-   installs work from any cwd, 489 tests); npm publish pending login.
+   installs work from any cwd); **npm publish DONE** —
+   `design-system-builder@0.1.0` live on the public registry since
+   2026-07-08T02:04Z. M6 is closed.
 
 M4 video extension and M5 hardening keep their places after the above;
 hygiene items ride along in any session.
+
+## Open after M6
+
+- **Registry lag** — npm sits at 0.1.0 (2026-07-08). Ten commits landed
+  after it (M4-c/M4-d video codegen + Remotion example, ko-locale default,
+  industry reference lookups, medical-clinical + blueprint recipes, hero
+  advisory). A 0.2.0 cut is the next publish; releases need an
+  interactive `npm login` first.
+- **PR #1 unmerged** — `feat/blueprint-recipe-hero-advisory` (3 commits,
+  0 behind main, 532 tests + `tsc --noEmit` green as of 2026-08-02) has
+  been open since 2026-07-17. main is what playground and npm ship from,
+  so recipes d10/d11 and the hero advisory reach no consumer until it
+  merges.

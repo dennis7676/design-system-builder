@@ -30,7 +30,7 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 | FS-001 | 컴포넌트 스펙 소스 스키마 | REQ-001 | src/component-spec.ts | verified |
 | FS-002 | 레시피 델타 병합 | REQ-001 | src/component-spec.ts | draft |
 | FS-003 | components.json 생성 | REQ-001, REQ-003 | src/component-spec.ts | verified |
-| FS-004 | rules.json 생성 | REQ-001 | src/rules-generator.ts | draft |
+| FS-004 | rules.json 생성 | REQ-001 | src/rules-generator.ts | verified |
 | FS-005 | styleguide 사이드바 라우팅 | REQ-002 | src/styleguide-generator.ts | draft |
 | FS-006 | styleguide 컴포넌트·준용 섹션 | REQ-002 | src/styleguide-generator.ts | draft |
 | FS-007 | DESIGN.md 판별 그래프 | REQ-003 | src/design-md-generator.ts | draft |
@@ -38,7 +38,7 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 | FS-009 | 스펙 완주 게이트 | REQ-001, REQ-004 | src/gate.ts | draft |
 | FS-010 | manifest 신규 2면 교차검사 | REQ-004 | src/manifest.ts | draft |
 | FS-011 | compliance CLI 값 규칙 4종 | REQ-001 | src/compliance.ts | draft |
-| FS-012 | rules.json 확장 kind 예약 | REQ-001 | src/rules-generator.ts | draft |
+| FS-012 | rules.json 확장 kind 예약 | REQ-001 | src/rules-generator.ts | implemented |
 
 `shared: true` FS = FS-008(전 면이 참조하는 앵커 규약), FS-001(전 생성기의 입력 스키마). 이 둘이 바뀌면 의존 FS의 TC까지 재실행한다.
 
@@ -108,7 +108,7 @@ LLM과 페이지 생성기가 함께 읽는 구조화 스펙. tokens.json에 넣
 - satisfies: REQ-001
 - impl: `src/rules-generator.ts`, `src/cli.ts`
 - shared: false
-- 상태: draft
+- 상태: **verified** (e4bdd22 · TC-012~017 · `golden/rules-json.test.ts`)
 
 소비자 계약. `contract.json`(생산자 계약 — 빌드 유효성·게이트)과 분리해 검사기가 게이트 코드를 로드하지 않게 한다.
 
@@ -270,7 +270,7 @@ ds-portal이 `anatomy` 71/145(49%)에서 멈춘 실패를 구조로 막는다. �
 - satisfies: REQ-001
 - impl: `src/rules-generator.ts`
 - shared: false
-- 상태: draft
+- 상태: **implemented** (e4bdd22 — kind 어휘와 `radius-nesting` 예약까지만 검증됨. 나머지 세 기준은 검사기가 있어야 판정 가능하므로 FS-011에서 verified로 종결한다)
 
 1차에 구현하지 않는 조립·선택 규칙을 스키마가 미리 표현할 수 있게 해 나중에 구조 변경 없이 채운다.
 

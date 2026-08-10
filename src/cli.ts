@@ -21,7 +21,8 @@ import { buildTokens } from "./tokens-builder.js";
 import { canGenerate } from "./gate.js";
 import type { TokensDocument } from "./tokens-schema.js";
 import type { Surfaces } from "./manifest.js";
-import { defaultRecipesDir } from "./package-paths.js";
+import { defaultComponentSpecsDir, defaultRecipesDir } from "./package-paths.js";
+import { loadComponentSpecs, specCoverage, toComponentsJson } from "./component-spec.js";
 
 interface GeneratedArtifacts {
   readonly doc: TokensDocument;
@@ -30,6 +31,7 @@ interface GeneratedArtifacts {
   readonly designMd: string;
   readonly demoHtml: string;
   readonly contractJson: string;
+  readonly componentsJson: string;
 }
 
 function main(argv: string[]): number {
@@ -86,11 +88,12 @@ function generate(argv: string[]): number {
     return 0;
   }
   writeGeneratedArtifacts(outDir, artifacts);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/fonts.video.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json`);
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/fonts.video.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json, ${outDir}/components.json`);
   return 0;
 }
 
 export function buildGeneratedArtifacts(doc: TokensDocument): GeneratedArtifacts {
+  const specs = loadComponentSpecs(defaultComponentSpecsDir()).specs;
   return {
     doc,
     css: toCssVars(doc),
@@ -98,6 +101,7 @@ export function buildGeneratedArtifacts(doc: TokensDocument): GeneratedArtifacts
     designMd: generateDesignMd(doc),
     demoHtml: generateDemo(doc),
     contractJson: buildContractJson(doc),
+    componentsJson: toComponentsJson(doc, specs),
   };
 }
 
@@ -111,6 +115,7 @@ export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArti
   writeFileSync(`${outDir}/DESIGN.md`, artifacts.designMd);
   writeFileSync(`${outDir}/demo.html`, artifacts.demoHtml);
   writeFileSync(`${outDir}/contract.json`, artifacts.contractJson);
+  writeFileSync(`${outDir}/components.json`, artifacts.componentsJson);
 }
 
 function generatedManifestSurfaces(doc: TokensDocument): Surfaces {

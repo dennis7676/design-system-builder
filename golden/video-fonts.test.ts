@@ -106,6 +106,7 @@ describe("G-V7 — emitted Remotion font loader module", () => {
       designMd: "",
       demoHtml: "",
       contractJson: buildContractJson(doc),
+      componentsJson: "",
     });
 
     expect(readFileSync(join(dir, "tokens.ts"), "utf8")).toBe(tokensTs);

@@ -12,11 +12,16 @@
  */
 import { readFileSync, readdirSync } from "node:fs";
 import {
+  COMPONENT_P1_REGISTRY,
+  COMPONENT_STATES,
   componentCompositeNames,
   componentPatternNames,
   componentPrimitiveNames,
+  type ComponentPrimitiveDefinition,
 } from "./component-registry.js";
-import type { Finding } from "./validator.js";
+import { entriesFrom } from "./surface-data.js";
+import type { TokenGroup, TokensDocument } from "./tokens-schema.js";
+import { computeTokenHash, type Finding } from "./validator.js";
 
 /** Fields a human must author. Missing value requires a `_deferred` reason. */
 export const SPEC_REQUIRED_FIELDS = [
@@ -261,6 +266,100 @@ export interface SpecCoverage {
  * Per-field coverage across all specs. Always reported, including at 100% —
  * a number that only appears when it is bad teaches people to ignore it.
  */
+export type ComponentTier = "primitive" | "composite" | "pattern";
+
+export interface ComponentEntry {
+  readonly name: string;
+  readonly tier: ComponentTier;
+  readonly purpose: ComponentSpecPurpose;
+  readonly useWhen: string | null;
+  readonly dontUseWhen: string | null;
+  readonly vsPartner: readonly VsPartnerRef[];
+  readonly anatomy: string | null;
+  readonly designRules: readonly string[];
+  readonly _deferred?: Readonly<Record<string, string>>;
+  /** Registry-derived, deterministic — never authored by hand. */
+  readonly variants: readonly string[];
+  readonly states: readonly string[];
+  readonly baseProperties: readonly string[];
+  readonly stateProperties: readonly string[];
+  /** Token paths this component actually realizes in this build (FS-008 anchors). */
+  readonly tokenPaths: readonly string[];
+}
+
+export interface ComponentsDocument {
+  readonly schemaVersion: string;
+  readonly tokenHash: string;
+  readonly components: Readonly<Record<string, ComponentEntry>>;
+}
+
+function tierOf(name: string): ComponentTier {
+  if (componentPrimitiveNames().includes(name)) return "primitive";
+  if (componentCompositeNames().includes(name)) return "composite";
+  return "pattern";
+}
+
+/** Token paths under `component.<name>.` that exist in this build. */
+function realizedPaths(doc: TokensDocument, name: string): readonly string[] {
+  const tree = (doc as unknown as { component?: TokenGroup }).component;
+  if (!tree) return [];
+  const prefix = `component.${name}.`;
+  return entriesFrom(tree, "component")
+    .map((e) => e.path)
+    .filter((p) => p.startsWith(prefix))
+    .sort();
+}
+
+/**
+ * Merges authored prose (FS-001) with registry-derived facts into the
+ * consumer-facing document. The `tokenHash` ties it to the exact tokens.json
+ * of the same build — a surface carrying a stale hash is a manifest error.
+ */
+export function buildComponentsDocument(
+  doc: TokensDocument,
+  specs: readonly ComponentSpecSource[],
+): ComponentsDocument {
+  const primitives = new Map<string, ComponentPrimitiveDefinition>(
+    COMPONENT_P1_REGISTRY.map((d) => [d.name, d]),
+  );
+  const components: Record<string, ComponentEntry> = {};
+
+  for (const spec of specs) {
+    const primitive = primitives.get(spec.name);
+    const entry: ComponentEntry = {
+      name: spec.name,
+      tier: tierOf(spec.name),
+      purpose: { what: spec.purpose?.what ?? null, why: spec.purpose?.why ?? null },
+      useWhen: spec.useWhen ?? null,
+      dontUseWhen: spec.dontUseWhen ?? null,
+      vsPartner: spec.vsPartner ?? [],
+      anatomy: spec.anatomy ?? null,
+      designRules: spec.designRules ?? [],
+      ...(spec._deferred ? { _deferred: spec._deferred } : {}),
+      variants: primitive?.variants ?? [],
+      states: primitive?.stateProperties ? [...COMPONENT_STATES] : [],
+      baseProperties: primitive?.baseProperties ?? [],
+      stateProperties: primitive?.stateProperties ?? [],
+      tokenPaths: realizedPaths(doc, spec.name),
+    };
+    components[spec.name] = entry;
+  }
+
+  return {
+    schemaVersion: doc.schemaVersion,
+    tokenHash: computeTokenHash(doc),
+    components,
+  };
+}
+
+/** Serialized form written to out/components.json — stable for byte-identical rebuilds. */
+export function toComponentsJson(
+  doc: TokensDocument,
+  specs: readonly ComponentSpecSource[],
+): string {
+  return `${JSON.stringify(buildComponentsDocument(doc, specs), null, 2)}\n`;
+}
+
 export function specCoverage(specs: readonly ComponentSpecSource[]): readonly SpecCoverage[] {
   return SPEC_REQUIRED_FIELDS.map((field) => {
     const deferred: string[] = [];

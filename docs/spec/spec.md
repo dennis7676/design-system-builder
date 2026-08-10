@@ -29,7 +29,7 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 |---|---|---|---|---|
 | FS-001 | 컴포넌트 스펙 소스 스키마 | REQ-001 | src/component-spec.ts | verified |
 | FS-002 | 레시피 델타 병합 | REQ-001 | src/component-spec.ts | draft |
-| FS-003 | components.json 생성 | REQ-001, REQ-003 | src/component-spec.ts | draft |
+| FS-003 | components.json 생성 | REQ-001, REQ-003 | src/component-spec.ts | verified |
 | FS-004 | rules.json 생성 | REQ-001 | src/rules-generator.ts | draft |
 | FS-005 | styleguide 사이드바 라우팅 | REQ-002 | src/styleguide-generator.ts | draft |
 | FS-006 | styleguide 컴포넌트·준용 섹션 | REQ-002 | src/styleguide-generator.ts | draft |
@@ -88,7 +88,7 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 - satisfies: REQ-001, REQ-003
 - impl: `src/component-spec.ts`, `src/cli.ts` (generate 경로)
 - shared: false
-- 상태: draft
+- 상태: **verified** (837d24d · TC-006~010 · `golden/components-json.test.ts`)
 
 LLM과 페이지 생성기가 함께 읽는 구조화 스펙. tokens.json에 넣지 않는 이유는 `tokenHash`가 `component` 키를 해싱하기 때문이며(`tokens-schema.ts:264`), 산문 수정이 재현성 계약을 오염시키면 안 된다.
 

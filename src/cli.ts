@@ -23,6 +23,7 @@ import type { TokensDocument } from "./tokens-schema.js";
 import type { Surfaces } from "./manifest.js";
 import { defaultComponentSpecsDir, defaultRecipesDir } from "./package-paths.js";
 import { loadComponentSpecs, specCoverage, toComponentsJson } from "./component-spec.js";
+import { toRulesJson } from "./rules-generator.js";
 
 interface GeneratedArtifacts {
   readonly doc: TokensDocument;
@@ -32,6 +33,7 @@ interface GeneratedArtifacts {
   readonly demoHtml: string;
   readonly contractJson: string;
   readonly componentsJson: string;
+  readonly rulesJson: string;
 }
 
 function main(argv: string[]): number {
@@ -88,7 +90,7 @@ function generate(argv: string[]): number {
     return 0;
   }
   writeGeneratedArtifacts(outDir, artifacts);
-  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/fonts.video.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json, ${outDir}/components.json`);
+  console.error(`wrote ${outDir}/tokens.css, ${outDir}/fonts.css, ${outDir}/tokens.ts, ${outDir}/fonts.video.ts, ${outDir}/styleguide.html, ${outDir}/DESIGN.md, ${outDir}/demo.html, ${outDir}/contract.json, ${outDir}/components.json, ${outDir}/rules.json`);
   return 0;
 }
 
@@ -102,6 +104,7 @@ export function buildGeneratedArtifacts(doc: TokensDocument): GeneratedArtifacts
     demoHtml: generateDemo(doc),
     contractJson: buildContractJson(doc),
     componentsJson: toComponentsJson(doc, specs),
+    rulesJson: toRulesJson(doc),
   };
 }
 
@@ -116,6 +119,7 @@ export function writeGeneratedArtifacts(outDir: string, artifacts: GeneratedArti
   writeFileSync(`${outDir}/demo.html`, artifacts.demoHtml);
   writeFileSync(`${outDir}/contract.json`, artifacts.contractJson);
   writeFileSync(`${outDir}/components.json`, artifacts.componentsJson);
+  writeFileSync(`${outDir}/rules.json`, artifacts.rulesJson);
 }
 
 function generatedManifestSurfaces(doc: TokensDocument): Surfaces {

@@ -105,6 +105,7 @@ describe("G-W4 — CLI fonts.css sidecar", () => {
       demoHtml: "",
       contractJson: buildContractJson(doc),
       componentsJson: "",
+      rulesJson: "",
     });
 
     expect(readFileSync(join(dir, "fonts.css"), "utf8")).toBe(`${webfontImportCss(doc)}\n`);

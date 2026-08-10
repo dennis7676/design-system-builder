@@ -8,3 +8,7 @@ export function packageRootDir(): string {
 export function defaultRecipesDir(): string {
   return resolve(packageRootDir(), "references/recipes");
 }
+
+export function defaultComponentSpecsDir(): string {
+  return resolve(packageRootDir(), "references/components");
+}

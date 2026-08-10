@@ -116,7 +116,7 @@ LLM과 페이지 생성기가 함께 읽는 구조화 스펙. tokens.json에 넣
 - generate 실행 시 out/rules.json이 생성된다
 - 최상위 구조는 {tokenHash, rules[]}이며 tokenHash는 같은 빌드의 tokens.json 해시와 일치한다
 - 각 rule은 {id, kind, severity, appliesTo, message} 필드를 갖는다
-- severity 어휘는 error 또는 warning 두 값만 허용한다
+- severity 어휘는 error 또는 warn 두 값만 허용한다 (validator.ts Severity와 통일)
 - appliesTo의 토큰 경로 패턴은 tokens.json에 실재하는 경로를 최소 1개 이상 매칭한다
 - rules[]는 FS-011의 값 규칙 4종을 포함한다
 ```

@@ -37,8 +37,8 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 | FS-008 | 토큰 경로 공통 앵커 규약 | REQ-004 | src/surface-data.ts | draft |
 | FS-009 | 스펙 완주 게이트 | REQ-001, REQ-004 | src/gate.ts | draft |
 | FS-010 | manifest 신규 2면 교차검사 | REQ-004 | src/manifest.ts | draft |
-| FS-011 | compliance CLI 값 규칙 4종 | REQ-001 | src/compliance.ts | draft |
-| FS-012 | rules.json 확장 kind 예약 | REQ-001 | src/rules-generator.ts | implemented |
+| FS-011 | compliance CLI 값 규칙 4종 | REQ-001 | src/compliance.ts | verified |
+| FS-012 | rules.json 확장 kind 예약 | REQ-001 | src/rules-generator.ts | verified |
 
 `shared: true` FS = FS-008(전 면이 참조하는 앵커 규약), FS-001(전 생성기의 입력 스키마). 이 둘이 바뀌면 의존 FS의 TC까지 재실행한다.
 
@@ -248,12 +248,13 @@ ds-portal이 `anatomy` 71/145(49%)에서 멈춘 실패를 구조로 막는다. �
 - satisfies: REQ-001
 - impl: `src/compliance.ts`, `src/cli.ts`
 - shared: false
-- 상태: draft
+- 상태: **verified** (TC-020~027 · `golden/compliance.test.ts`)
 
 소비 코드를 정적 분석한다. 브라우저를 쓰지 않아 100% 결정론이며 CI에서 돈다. 런타임 생성 스타일은 보지 못한다는 한계를 문서에 명시한다.
 
 ```ac
-- dsb compliance <경로> --rules <rules.json> 형태로 실행된다
+- dsb compliance <경로> --rules <rules.json> --tokens <tokens.json> 형태로 실행된다
+- rules.json의 tokenHash가 tokens.json과 다르면 검사하지 않고 exit 2로 거부한다
 - CSS·TSX·JSX 파일에서 색 리터럴(hex·rgb·hsl)을 찾아 no-hardcoded-color 위반으로 보고한다
 - px·rem 치수 리터럴을 찾아 no-hardcoded-dimension 위반으로 보고한다
 - ms·s 지속시간 리터럴을 찾아 no-hardcoded-duration 위반으로 보고한다
@@ -270,7 +271,7 @@ ds-portal이 `anatomy` 71/145(49%)에서 멈춘 실패를 구조로 막는다. �
 - satisfies: REQ-001
 - impl: `src/rules-generator.ts`
 - shared: false
-- 상태: **implemented** (e4bdd22 — kind 어휘와 `radius-nesting` 예약까지만 검증됨. 나머지 세 기준은 검사기가 있어야 판정 가능하므로 FS-011에서 verified로 종결한다)
+- 상태: **verified** (TC-018·TC-028 · `golden/rules-json.test.ts` + `golden/compliance.test.ts` — 검사기가 value만 검사하고 건너뛴 규칙을 이름과 개수로 보고하는 것까지 확인됨)
 
 1차에 구현하지 않는 조립·선택 규칙을 스키마가 미리 표현할 수 있게 해 나중에 구조 변경 없이 채운다.
 

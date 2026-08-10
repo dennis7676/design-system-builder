@@ -27,7 +27,7 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 
 | ID | 기능 단위 | satisfies | impl | 상태 |
 |---|---|---|---|---|
-| FS-001 | 컴포넌트 스펙 소스 스키마 | REQ-001 | references/components/*.json | draft |
+| FS-001 | 컴포넌트 스펙 소스 스키마 | REQ-001 | src/component-spec.ts | verified |
 | FS-002 | 레시피 델타 병합 | REQ-001 | src/component-spec.ts | draft |
 | FS-003 | components.json 생성 | REQ-001, REQ-003 | src/component-spec.ts | draft |
 | FS-004 | rules.json 생성 | REQ-001 | src/rules-generator.ts | draft |
@@ -47,9 +47,9 @@ REQ-005는 이 문서 자체의 존재로 충족되며, 유지 절차는 3절 �
 ### FS-001 — 컴포넌트 스펙 소스 스키마
 
 - satisfies: REQ-001
-- impl: `references/components/*.json` (18개), `src/component-spec.ts` (스키마 타입·로더)
+- impl: `src/component-spec.ts` (스키마 타입·로더), `references/components/*.json` (18개)
 - shared: **true** — 전 생성기의 입력
-- 상태: draft
+- 상태: **verified** (44b810d · TC-001~005 · `golden/component-spec.test.ts`)
 
 컴포넌트 18개(P1 primitives 10 · P2 composites 4 · P3 patterns 4)의 정체성 산문을 레시피 무관 공통 1벌로 둔다. 값(radius·padding·motion)은 레시피가 정하지만 "button이 무엇이고 link와 어떻게 다른가"는 브랜드 톤과 무관하다.
 

@@ -14,7 +14,7 @@ import {
   toTokensTs,
   webfontImportCss,
 } from "./index.js";
-import { validateTokens } from "./validator.js";
+import { computeTokenHash, validateTokens } from "./validator.js";
 import { validateBrand, type BrandJson } from "./brand-schema.js";
 import { RecipeSelectionError, formatRecipeCandidateTable, loadRecipes, selectRecipe } from "./recipe-selection.js";
 import { buildTokens } from "./tokens-builder.js";
@@ -23,7 +23,8 @@ import type { TokensDocument } from "./tokens-schema.js";
 import type { Surfaces } from "./manifest.js";
 import { defaultComponentSpecsDir, defaultRecipesDir } from "./package-paths.js";
 import { loadComponentSpecs, specCoverage, toComponentsJson } from "./component-spec.js";
-import { toRulesJson } from "./rules-generator.js";
+import { toRulesJson, type RulesDocument } from "./rules-generator.js";
+import { formatComplianceReport, runCompliance } from "./compliance.js";
 
 interface GeneratedArtifacts {
   readonly doc: TokensDocument;
@@ -40,10 +41,12 @@ function main(argv: string[]): number {
   const [cmd, ...rest] = argv;
   if (cmd === "generate") return generate(rest);
   if (cmd === "build") return build(rest);
+  if (cmd === "compliance") return compliance(rest);
   if (cmd !== "validate") {
     console.error("usage: design-system-builder validate <tokens.json> [--check-manifest]");
     console.error("   or: design-system-builder generate <tokens.json> [--out-dir <dir>]");
     console.error("   or: design-system-builder build <brand.json> [--recipes <dir>] [--out <tokens.json>] [--confirm]");
+    console.error("   or: design-system-builder compliance <src-dir> --rules <rules.json> --tokens <tokens.json>");
     return 2;
   }
   const file = rest.find((a) => !a.startsWith("--"));
@@ -69,6 +72,31 @@ function main(argv: string[]): number {
   const ok = !findings.some((f) => f.severity === "error");
   console.error(ok ? "✓ export gate PASS" : "✗ export gate BLOCKED (error 존재)");
   return ok ? 0 : 1;
+}
+
+function compliance(argv: string[]): number {
+  const root = argv.find((a) => !a.startsWith("--") && !isFlagValue(argv, a));
+  const rulesPath = flagValue(argv, "--rules");
+  const tokensPath = flagValue(argv, "--tokens");
+  if (!root || !rulesPath || !tokensPath) {
+    console.error(
+      "usage: design-system-builder compliance <src-dir> --rules <rules.json> --tokens <tokens.json>",
+    );
+    return 2;
+  }
+  const rulesDoc = JSON.parse(readFileSync(rulesPath, "utf8")) as RulesDocument;
+  const doc = loadTokens(tokensPath);
+  const expected = computeTokenHash(doc);
+  if (rulesDoc.tokenHash !== expected) {
+    console.error(
+      `error: rules.json tokenHash ${rulesDoc.tokenHash} does not match tokens.json ${expected}` +
+        " — regenerate the surfaces before checking against them",
+    );
+    return 2;
+  }
+  const report = runCompliance(root, rulesDoc, doc);
+  console.log(formatComplianceReport(report));
+  return report.errorCount > 0 ? 1 : 0;
 }
 
 function generate(argv: string[]): number {

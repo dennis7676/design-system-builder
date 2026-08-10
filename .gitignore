@@ -10,3 +10,6 @@ examples/*/tokens.css
 examples/*/styleguide.html
 examples/*/DESIGN.md
 .playwright-cli/
+
+# spec-pipeline trace reports are GENERATED — regenerate with spec_trace.py
+docs/spec/_generated/

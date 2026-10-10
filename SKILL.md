@@ -44,6 +44,24 @@ Handoff contract: this skill consumes a product brief if present (`medium`,
 as the boundary artifact. It owns token implementation + lint + web surfaces;
 it does **not** own product strategy (that is `product-design-system`).
 
+### Shortcut: borrow an existing brand's DESIGN.md (added 2026-10-10)
+
+When the request is "make it look like <brand>" or a screen needs a look now and
+no brand interview is wanted, skip the interview and start from a reference file.
+
+1. Pick one brand folder under `$HOME/dev/awesome-design-md/design-md/` (74 brands,
+   one `DESIGN.md` each: colors, typography, spacing, component rules). If the
+   folder is missing on this machine, fetch it first:
+   `git clone --depth 1 https://github.com/VoltAgent/awesome-design-md "$HOME/dev/awesome-design-md"` (MIT).
+2. Copy that one `DESIGN.md` into the project root.
+3. Build the screen with the usual frontend skill and tell it to follow the file
+   ("이 디자인 언어에 맞춰 만들어 줘").
+
+This is a reference, not a token SSOT: it produces no `brand.json` or `tokens.json`.
+If the product later needs its own system, run the interview above and replace the
+borrowed file. Approved by the user on 2026-10-10 (review
+`review_inbox-30-adoption-and-primer_20261010.html`, Q1).
+
 ---
 
 ## Interview — 5 Phases (earlier answers narrow later questions)

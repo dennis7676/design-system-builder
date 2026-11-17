@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>enterprise — product</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap">
+<style>:root {
+  --primitive-color-neutral-50: oklch(0.98 0.006 75);
+  --primitive-color-neutral-100: oklch(0.95 0.008 75);
+  --primitive-color-neutral-600: oklch(0.50 0.01 75);
+  --primitive-color-neutral-900: oklch(0.24 0.012 75);
+  --primitive-color-brand-600: oklch(0.470 0.129 150.0);
+  --primitive-color-brand-700: oklch(0.410 0.112 150.0);
+  --primitive-space-xs: 0.5rem;
+  --primitive-space-sm: 1rem;
+  --primitive-space-md: 2rem;
+  --primitive-space-lg: 3rem;
+  --primitive-radius-sm: 0.125rem;
+  --primitive-radius-md: 0.25rem;
+  --primitive-duration-fast: 160ms;
+  --primitive-duration-normal: 240ms;
+  --primitive-font-family-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --primitive-font-family-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --primitive-font-size-caption: 0.8125rem;
+  --primitive-font-size-body: 1rem;
+  --primitive-font-size-heading: 1.375rem;
+  --primitive-font-size-h2: 1.237rem;
+  --primitive-font-size-h3: 1.112rem;
+  --primitive-font-size-display: 2rem;
+  --primitive-font-weight-regular: 400;
+  --primitive-font-weight-bold: 600;
+  --primitive-font-lineHeight-tight: 1.3;
+  --primitive-font-lineHeight-normal: 1.6;
+  --primitive-font-tracking-heading: -0.01;
+  --primitive-font-tracking-body: 0;
+  --primitive-font-tracking-caption: 0.04;
+  --primitive-motion-easing-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --primitive-motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --primitive-motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+  --semantic-color-surface-default: oklch(0.98 0.006 75);
+  --semantic-color-surface-foreground: oklch(0.24 0.012 75);
+  --semantic-color-primary-default: oklch(0.470 0.129 150.0);
+  --semantic-color-primary-hover: oklch(0.410 0.112 150.0);
+  --semantic-color-primary-foreground: oklch(0.98 0.006 75);
+  --semantic-space-inset: 2rem;
+  --semantic-space-stack: 1rem;
+  --semantic-shape-control: 0.25rem;
+  --semantic-motion-transition: 240ms;
+  --semantic-motion-easing-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --semantic-motion-easing-enter: cubic-bezier(0, 0, 0.2, 1);
+  --semantic-motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+  --semantic-typography-body-size: 1rem;
+  --semantic-typography-body-weight: 400;
+  --semantic-typography-body-lineHeight: 1.6;
+  --semantic-typography-body-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-body-tracking: 0;
+  --semantic-typography-heading-size: 1.375rem;
+  --semantic-typography-heading-weight: 600;
+  --semantic-typography-heading-lineHeight: 1.3;
+  --semantic-typography-heading-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-display-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-display-size: 2rem;
+  --semantic-typography-display-weight: 600;
+  --semantic-typography-display-lineHeight: 1.3;
+  --semantic-typography-display-tracking: -0.01;
+  --semantic-typography-h1-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-h1-size: 1.375rem;
+  --semantic-typography-h1-weight: 600;
+  --semantic-typography-h1-lineHeight: 1.3;
+  --semantic-typography-h1-tracking: -0.01;
+  --semantic-typography-h2-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-h2-size: 1.237rem;
+  --semantic-typography-h2-weight: 600;
+  --semantic-typography-h2-lineHeight: 1.3;
+  --semantic-typography-h2-tracking: -0.01;
+  --semantic-typography-h3-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-h3-size: 1.112rem;
+  --semantic-typography-h3-weight: 600;
+  --semantic-typography-h3-lineHeight: 1.6;
+  --semantic-typography-h3-tracking: 0;
+  --semantic-typography-caption-family: "IBM Plex Sans", system-ui, sans-serif;
+  --semantic-typography-caption-size: 0.8125rem;
+  --semantic-typography-caption-weight: 400;
+  --semantic-typography-caption-lineHeight: 1.6;
+  --semantic-typography-caption-tracking: 0.04;
+  --component-button-primary-radius: 0.125rem;
+  --component-button-primary-paddingX: 1rem;
+  --component-button-primary-paddingY: 0.5rem;
+  --component-button-primary-borderWidth: 0.125rem;
+  --component-button-primary-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-button-primary-label-weight: 400;
+  --component-button-primary-label-transform: none;
+  --component-button-primary-transition: 240ms;
+  --component-button-primary-background-default: oklch(0.470 0.129 150.0);
+  --component-button-primary-background-hover: oklch(0.410 0.112 150.0);
+  --component-button-primary-background-focus: oklch(0.470 0.129 150.0);
+  --component-button-primary-background-active: oklch(0.410 0.112 150.0);
+  --component-button-primary-background-disabled: oklch(0.95 0.008 75);
+  --component-button-primary-foreground-default: oklch(0.98 0.006 75);
+  --component-button-primary-foreground-hover: oklch(0.98 0.006 75);
+  --component-button-primary-foreground-focus: oklch(0.98 0.006 75);
+  --component-button-primary-foreground-active: oklch(0.98 0.006 75);
+  --component-button-primary-foreground-disabled: oklch(0.50 0.01 75);
+  --component-button-primary-border-default: oklch(0.470 0.129 150.0);
+  --component-button-primary-border-hover: oklch(0.410 0.112 150.0);
+  --component-button-primary-border-focus: oklch(0.98 0.006 75);
+  --component-button-primary-border-active: oklch(0.410 0.112 150.0);
+  --component-button-primary-border-disabled: oklch(0.95 0.008 75);
+  --component-button-secondary-radius: 0.125rem;
+  --component-button-secondary-paddingX: 1rem;
+  --component-button-secondary-paddingY: 0.5rem;
+  --component-button-secondary-borderWidth: 0.125rem;
+  --component-button-secondary-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-button-secondary-label-weight: 400;
+  --component-button-secondary-label-transform: none;
+  --component-button-secondary-transition: 240ms;
+  --component-button-secondary-background-default: oklch(0.98 0.006 75);
+  --component-button-secondary-background-hover: oklch(0.95 0.008 75);
+  --component-button-secondary-background-focus: oklch(0.98 0.006 75);
+  --component-button-secondary-background-active: oklch(0.95 0.008 75);
+  --component-button-secondary-background-disabled: oklch(0.98 0.006 75);
+  --component-button-secondary-foreground-default: oklch(0.24 0.012 75);
+  --component-button-secondary-foreground-hover: oklch(0.24 0.012 75);
+  --component-button-secondary-foreground-focus: oklch(0.24 0.012 75);
+  --component-button-secondary-foreground-active: oklch(0.24 0.012 75);
+  --component-button-secondary-foreground-disabled: oklch(0.50 0.01 75);
+  --component-button-secondary-border-default: oklch(0.95 0.008 75);
+  --component-button-secondary-border-hover: oklch(0.50 0.01 75);
+  --component-button-secondary-border-focus: oklch(0.470 0.129 150.0);
+  --component-button-secondary-border-active: oklch(0.50 0.01 75);
+  --component-button-secondary-border-disabled: oklch(0.98 0.006 75);
+  --component-button-ghost-radius: 0.125rem;
+  --component-button-ghost-paddingX: 1rem;
+  --component-button-ghost-paddingY: 0.5rem;
+  --component-button-ghost-borderWidth: 0.125rem;
+  --component-button-ghost-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-button-ghost-label-weight: 400;
+  --component-button-ghost-label-transform: none;
+  --component-button-ghost-transition: 240ms;
+  --component-button-ghost-background-default: oklch(0.98 0.006 75);
+  --component-button-ghost-background-hover: oklch(0.95 0.008 75);
+  --component-button-ghost-background-focus: oklch(0.98 0.006 75);
+  --component-button-ghost-background-active: oklch(0.95 0.008 75);
+  --component-button-ghost-background-disabled: oklch(0.98 0.006 75);
+  --component-button-ghost-foreground-default: oklch(0.470 0.129 150.0);
+  --component-button-ghost-foreground-hover: oklch(0.410 0.112 150.0);
+  --component-button-ghost-foreground-focus: oklch(0.470 0.129 150.0);
+  --component-button-ghost-foreground-active: oklch(0.410 0.112 150.0);
+  --component-button-ghost-foreground-disabled: oklch(0.50 0.01 75);
+  --component-button-ghost-border-default: oklch(0.98 0.006 75);
+  --component-button-ghost-border-hover: oklch(0.95 0.008 75);
+  --component-button-ghost-border-focus: oklch(0.470 0.129 150.0);
+  --component-button-ghost-border-active: oklch(0.95 0.008 75);
+  --component-button-ghost-border-disabled: oklch(0.98 0.006 75);
+  --component-link-underlineOffset: 0.125rem;
+  --component-link-borderWidth: 0.125rem;
+  --component-link-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-link-label-weight: 400;
+  --component-link-transition: 240ms;
+  --component-link-background-default: oklch(0.98 0.006 75);
+  --component-link-background-hover: oklch(0.95 0.008 75);
+  --component-link-background-focus: oklch(0.98 0.006 75);
+  --component-link-background-active: oklch(0.98 0.006 75);
+  --component-link-background-disabled: oklch(0.98 0.006 75);
+  --component-link-foreground-default: oklch(0.470 0.129 150.0);
+  --component-link-foreground-hover: oklch(0.410 0.112 150.0);
+  --component-link-foreground-focus: oklch(0.470 0.129 150.0);
+  --component-link-foreground-active: oklch(0.410 0.112 150.0);
+  --component-link-foreground-disabled: oklch(0.50 0.01 75);
+  --component-link-border-default: oklch(0.470 0.129 150.0);
+  --component-link-border-hover: oklch(0.410 0.112 150.0);
+  --component-link-border-focus: oklch(0.470 0.129 150.0);
+  --component-link-border-active: oklch(0.410 0.112 150.0);
+  --component-link-border-disabled: oklch(0.95 0.008 75);
+  --component-input-radius: 0.125rem;
+  --component-input-paddingX: 0.5rem;
+  --component-input-paddingY: 0.5rem;
+  --component-input-borderWidth: 0.125rem;
+  --component-input-borderPlacement: top;
+  --component-input-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-input-label-weight: 400;
+  --component-input-label-transform: none;
+  --component-input-transition: 240ms;
+  --component-input-background-default: oklch(0.98 0.006 75);
+  --component-input-background-hover: oklch(0.98 0.006 75);
+  --component-input-background-focus: oklch(0.98 0.006 75);
+  --component-input-background-active: oklch(0.98 0.006 75);
+  --component-input-background-disabled: oklch(0.95 0.008 75);
+  --component-input-foreground-default: oklch(0.24 0.012 75);
+  --component-input-foreground-hover: oklch(0.24 0.012 75);
+  --component-input-foreground-focus: oklch(0.24 0.012 75);
+  --component-input-foreground-active: oklch(0.24 0.012 75);
+  --component-input-foreground-disabled: oklch(0.50 0.01 75);
+  --component-input-border-default: oklch(0.470 0.129 150.0);
+  --component-input-border-hover: oklch(0.410 0.112 150.0);
+  --component-input-border-focus: oklch(0.470 0.129 150.0);
+  --component-input-border-active: oklch(0.410 0.112 150.0);
+  --component-input-border-disabled: oklch(0.95 0.008 75);
+  --component-select-radius: 0.125rem;
+  --component-select-paddingX: 0.5rem;
+  --component-select-paddingY: 0.5rem;
+  --component-select-borderWidth: 0.125rem;
+  --component-select-borderPlacement: top;
+  --component-select-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-select-label-weight: 400;
+  --component-select-label-transform: none;
+  --component-select-transition: 240ms;
+  --component-select-background-default: oklch(0.98 0.006 75);
+  --component-select-background-hover: oklch(0.98 0.006 75);
+  --component-select-background-focus: oklch(0.98 0.006 75);
+  --component-select-background-active: oklch(0.98 0.006 75);
+  --component-select-background-disabled: oklch(0.95 0.008 75);
+  --component-select-foreground-default: oklch(0.24 0.012 75);
+  --component-select-foreground-hover: oklch(0.24 0.012 75);
+  --component-select-foreground-focus: oklch(0.24 0.012 75);
+  --component-select-foreground-active: oklch(0.24 0.012 75);
+  --component-select-foreground-disabled: oklch(0.50 0.01 75);
+  --component-select-border-default: oklch(0.470 0.129 150.0);
+  --component-select-border-hover: oklch(0.410 0.112 150.0);
+  --component-select-border-focus: oklch(0.470 0.129 150.0);
+  --component-select-border-active: oklch(0.410 0.112 150.0);
+  --component-select-border-disabled: oklch(0.95 0.008 75);
+  --component-checkbox-size: 0.875rem;
+  --component-checkbox-radius: 0.125rem;
+  --component-checkbox-borderWidth: 0.125rem;
+  --component-checkbox-transition: 240ms;
+  --component-checkbox-background-default: oklch(0.98 0.006 75);
+  --component-checkbox-background-hover: oklch(0.95 0.008 75);
+  --component-checkbox-background-focus: oklch(0.98 0.006 75);
+  --component-checkbox-background-active: oklch(0.470 0.129 150.0);
+  --component-checkbox-background-disabled: oklch(0.95 0.008 75);
+  --component-checkbox-foreground-default: oklch(0.24 0.012 75);
+  --component-checkbox-foreground-hover: oklch(0.24 0.012 75);
+  --component-checkbox-foreground-focus: oklch(0.24 0.012 75);
+  --component-checkbox-foreground-active: oklch(0.98 0.006 75);
+  --component-checkbox-foreground-disabled: oklch(0.50 0.01 75);
+  --component-checkbox-border-default: oklch(0.50 0.01 75);
+  --component-checkbox-border-hover: oklch(0.24 0.012 75);
+  --component-checkbox-border-focus: oklch(0.470 0.129 150.0);
+  --component-checkbox-border-active: oklch(0.470 0.129 150.0);
+  --component-checkbox-border-disabled: oklch(0.95 0.008 75);
+  --component-radio-size: 0.875rem;
+  --component-radio-radius: 0.125rem;
+  --component-radio-borderWidth: 0.125rem;
+  --component-radio-transition: 240ms;
+  --component-radio-background-default: oklch(0.98 0.006 75);
+  --component-radio-background-hover: oklch(0.95 0.008 75);
+  --component-radio-background-focus: oklch(0.98 0.006 75);
+  --component-radio-background-active: oklch(0.470 0.129 150.0);
+  --component-radio-background-disabled: oklch(0.95 0.008 75);
+  --component-radio-foreground-default: oklch(0.24 0.012 75);
+  --component-radio-foreground-hover: oklch(0.24 0.012 75);
+  --component-radio-foreground-focus: oklch(0.24 0.012 75);
+  --component-radio-foreground-active: oklch(0.98 0.006 75);
+  --component-radio-foreground-disabled: oklch(0.50 0.01 75);
+  --component-radio-border-default: oklch(0.50 0.01 75);
+  --component-radio-border-hover: oklch(0.24 0.012 75);
+  --component-radio-border-focus: oklch(0.470 0.129 150.0);
+  --component-radio-border-active: oklch(0.470 0.129 150.0);
+  --component-radio-border-disabled: oklch(0.95 0.008 75);
+  --component-switch-width: 2.125rem;
+  --component-switch-height: 1.125rem;
+  --component-switch-thumbSize: 0.75rem;
+  --component-switch-radius: 0.125rem;
+  --component-switch-borderWidth: 0.125rem;
+  --component-switch-transition: 240ms;
+  --component-switch-background-default: oklch(0.95 0.008 75);
+  --component-switch-background-hover: oklch(0.95 0.008 75);
+  --component-switch-background-focus: oklch(0.95 0.008 75);
+  --component-switch-background-active: oklch(0.470 0.129 150.0);
+  --component-switch-background-disabled: oklch(0.95 0.008 75);
+  --component-switch-foreground-default: oklch(0.50 0.01 75);
+  --component-switch-foreground-hover: oklch(0.24 0.012 75);
+  --component-switch-foreground-focus: oklch(0.50 0.01 75);
+  --component-switch-foreground-active: oklch(0.98 0.006 75);
+  --component-switch-foreground-disabled: oklch(0.50 0.01 75);
+  --component-switch-border-default: oklch(0.50 0.01 75);
+  --component-switch-border-hover: oklch(0.24 0.012 75);
+  --component-switch-border-focus: oklch(0.470 0.129 150.0);
+  --component-switch-border-active: oklch(0.470 0.129 150.0);
+  --component-switch-border-disabled: oklch(0.95 0.008 75);
+  --component-card-background: oklch(0.98 0.006 75);
+  --component-card-foreground: oklch(0.24 0.012 75);
+  --component-card-border: oklch(0.95 0.008 75);
+  --component-card-radius: 0.125rem;
+  --component-card-padding: 1rem;
+  --component-card-borderWidth: 0.0625rem;
+  --component-badge-background: oklch(0.95 0.008 75);
+  --component-badge-foreground: oklch(0.24 0.012 75);
+  --component-badge-border: oklch(0.50 0.01 75);
+  --component-badge-radius: 0.125rem;
+  --component-badge-paddingX: 0.5rem;
+  --component-badge-paddingY: 0.125rem;
+  --component-badge-borderWidth: 0.0625rem;
+  --component-badge-label-family: "IBM Plex Sans", system-ui, sans-serif;
+  --component-badge-label-weight: 400;
+  --component-badge-label-transform: uppercase;
+  --component-divider-color: oklch(0.470 0.129 150.0);
+  --component-divider-thickness: 0.125rem;
+  --component-divider-style: solid;
+  --component-nav-background: oklch(0.98 0.006 75);
+  --component-nav-foreground: oklch(0.24 0.012 75);
+  --component-nav-border: oklch(0.470 0.129 150.0);
+  --component-nav-paddingX: 1rem;
+  --component-nav-paddingY: 0.125rem;
+  --component-table-headerBackground: oklch(0.24 0.012 75);
+  --component-table-headerForeground: oklch(0.98 0.006 75);
+  --component-table-rowBackground: oklch(0.98 0.006 75);
+  --component-table-rowStripeBackground: oklch(0.95 0.008 75);
+  --component-table-rowHoverBackground: oklch(0.95 0.008 75);
+  --component-table-cellForeground: oklch(0.24 0.012 75);
+  --component-table-border: oklch(0.95 0.008 75);
+  --component-table-cellPaddingX: 0.5rem;
+  --component-table-cellPaddingY: 0.25rem;
+  --component-modal-overlayBackground: oklch(0.24 0.012 75);
+  --component-modal-panelBackground: oklch(0.98 0.006 75);
+  --component-modal-panelForeground: oklch(0.24 0.012 75);
+  --component-modal-panelBorder: oklch(0.95 0.008 75);
+  --component-modal-panelRadius: 0.125rem;
+  --component-modal-panelShadow: none;
+  --component-modal-padding: 1rem;
+  --component-formRow-gap: 0.5rem;
+  --component-formRow-labelForeground: oklch(0.24 0.012 75);
+  --component-formRow-helpForeground: oklch(0.50 0.01 75);
+  --component-formRow-errorForeground: oklch(0.410 0.112 150.0);
+  --component-formRow-errorBorder: oklch(0.410 0.112 150.0);
+  --component-hero-background: oklch(0.98 0.006 75);
+  --component-hero-foreground: oklch(0.24 0.012 75);
+  --component-hero-subForeground: oklch(0.50 0.01 75);
+  --component-hero-paddingX: 1rem;
+  --component-hero-paddingY: 2rem;
+  --component-hero-gap: 0.5rem;
+  --component-pricing-cardBackground: oklch(0.98 0.006 75);
+  --component-pricing-cardForeground: oklch(0.24 0.012 75);
+  --component-pricing-cardMutedForeground: oklch(0.50 0.01 75);
+  --component-pricing-cardBorder: oklch(0.95 0.008 75);
+  --component-pricing-cardRadius: 0.125rem;
+  --component-pricing-featuredBackground: oklch(0.470 0.129 150.0);
+  --component-pricing-featuredForeground: oklch(0.98 0.006 75);
+  --component-pricing-featuredBorder: oklch(0.410 0.112 150.0);
+  --component-pricing-cardPadding: 1rem;
+  --component-pricing-gap: 0.5rem;
+  --component-featureGrid-background: oklch(0.98 0.006 75);
+  --component-featureGrid-titleForeground: oklch(0.24 0.012 75);
+  --component-featureGrid-bodyForeground: oklch(0.50 0.01 75);
+  --component-featureGrid-iconForeground: oklch(0.470 0.129 150.0);
+  --component-featureGrid-cellPadding: 0.5rem;
+  --component-featureGrid-gap: 0.5rem;
+  --component-footer-background: oklch(0.98 0.006 75);
+  --component-footer-foreground: oklch(0.24 0.012 75);
+  --component-footer-mutedForeground: oklch(0.50 0.01 75);
+  --component-footer-border: oklch(0.470 0.129 150.0);
+  --component-footer-paddingY: 1rem;
+  --component-footer-gap: 0.5rem;
+}
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    h1, h2, h3, p { margin: 0; }
+    a { color: inherit; transition: color var(--semantic-motion-transition, 160ms) var(--semantic-motion-easing-standard), background var(--semantic-motion-transition, 160ms) var(--semantic-motion-easing-standard); }
+    .brand { font: var(--semantic-typography-h1-weight) var(--semantic-typography-h1-size)/var(--semantic-typography-h1-lineHeight) var(--semantic-typography-h1-family); letter-spacing: calc(var(--semantic-typography-h1-tracking) * 1em); text-decoration: none; }
+    .briefing-utility, .briefing-number, .briefing-metric span, .fine { font-family: var(--primitive-font-family-mono, ui-monospace, monospace); text-transform: uppercase; letter-spacing: .06em; }
+    .briefing-utility, .briefing-number, .briefing-metric span { font-size: .78rem; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 62%, var(--semantic-color-surface-default, Canvas)); }
+    .lead { max-width: 52ch; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 76%, var(--semantic-color-surface-default, Canvas)); font: var(--semantic-typography-body-weight) var(--semantic-typography-body-size)/var(--semantic-typography-body-lineHeight) var(--semantic-typography-body-family); letter-spacing: calc(var(--semantic-typography-body-tracking) * 1em); }
+    .btn { border: 0; border-radius: var(--semantic-shape-control, .5rem); padding: .7rem 1.25rem; font: inherit; cursor: pointer; transition: background var(--semantic-motion-transition, 160ms) var(--semantic-motion-easing-standard), transform var(--semantic-motion-transition, 160ms) var(--semantic-motion-easing-standard); }
+    .btn-primary { background: var(--component-button-background, var(--semantic-color-primary-default, LinkText)); color: var(--component-button-foreground, ButtonText); border-radius: var(--component-button-radius, var(--semantic-shape-control, .5rem)); padding: .7rem var(--component-button-paddingX, 1.25rem); }
+    .btn-primary:hover { background: var(--component-button-backgroundHover, var(--semantic-color-primary-default, LinkText)); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--semantic-color-primary-default, LinkText); border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .btn:focus-visible, .briefing-form input:focus-visible { outline: .18rem solid var(--semantic-color-primary-default, LinkText); outline-offset: .18rem; }
+    .briefing-utility { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-main { display: flex; align-items: center; gap: 1.5rem; padding: 1rem clamp(1rem, 4vw, 3rem); border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-main nav { display: flex; gap: 1rem; margin-left: auto; }
+    .briefing-main nav a { text-decoration: none; padding: .35rem .25rem; }
+    main { width: min(78rem, 100%); margin: 0 auto; padding: 0 clamp(1rem, 4vw, 3rem); }
+    .briefing-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(18rem, .72fr); border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-copy { display: grid; align-content: center; justify-items: start; gap: 1.25rem; padding: clamp(4rem, 9vw, 7rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 9vw, 7rem) 0; }
+    .briefing-hero h1 { max-width: 24ch; text-wrap: balance; font: var(--semantic-typography-display-weight) clamp(calc(var(--semantic-typography-display-size) * .68), 6.8vw, calc(var(--semantic-typography-display-size) * .82))/var(--semantic-typography-display-lineHeight) var(--semantic-typography-display-family); letter-spacing: calc(var(--semantic-typography-display-tracking) * 1em); }
+    .briefing-metrics { border-left: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); display: grid; align-content: stretch; }
+    .briefing-metric { display: grid; gap: .5rem; align-content: center; padding: clamp(1.25rem, 4vw, 2.25rem); border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-metric:last-child { border-bottom: 0; }
+    .briefing-metric strong, .briefing-rows h3 { font: var(--semantic-typography-h3-weight) var(--semantic-typography-h3-size)/var(--semantic-typography-h3-lineHeight) var(--semantic-typography-h3-family); letter-spacing: calc(var(--semantic-typography-h3-tracking) * 1em); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .briefing-section { padding: clamp(3rem, 7vw, 5.5rem) 0; display: grid; gap: 1.5rem; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-heading { display: flex; gap: 1rem; align-items: baseline; }
+    .briefing-heading h2, .briefing-form h2 { font: var(--semantic-typography-h2-weight) var(--semantic-typography-h2-size)/var(--semantic-typography-h2-lineHeight) var(--semantic-typography-h2-family); letter-spacing: calc(var(--semantic-typography-h2-tracking) * 1em); }
+    .briefing-rows { display: grid; border-top: 2px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-rows article { display: grid; grid-template-columns: minmax(14rem, .7fr) minmax(0, 1fr); gap: clamp(1rem, 4vw, 3rem); padding: clamp(1.25rem, 4vw, 2.5rem) 0; border-bottom: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); }
+    .briefing-rows p { color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 72%, var(--semantic-color-surface-default, Canvas)); }
+    .briefing-form { padding: clamp(3rem, 7vw, 5.5rem) 0; display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(18rem, .8fr); gap: clamp(1rem, 4vw, 3rem); align-items: start; }
+    .briefing-form form { display: grid; gap: .85rem; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); padding: clamp(1rem, 3vw, 1.75rem); }
+    .briefing-form label { display: grid; gap: .35rem; font-size: .9rem; }
+    .briefing-form input { padding: .7rem .8rem; border: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); border-radius: var(--semantic-shape-control, .5rem); background: var(--semantic-color-surface-default, Canvas); color: var(--semantic-color-surface-foreground, CanvasText); font: inherit; }
+    .briefing-footer { border-top: 2px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); padding: clamp(2rem, 5vw, 3rem) clamp(1rem, 4vw, 3rem); display: grid; gap: 1.25rem; }
+    .footer-cols { display: grid; grid-template-columns: 1.4fr repeat(3, minmax(8rem, 1fr)); gap: 1.5rem; width: min(78rem, 100%); margin: 0 auto; }
+    .footer-cols div { display: grid; gap: .4rem; align-content: start; }
+    .footer-cols a { text-decoration: none; color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 72%, var(--semantic-color-surface-default, Canvas)); }
+    .fine { width: min(78rem, 100%); margin: 0 auto; text-align: right; font-size: var(--semantic-typography-caption-size); line-height: var(--semantic-typography-caption-lineHeight); color: color-mix(in oklch, var(--semantic-color-surface-foreground, CanvasText) 60%, var(--semantic-color-surface-default, Canvas)); }
+    @media (max-width: 780px) { .briefing-main { align-items: flex-start; flex-direction: column; } .briefing-main nav { margin-left: 0; flex-wrap: wrap; } .briefing-hero, .briefing-rows article, .briefing-form, .footer-cols { grid-template-columns: 1fr; } .briefing-copy { padding-right: 0; } .briefing-metrics { border-left: 0; border-top: 1px solid var(--primitive-color-neutral-100, color-mix(in oklch, currentColor 14%, transparent)); } .fine { text-align: left; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }</style>
+</head>
+<body>
+<header data-demo-region="nav" class="briefing-nav"><div class="briefing-utility"><span>BRIEFING</span><span>enterprise</span></div><div class="briefing-main"><a class="brand" href="#">enterprise</a><nav aria-label="Primary"><a href="#">Product</a><a href="#">Pricing</a><a href="#">Docs</a><a href="#">Company</a></nav><button class="btn btn-primary">Get started</button></div></header>
+<main>
+<section data-demo-region="hero" class="briefing-hero"><div class="briefing-copy"><p class="briefing-number">01</p><h1>Ship a product that feels unmistakably yours.</h1><p class="lead">Every color, type ramp, radius, and motion on this page is driven by one brand token set — nothing here is hardcoded.</p><div class="cta-row"><button class="btn btn-primary">Start free</button><button class="btn btn-ghost">Book a demo</button></div></div><aside class="briefing-metrics"><div class="briefing-metric"><span>01</span><strong>Token-driven</strong></div><div class="briefing-metric"><span>02</span><strong>Accessible by gate</strong></div><div class="briefing-metric"><span>03</span><strong>Recipe families</strong></div></aside></section>
+<section data-demo-region="features" class="briefing-section"><div class="briefing-heading"><span class="briefing-number">02</span><h2>Built on the brand's own tokens</h2></div><div class="briefing-rows"><article><h3>Token-driven</h3><p>One tokens.json compiles into every surface — catalog, docs, and this applied page.</p></article><article><h3>Accessible by gate</h3><p>Contrast pairs pass a deterministic WCAG export gate before anything ships.</p></article><article><h3>Recipe families</h3><p>Structural recipes give each brand its own room; overrides fine-tune within it.</p></article></div></section>
+<section data-demo-region="form" class="briefing-form"><span class="briefing-number">03</span><div><h2>Request access</h2><p class="lead">See the applied page rendered for your brand.</p></div><form><label>Name<input type="text" name="name" placeholder="Ada Lovelace"></label><label>Work email<input type="email" name="email" placeholder="ada@example.com"></label><label>Company<input type="text" name="company" placeholder="Analytical Engines"></label><button type="submit" class="btn btn-primary">Request access</button></form></section>
+</main>
+<footer data-demo-region="footer" class="briefing-footer"><div class="footer-cols"><div><span class="brand">enterprise</span><p>Design tokens, applied.</p></div><div><strong>Product</strong><a href="#">Overview</a><a href="#">Changelog</a><a href="#">Support</a></div><div><strong>Resources</strong><a href="#">Overview</a><a href="#">Changelog</a><a href="#">Support</a></div><div><strong>Company</strong><a href="#">Overview</a><a href="#">Changelog</a><a href="#">Support</a></div></div><p class="fine">© enterprise. Styled entirely by brand tokens.</p></footer>
+<script id="token-snapshot" type="application/json">{"builtFromTokenHash":"sha256:400df42bcf091069152aab8b245ce2beda9e2c211e402ee4dd759c92d9a452a7","generatedAt":"1970-01-01T00:00:00Z"}</script>
+</body>
+</html>

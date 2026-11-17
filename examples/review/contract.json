@@ -1,0 +1,1173 @@
+{
+  "contractVersion": 1,
+  "builtFromTokenHash": "sha256:400df42bcf091069152aab8b245ce2beda9e2c211e402ee4dd759c92d9a452a7",
+  "artifacts": [
+    "tokens.css",
+    "fonts.css",
+    "tokens.ts",
+    "styleguide.html",
+    "DESIGN.md",
+    "demo.html",
+    "contract.json"
+  ],
+  "consume": {
+    "do": [
+      "Consume semantic token CSS variables (--semantic-*) for product surfaces.",
+      "Consume component token CSS variables (--component-*) for primitive component states.",
+      "Use contrastPairs as the allowed foreground/background registry.",
+      "Treat generated files as read-only outputs and regenerate them from tokens.json."
+    ],
+    "dont": [
+      "Do not consume primitive token variables directly in product code.",
+      "Do not copy physical literals from generated CSS, HTML, or markdown into source code.",
+      "Do not create foreground/background combinations outside contrastPairs or documented component states.",
+      "Do not edit generated artifacts by hand to repair drift."
+    ]
+  },
+  "tokens": {
+    "publicPrefixes": [
+      "--semantic-",
+      "--component-"
+    ],
+    "internalPrefixes": [
+      "--primitive-"
+    ],
+    "classes": [
+      "portable",
+      "adapter-derived",
+      "target-only:<target>"
+    ],
+    "units": [
+      "abstract",
+      "px-base",
+      "ms"
+    ],
+    "leafTypes": [
+      "color",
+      "dimension",
+      "duration",
+      "fontFamily",
+      "fontWeight",
+      "number",
+      "string",
+      "shadow",
+      "gradient",
+      "cubicBezier"
+    ],
+    "contrastRoles": [
+      "text",
+      "large-text",
+      "non-text"
+    ],
+    "contrastStates": [
+      "default",
+      "hover",
+      "focus",
+      "active",
+      "disabled"
+    ]
+  },
+  "components": {
+    "rolloutRecipes": [
+      "minimal-tech",
+      "enterprise",
+      "pro-emotive",
+      "expressive",
+      "creative-multiscale",
+      "luxury",
+      "retro",
+      "warm-creator"
+    ],
+    "states": [
+      "default",
+      "hover",
+      "focus",
+      "active",
+      "disabled"
+    ],
+    "registry": [
+      {
+        "name": "button",
+        "variants": [
+          "primary",
+          "secondary",
+          "ghost"
+        ],
+        "baseProperties": [
+          "radius",
+          "paddingX",
+          "paddingY",
+          "borderWidth",
+          "label.family",
+          "label.weight",
+          "label.transform",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "link",
+        "variants": [],
+        "baseProperties": [
+          "underlineOffset",
+          "borderWidth",
+          "label.family",
+          "label.weight",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "input",
+        "variants": [],
+        "baseProperties": [
+          "radius",
+          "paddingX",
+          "paddingY",
+          "borderWidth",
+          "borderPlacement",
+          "label.family",
+          "label.weight",
+          "label.transform",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "select",
+        "variants": [],
+        "baseProperties": [
+          "radius",
+          "paddingX",
+          "paddingY",
+          "borderWidth",
+          "borderPlacement",
+          "label.family",
+          "label.weight",
+          "label.transform",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "checkbox",
+        "variants": [],
+        "baseProperties": [
+          "size",
+          "radius",
+          "borderWidth",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "non-text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "radio",
+        "variants": [],
+        "baseProperties": [
+          "size",
+          "radius",
+          "borderWidth",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "non-text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "switch",
+        "variants": [],
+        "baseProperties": [
+          "width",
+          "height",
+          "thumbSize",
+          "radius",
+          "borderWidth",
+          "transition"
+        ],
+        "stateProperties": [
+          "background",
+          "foreground",
+          "border"
+        ],
+        "contrastRole": "non-text",
+        "focusIndicator": "border"
+      },
+      {
+        "name": "card",
+        "variants": [],
+        "baseProperties": [
+          "background",
+          "foreground",
+          "border",
+          "radius",
+          "padding",
+          "borderWidth"
+        ],
+        "stateProperties": [],
+        "contrastRole": null,
+        "focusIndicator": null
+      },
+      {
+        "name": "badge",
+        "variants": [],
+        "baseProperties": [
+          "background",
+          "foreground",
+          "border",
+          "radius",
+          "paddingX",
+          "paddingY",
+          "borderWidth",
+          "label.family",
+          "label.weight",
+          "label.transform"
+        ],
+        "stateProperties": [],
+        "contrastRole": null,
+        "focusIndicator": null
+      },
+      {
+        "name": "divider",
+        "variants": [],
+        "baseProperties": [
+          "color",
+          "thickness",
+          "style"
+        ],
+        "stateProperties": [],
+        "contrastRole": null,
+        "focusIndicator": null
+      }
+    ],
+    "p2RolloutRecipes": [
+      "minimal-tech",
+      "enterprise",
+      "pro-emotive",
+      "luxury",
+      "retro",
+      "warm-creator",
+      "expressive",
+      "creative-multiscale"
+    ],
+    "composites": [
+      {
+        "name": "nav",
+        "leafPaths": [
+          "background",
+          "foreground",
+          "border",
+          "paddingX",
+          "paddingY"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.nav.foreground",
+            "bg": "component.nav.background",
+            "role": "text"
+          }
+        ],
+        "exemptions": []
+      },
+      {
+        "name": "table",
+        "leafPaths": [
+          "headerBackground",
+          "headerForeground",
+          "rowBackground",
+          "rowStripeBackground",
+          "rowHoverBackground",
+          "cellForeground",
+          "border",
+          "cellPaddingX",
+          "cellPaddingY"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.table.headerForeground",
+            "bg": "component.table.headerBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.table.cellForeground",
+            "bg": "component.table.rowBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.table.cellForeground",
+            "bg": "component.table.rowStripeBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.table.cellForeground",
+            "bg": "component.table.rowHoverBackground",
+            "role": "text"
+          }
+        ],
+        "exemptions": []
+      },
+      {
+        "name": "modal",
+        "leafPaths": [
+          "overlayBackground",
+          "panelBackground",
+          "panelForeground",
+          "panelBorder",
+          "panelRadius",
+          "panelShadow",
+          "padding"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.modal.panelForeground",
+            "bg": "component.modal.panelBackground",
+            "role": "text"
+          }
+        ],
+        "exemptions": [
+          {
+            "path": "component.modal.overlayBackground",
+            "reason": "Non-text decorative scrim; panel legibility is covered by panelForeground on panelBackground.",
+            "exemption": "WCAG 1.4.3 incidental decorative content"
+          }
+        ]
+      },
+      {
+        "name": "formRow",
+        "leafPaths": [
+          "gap",
+          "labelForeground",
+          "helpForeground",
+          "errorForeground",
+          "errorBorder"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.formRow.labelForeground",
+            "bg": "semantic.color.surface.default",
+            "role": "text"
+          },
+          {
+            "fg": "component.formRow.helpForeground",
+            "bg": "semantic.color.surface.default",
+            "role": "text"
+          },
+          {
+            "fg": "component.formRow.errorForeground",
+            "bg": "semantic.color.surface.default",
+            "role": "text"
+          },
+          {
+            "fg": "component.formRow.errorBorder",
+            "bg": "semantic.color.surface.default",
+            "role": "non-text"
+          }
+        ],
+        "exemptions": []
+      }
+    ],
+    "p3RolloutRecipes": [
+      "minimal-tech",
+      "enterprise",
+      "pro-emotive",
+      "luxury",
+      "retro",
+      "warm-creator",
+      "expressive",
+      "creative-multiscale"
+    ],
+    "patterns": [
+      {
+        "name": "hero",
+        "leafPaths": [
+          "background",
+          "foreground",
+          "subForeground",
+          "paddingX",
+          "paddingY",
+          "gap"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.hero.foreground",
+            "bg": "component.hero.background",
+            "role": "text"
+          },
+          {
+            "fg": "component.hero.subForeground",
+            "bg": "component.hero.background",
+            "role": "text"
+          }
+        ],
+        "exemptions": []
+      },
+      {
+        "name": "pricing",
+        "leafPaths": [
+          "cardBackground",
+          "cardForeground",
+          "cardMutedForeground",
+          "cardBorder",
+          "cardRadius",
+          "featuredBackground",
+          "featuredForeground",
+          "featuredBorder",
+          "cardPadding",
+          "gap"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.pricing.cardForeground",
+            "bg": "component.pricing.cardBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.pricing.cardMutedForeground",
+            "bg": "component.pricing.cardBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.pricing.featuredForeground",
+            "bg": "component.pricing.featuredBackground",
+            "role": "text"
+          },
+          {
+            "fg": "component.pricing.featuredBorder",
+            "bg": "semantic.color.surface.default",
+            "role": "non-text"
+          }
+        ],
+        "exemptions": []
+      },
+      {
+        "name": "featureGrid",
+        "leafPaths": [
+          "background",
+          "titleForeground",
+          "bodyForeground",
+          "iconForeground",
+          "cellPadding",
+          "gap"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.featureGrid.titleForeground",
+            "bg": "component.featureGrid.background",
+            "role": "text"
+          },
+          {
+            "fg": "component.featureGrid.bodyForeground",
+            "bg": "component.featureGrid.background",
+            "role": "text"
+          },
+          {
+            "fg": "component.featureGrid.iconForeground",
+            "bg": "component.featureGrid.background",
+            "role": "non-text"
+          }
+        ],
+        "exemptions": []
+      },
+      {
+        "name": "footer",
+        "leafPaths": [
+          "background",
+          "foreground",
+          "mutedForeground",
+          "border",
+          "paddingY",
+          "gap"
+        ],
+        "contrastTargets": [
+          {
+            "fg": "component.footer.foreground",
+            "bg": "component.footer.background",
+            "role": "text"
+          },
+          {
+            "fg": "component.footer.mutedForeground",
+            "bg": "component.footer.background",
+            "role": "text"
+          }
+        ],
+        "exemptions": []
+      }
+    ]
+  },
+  "video": {
+    "realizablePaths": [
+      "component.badge.background",
+      "component.badge.border",
+      "component.badge.borderWidth",
+      "component.badge.foreground",
+      "component.badge.label.family",
+      "component.badge.label.weight",
+      "component.badge.paddingX",
+      "component.badge.paddingY",
+      "component.badge.radius",
+      "component.button.ghost.background.active",
+      "component.button.ghost.background.default",
+      "component.button.ghost.background.disabled",
+      "component.button.ghost.background.focus",
+      "component.button.ghost.background.hover",
+      "component.button.ghost.border.active",
+      "component.button.ghost.border.default",
+      "component.button.ghost.border.disabled",
+      "component.button.ghost.border.focus",
+      "component.button.ghost.border.hover",
+      "component.button.ghost.borderWidth",
+      "component.button.ghost.foreground.active",
+      "component.button.ghost.foreground.default",
+      "component.button.ghost.foreground.disabled",
+      "component.button.ghost.foreground.focus",
+      "component.button.ghost.foreground.hover",
+      "component.button.ghost.label.family",
+      "component.button.ghost.label.weight",
+      "component.button.ghost.paddingX",
+      "component.button.ghost.paddingY",
+      "component.button.ghost.radius",
+      "component.button.ghost.transition",
+      "component.button.primary.background.active",
+      "component.button.primary.background.default",
+      "component.button.primary.background.disabled",
+      "component.button.primary.background.focus",
+      "component.button.primary.background.hover",
+      "component.button.primary.border.active",
+      "component.button.primary.border.default",
+      "component.button.primary.border.disabled",
+      "component.button.primary.border.focus",
+      "component.button.primary.border.hover",
+      "component.button.primary.borderWidth",
+      "component.button.primary.foreground.active",
+      "component.button.primary.foreground.default",
+      "component.button.primary.foreground.disabled",
+      "component.button.primary.foreground.focus",
+      "component.button.primary.foreground.hover",
+      "component.button.primary.label.family",
+      "component.button.primary.label.weight",
+      "component.button.primary.paddingX",
+      "component.button.primary.paddingY",
+      "component.button.primary.radius",
+      "component.button.primary.transition",
+      "component.button.secondary.background.active",
+      "component.button.secondary.background.default",
+      "component.button.secondary.background.disabled",
+      "component.button.secondary.background.focus",
+      "component.button.secondary.background.hover",
+      "component.button.secondary.border.active",
+      "component.button.secondary.border.default",
+      "component.button.secondary.border.disabled",
+      "component.button.secondary.border.focus",
+      "component.button.secondary.border.hover",
+      "component.button.secondary.borderWidth",
+      "component.button.secondary.foreground.active",
+      "component.button.secondary.foreground.default",
+      "component.button.secondary.foreground.disabled",
+      "component.button.secondary.foreground.focus",
+      "component.button.secondary.foreground.hover",
+      "component.button.secondary.label.family",
+      "component.button.secondary.label.weight",
+      "component.button.secondary.paddingX",
+      "component.button.secondary.paddingY",
+      "component.button.secondary.radius",
+      "component.button.secondary.transition",
+      "component.card.background",
+      "component.card.border",
+      "component.card.borderWidth",
+      "component.card.foreground",
+      "component.card.padding",
+      "component.card.radius",
+      "component.checkbox.background.active",
+      "component.checkbox.background.default",
+      "component.checkbox.background.disabled",
+      "component.checkbox.background.focus",
+      "component.checkbox.background.hover",
+      "component.checkbox.border.active",
+      "component.checkbox.border.default",
+      "component.checkbox.border.disabled",
+      "component.checkbox.border.focus",
+      "component.checkbox.border.hover",
+      "component.checkbox.borderWidth",
+      "component.checkbox.foreground.active",
+      "component.checkbox.foreground.default",
+      "component.checkbox.foreground.disabled",
+      "component.checkbox.foreground.focus",
+      "component.checkbox.foreground.hover",
+      "component.checkbox.radius",
+      "component.checkbox.size",
+      "component.checkbox.transition",
+      "component.divider.color",
+      "component.divider.thickness",
+      "component.featureGrid.background",
+      "component.featureGrid.bodyForeground",
+      "component.featureGrid.cellPadding",
+      "component.featureGrid.gap",
+      "component.featureGrid.iconForeground",
+      "component.featureGrid.titleForeground",
+      "component.footer.background",
+      "component.footer.border",
+      "component.footer.foreground",
+      "component.footer.gap",
+      "component.footer.mutedForeground",
+      "component.footer.paddingY",
+      "component.formRow.errorBorder",
+      "component.formRow.errorForeground",
+      "component.formRow.gap",
+      "component.formRow.helpForeground",
+      "component.formRow.labelForeground",
+      "component.hero.background",
+      "component.hero.foreground",
+      "component.hero.gap",
+      "component.hero.paddingX",
+      "component.hero.paddingY",
+      "component.hero.subForeground",
+      "component.input.background.active",
+      "component.input.background.default",
+      "component.input.background.disabled",
+      "component.input.background.focus",
+      "component.input.background.hover",
+      "component.input.border.active",
+      "component.input.border.default",
+      "component.input.border.disabled",
+      "component.input.border.focus",
+      "component.input.border.hover",
+      "component.input.borderWidth",
+      "component.input.foreground.active",
+      "component.input.foreground.default",
+      "component.input.foreground.disabled",
+      "component.input.foreground.focus",
+      "component.input.foreground.hover",
+      "component.input.label.family",
+      "component.input.label.weight",
+      "component.input.paddingX",
+      "component.input.paddingY",
+      "component.input.radius",
+      "component.input.transition",
+      "component.link.background.active",
+      "component.link.background.default",
+      "component.link.background.disabled",
+      "component.link.background.focus",
+      "component.link.background.hover",
+      "component.link.border.active",
+      "component.link.border.default",
+      "component.link.border.disabled",
+      "component.link.border.focus",
+      "component.link.border.hover",
+      "component.link.borderWidth",
+      "component.link.foreground.active",
+      "component.link.foreground.default",
+      "component.link.foreground.disabled",
+      "component.link.foreground.focus",
+      "component.link.foreground.hover",
+      "component.link.label.family",
+      "component.link.label.weight",
+      "component.link.transition",
+      "component.link.underlineOffset",
+      "component.modal.overlayBackground",
+      "component.modal.padding",
+      "component.modal.panelBackground",
+      "component.modal.panelBorder",
+      "component.modal.panelForeground",
+      "component.modal.panelRadius",
+      "component.nav.background",
+      "component.nav.border",
+      "component.nav.foreground",
+      "component.nav.paddingX",
+      "component.nav.paddingY",
+      "component.pricing.cardBackground",
+      "component.pricing.cardBorder",
+      "component.pricing.cardForeground",
+      "component.pricing.cardMutedForeground",
+      "component.pricing.cardPadding",
+      "component.pricing.cardRadius",
+      "component.pricing.featuredBackground",
+      "component.pricing.featuredBorder",
+      "component.pricing.featuredForeground",
+      "component.pricing.gap",
+      "component.radio.background.active",
+      "component.radio.background.default",
+      "component.radio.background.disabled",
+      "component.radio.background.focus",
+      "component.radio.background.hover",
+      "component.radio.border.active",
+      "component.radio.border.default",
+      "component.radio.border.disabled",
+      "component.radio.border.focus",
+      "component.radio.border.hover",
+      "component.radio.borderWidth",
+      "component.radio.foreground.active",
+      "component.radio.foreground.default",
+      "component.radio.foreground.disabled",
+      "component.radio.foreground.focus",
+      "component.radio.foreground.hover",
+      "component.radio.radius",
+      "component.radio.size",
+      "component.radio.transition",
+      "component.select.background.active",
+      "component.select.background.default",
+      "component.select.background.disabled",
+      "component.select.background.focus",
+      "component.select.background.hover",
+      "component.select.border.active",
+      "component.select.border.default",
+      "component.select.border.disabled",
+      "component.select.border.focus",
+      "component.select.border.hover",
+      "component.select.borderWidth",
+      "component.select.foreground.active",
+      "component.select.foreground.default",
+      "component.select.foreground.disabled",
+      "component.select.foreground.focus",
+      "component.select.foreground.hover",
+      "component.select.label.family",
+      "component.select.label.weight",
+      "component.select.paddingX",
+      "component.select.paddingY",
+      "component.select.radius",
+      "component.select.transition",
+      "component.switch.background.active",
+      "component.switch.background.default",
+      "component.switch.background.disabled",
+      "component.switch.background.focus",
+      "component.switch.background.hover",
+      "component.switch.border.active",
+      "component.switch.border.default",
+      "component.switch.border.disabled",
+      "component.switch.border.focus",
+      "component.switch.border.hover",
+      "component.switch.borderWidth",
+      "component.switch.foreground.active",
+      "component.switch.foreground.default",
+      "component.switch.foreground.disabled",
+      "component.switch.foreground.focus",
+      "component.switch.foreground.hover",
+      "component.switch.height",
+      "component.switch.radius",
+      "component.switch.thumbSize",
+      "component.switch.transition",
+      "component.switch.width",
+      "component.table.border",
+      "component.table.cellForeground",
+      "component.table.cellPaddingX",
+      "component.table.cellPaddingY",
+      "component.table.headerBackground",
+      "component.table.headerForeground",
+      "component.table.rowBackground",
+      "component.table.rowHoverBackground",
+      "component.table.rowStripeBackground",
+      "primitive.color.brand.600",
+      "primitive.color.brand.700",
+      "primitive.color.neutral.100",
+      "primitive.color.neutral.50",
+      "primitive.color.neutral.600",
+      "primitive.color.neutral.900",
+      "primitive.duration.fast",
+      "primitive.duration.normal",
+      "primitive.font.family.mono",
+      "primitive.font.family.sans",
+      "primitive.font.lineHeight.normal",
+      "primitive.font.lineHeight.tight",
+      "primitive.font.size.body",
+      "primitive.font.size.caption",
+      "primitive.font.size.display",
+      "primitive.font.size.h2",
+      "primitive.font.size.h3",
+      "primitive.font.size.heading",
+      "primitive.font.tracking.body",
+      "primitive.font.tracking.caption",
+      "primitive.font.tracking.heading",
+      "primitive.font.weight.bold",
+      "primitive.font.weight.regular",
+      "primitive.motion.easing.enter",
+      "primitive.motion.easing.exit",
+      "primitive.motion.easing.standard",
+      "primitive.radius.md",
+      "primitive.radius.sm",
+      "primitive.space.lg",
+      "primitive.space.md",
+      "primitive.space.sm",
+      "primitive.space.xs",
+      "semantic.color.primary.default",
+      "semantic.color.primary.foreground",
+      "semantic.color.primary.hover",
+      "semantic.color.surface.default",
+      "semantic.color.surface.foreground",
+      "semantic.motion.easing.enter",
+      "semantic.motion.easing.exit",
+      "semantic.motion.easing.standard",
+      "semantic.motion.transition",
+      "semantic.shape.control",
+      "semantic.space.inset",
+      "semantic.space.stack",
+      "semantic.typography.body.family",
+      "semantic.typography.body.lineHeight",
+      "semantic.typography.body.size",
+      "semantic.typography.body.tracking",
+      "semantic.typography.body.weight",
+      "semantic.typography.caption.family",
+      "semantic.typography.caption.lineHeight",
+      "semantic.typography.caption.size",
+      "semantic.typography.caption.tracking",
+      "semantic.typography.caption.weight",
+      "semantic.typography.display.family",
+      "semantic.typography.display.lineHeight",
+      "semantic.typography.display.size",
+      "semantic.typography.display.tracking",
+      "semantic.typography.display.weight",
+      "semantic.typography.h1.family",
+      "semantic.typography.h1.lineHeight",
+      "semantic.typography.h1.size",
+      "semantic.typography.h1.tracking",
+      "semantic.typography.h1.weight",
+      "semantic.typography.h2.family",
+      "semantic.typography.h2.lineHeight",
+      "semantic.typography.h2.size",
+      "semantic.typography.h2.tracking",
+      "semantic.typography.h2.weight",
+      "semantic.typography.h3.family",
+      "semantic.typography.h3.lineHeight",
+      "semantic.typography.h3.size",
+      "semantic.typography.h3.tracking",
+      "semantic.typography.h3.weight",
+      "semantic.typography.heading.family",
+      "semantic.typography.heading.lineHeight",
+      "semantic.typography.heading.size",
+      "semantic.typography.heading.weight"
+    ],
+    "skippedTypes": [
+      "string",
+      "motif-kind"
+    ],
+    "gate": "video-contract-parity"
+  },
+  "gates": [
+    {
+      "code": "export-brand-fields",
+      "purpose": "brand.json is structurally complete and every finite field is in range."
+    },
+    {
+      "code": "export-conflict-free",
+      "purpose": "Recipe selection and requested overrides have no blocking conflicts."
+    },
+    {
+      "code": "export-recipe-selected",
+      "purpose": "A concrete recipe is selected before tokens are built."
+    },
+    {
+      "code": "export-override-limit",
+      "purpose": "At most three override axes are applied in one build."
+    },
+    {
+      "code": "export-user-confirmed",
+      "purpose": "The caller explicitly confirms generation after reviewing the selected recipe."
+    },
+    {
+      "code": "class-missing",
+      "purpose": "Every token leaf declares a portability class."
+    },
+    {
+      "code": "class-invalid",
+      "purpose": "Token leaf classes are limited to portable, adapter-derived, or target-only:<target>."
+    },
+    {
+      "code": "alias-unresolved",
+      "purpose": "Alias references resolve to an existing token path."
+    },
+    {
+      "code": "alias-cycle",
+      "purpose": "Alias references do not form cycles."
+    },
+    {
+      "code": "alias-type",
+      "purpose": "Alias references preserve the declared leaf type."
+    },
+    {
+      "code": "unit-invalid",
+      "purpose": "Dimension and duration leaves use normalized intent units."
+    },
+    {
+      "code": "cubic-bezier-invalid",
+      "purpose": "Motion easing leaves use finite four-point cubic-bezier tuples."
+    },
+    {
+      "code": "orphan-token",
+      "purpose": "Portable primitive leaves should be consumed by semantic or component aliases."
+    },
+    {
+      "code": "component-parity",
+      "purpose": "Rolled-out recipes expose the exact component path registry for each rollout set."
+    },
+    {
+      "code": "video-contract-parity",
+      "purpose": "Rolled-out recipes realize every path declared by the static video contract manifest."
+    },
+    {
+      "code": "texture-opacity-invalid",
+      "purpose": "Texture overlay opacity is a numeric token."
+    },
+    {
+      "code": "texture-opacity-cap",
+      "purpose": "Texture overlay opacity stays below the shipped cap."
+    },
+    {
+      "code": "texture-contrast-unparseable",
+      "purpose": "Texture worst-case blended contrast colors must parse."
+    },
+    {
+      "code": "texture-contrast-fail",
+      "purpose": "Texture worst-case blended backgrounds meet contrast floors."
+    },
+    {
+      "code": "glass-opacity-floor",
+      "purpose": "Glass backing opacity stays inside the statically provable interval."
+    },
+    {
+      "code": "glass-contrast-unparseable",
+      "purpose": "Glass contrast colors must parse."
+    },
+    {
+      "code": "glass-contrast-collapse",
+      "purpose": "Glass foreground luminance cannot collapse inside the reachable background interval."
+    },
+    {
+      "code": "glass-contrast-fail",
+      "purpose": "Glass worst-case interval contrast meets role floors."
+    },
+    {
+      "code": "contrast-unresolved",
+      "purpose": "Every contrastPair foreground and background resolves to a color."
+    },
+    {
+      "code": "contrast-unparseable",
+      "purpose": "Every contrastPair color can be parsed for WCAG math."
+    },
+    {
+      "code": "contrast-fail",
+      "purpose": "Every non-disabled contrastPair meets its role floor."
+    },
+    {
+      "code": "contrast-exempt",
+      "purpose": "Disabled controls record the WCAG incidental-content exemption."
+    },
+    {
+      "code": "foreground-missing",
+      "purpose": "Semantic background roles expose a paired foreground role."
+    },
+    {
+      "code": "trace-coverage",
+      "purpose": "Decision traces cover the core token categories present in the document."
+    },
+    {
+      "code": "intent-leak",
+      "purpose": "Intent rationale avoids physical implementation values."
+    },
+    {
+      "code": "manifest-drift",
+      "purpose": "Generated surfaces embed the current builtFromTokenHash."
+    },
+    {
+      "code": "surface-incomplete",
+      "purpose": "Generated surfaces contain the required manifest sections or demo regions."
+    },
+    {
+      "code": "a11y-record",
+      "purpose": "Generated documentation records every contrastPair result."
+    },
+    {
+      "code": "motion-reduce-missing",
+      "purpose": "Motion tokens require reduced-motion records in generated surfaces."
+    }
+  ],
+  "accessibility": {
+    "minRatio": {
+      "text": 4.5,
+      "large-text": 3,
+      "non-text": 3
+    },
+    "disabledExemption": "Disabled controls are exempt from WCAG 1.4.3 text floors and are recorded as contrast-exempt.",
+    "gradientRule": "Gradient backgrounds are checked at the worst contrast stop.",
+    "demoDerivedTextRule": "Demo foreground color-mix values are checked at build time with OKLCH interpolation."
+  },
+  "enums": {
+    "recipes": [
+      "minimal-tech",
+      "enterprise",
+      "expressive",
+      "pro-emotive",
+      "creative-multiscale",
+      "warm-creator",
+      "luxury",
+      "retro"
+    ],
+    "expression": [
+      "safe",
+      "balanced",
+      "bold"
+    ],
+    "skeletons": [
+      "standard",
+      "editorial",
+      "spec-sheet",
+      "briefing",
+      "collage",
+      "mosaic",
+      "poster",
+      "journal",
+      "story"
+    ],
+    "motionPresets": [
+      "subtle",
+      "standard",
+      "expressive",
+      "dramatic"
+    ],
+    "motionPresetCurves": {
+      "subtle": {
+        "standard": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "enter": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "exit": [
+          0.3,
+          0,
+          1,
+          1
+        ]
+      },
+      "standard": {
+        "standard": [
+          0.4,
+          0,
+          0.2,
+          1
+        ],
+        "enter": [
+          0,
+          0,
+          0.1,
+          1
+        ],
+        "exit": [
+          0.4,
+          0,
+          1,
+          1
+        ]
+      },
+      "expressive": {
+        "standard": [
+          0.34,
+          1.2,
+          0.64,
+          1
+        ],
+        "enter": [
+          0.16,
+          1.1,
+          0.3,
+          1
+        ],
+        "exit": [
+          0.6,
+          0,
+          0.8,
+          0.6
+        ]
+      },
+      "dramatic": {
+        "standard": [
+          0.68,
+          -0.3,
+          0.32,
+          1.3
+        ],
+        "enter": [
+          0.2,
+          1.25,
+          0.4,
+          1
+        ],
+        "exit": [
+          0.7,
+          -0.2,
+          0.9,
+          0.6
+        ]
+      }
+    },
+    "exportGateCodes": [
+      "export-brand-fields",
+      "export-conflict-free",
+      "export-recipe-selected",
+      "export-override-limit",
+      "export-user-confirmed"
+    ]
+  },
+  "guarantees": [
+    {
+      "claim": "Same input tokens produce deterministic contract bytes.",
+      "proof": "golden/contract.test.ts byte-golden and deterministic-bytes test."
+    },
+    {
+      "claim": "WCAG contrast is gated for contrastPairs, gradients, glass, texture overlays, and demo derived foregrounds.",
+      "proof": "src/validator.ts contrast-fail/texture-contrast-fail/glass-contrast-fail and src/render-utils.ts mixedText."
+    },
+    {
+      "claim": "Generated surfaces stay tied to the source token hash.",
+      "proof": "src/manifest.ts manifest-drift checks builtFromTokenHash on styleguide, DESIGN.md, demo.html, and contract.json."
+    },
+    {
+      "claim": "The component registry surface follows the code registry.",
+      "proof": "src/component-registry.ts COMPONENT_P1_REGISTRY, COMPONENT_P2_COMPOSITES, and COMPONENT_P3_PATTERNS plus golden/contract.test.ts registry flow assertion."
+    },
+    {
+      "claim": "The video-realizable token surface follows the static per-recipe video contract without mutating tokens.json.",
+      "proof": "src/video-contract.ts VIDEO_CONTRACT plus golden/video-contract.test.ts parity, seal, and deterministic contract assertions."
+    },
+    {
+      "claim": "Regression safety is enforced by the golden test suite.",
+      "proof": "Run npm test."
+    }
+  ]
+}
